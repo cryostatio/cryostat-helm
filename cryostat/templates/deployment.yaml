@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cryostat.fullname" . }}
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cryostat.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cryostat.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cryostat.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.coreImage.repository }}:{{ .Values.coreImage.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.coreImage.pullPolicy }}
+          env:
+          - name: CRYOSTAT_SSL_PROXIED
+            value: "true"
+          - name: CRYOSTAT_ALLOW_UNTRUSTED_SSL
+            value: "true"
+          - name: CRYOSTAT_WEB_PORT
+            value: "8181"
+          - name: CRYOSTAT_CONFIG_PATH
+            value: /opt/cryostat.d/conf.d
+          - name: CRYOSTAT_ARCHIVE_PATH
+            value: /opt/cryostat.d/recordings.d
+          - name: CRYOSTAT_TEMPLATE_PATH
+            value: /opt/cryostat.d/templates.d
+          - name: CRYOSTAT_CLIENTLIB_PATH
+            value: /opt/cryostat.d/clientlib.d
+          - name: CRYOSTAT_EXT_WEB_PORT
+            value: "{{ if .Values.coreIngress.tls }}443{{ else }}80{{ end }}"
+          - name: CRYOSTAT_WEB_HOST
+            value: "{{ with index .Values.coreIngress.hosts 0 }}{{ .host }}{{ end }}"
+          - name: CRYOSTAT_PLATFORM
+            value: io.cryostat.platform.internal.KubeApiPlatformStrategy
+          - name: CRYOSTAT_AUTH_MANAGER
+            value: io.cryostat.net.NoopAuthManager
+          - name: GRAFANA_DATASOURCE_URL
+            value: http://127.0.0.1:8080
+          - name: GRAFANA_DASHBOARD_URL
+            value: "http{{ if .Values.grafanaIngress.tls }}s{{ end }}://{{ with index .Values.grafanaIngress.hosts 0 }}{{ .host }}{{ end }}"
+          - name: CRYOSTAT_DISABLE_SSL
+            value: "true"
+          envFrom:
+          - secretRef:
+              name: cryostat-sample-jmx-auth
+          ports:
+            - containerPort: 8181
+              protocol: TCP
+            - containerPort: 9090
+              protocol: TCP
+            - containerPort: 9091
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: 8181
+          startupProbe:
+            httpGet:
+              path: "/health"
+              port: 8181
+            failureThreshold: 18
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
