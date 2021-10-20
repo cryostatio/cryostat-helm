@@ -30,9 +30,9 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.coreImage.repository }}:{{ .Values.coreImage.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.coreImage.pullPolicy }}
+            {{- toYaml .Values.core.securityContext | nindent 12 }}
+          image: "{{ .Values.core.image.repository }}:{{ .Values.core.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
@@ -62,9 +62,8 @@ spec:
             value: "http{{ if .Values.grafana.ingress.tls }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}"
           - name: CRYOSTAT_DISABLE_SSL
             value: "true"
-          envFrom:
-          - secretRef:
-              name: cryostat-sample-jmx-auth
+          - name: CRYOSTAT_DISABLE_JMX_AUTH
+            value: "true"
           ports:
             - containerPort: 8181
               protocol: TCP
@@ -82,7 +81,45 @@ spec:
               port: 8181
             failureThreshold: 18
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.core.resources | nindent 12 }}
+        - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
+          securityContext:
+            {{- toYaml .Values.grafana.securityContext | nindent 12 }}
+          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+          env:
+          - name: JFR_DATASOURCE_URL
+            value: http://127.0.0.1:8080
+          - name: GF_AUTH_ANONYMOUS_ENABLED
+            value: "true"
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+          resources:
+            {{- toYaml .Values.grafana.resources | nindent 12 }}
+        - name: {{ printf "%s-%s" .Chart.Name "jfr-datasource" }}
+          securityContext:
+            {{- toYaml .Values.datasource.securityContext | nindent 12 }}
+          image: "{{ .Values.datasource.image.repository }}:{{ .Values.datasource.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.datasource.image.pullPolicy }}
+          env:
+          - name: LISTEN_HOST
+            value: 127.0.0.1
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - curl
+              - --fail
+              - http://127.0.0.1:8080
+          resources:
+            {{- toYaml .Values.datasource.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
