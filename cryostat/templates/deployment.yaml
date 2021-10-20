@@ -49,9 +49,9 @@ spec:
           - name: CRYOSTAT_CLIENTLIB_PATH
             value: /opt/cryostat.d/clientlib.d
           - name: CRYOSTAT_EXT_WEB_PORT
-            value: "{{ if .Values.coreIngress.tls }}443{{ else }}80{{ end }}"
+            value: "{{ if .Values.core.ingress.tls }}443{{ else }}80{{ end }}"
           - name: CRYOSTAT_WEB_HOST
-            value: "{{ with index .Values.coreIngress.hosts 0 }}{{ .host }}{{ end }}"
+            value: "{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}"
           - name: CRYOSTAT_PLATFORM
             value: io.cryostat.platform.internal.KubeApiPlatformStrategy
           - name: CRYOSTAT_AUTH_MANAGER
@@ -59,7 +59,7 @@ spec:
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
           - name: GRAFANA_DASHBOARD_URL
-            value: "http{{ if .Values.grafanaIngress.tls }}s{{ end }}://{{ with index .Values.grafanaIngress.hosts 0 }}{{ .host }}{{ end }}"
+            value: "http{{ if .Values.grafana.ingress.tls }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}"
           - name: CRYOSTAT_DISABLE_SSL
             value: "true"
           envFrom:
