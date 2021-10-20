@@ -82,6 +82,19 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /opt/cryostat.d/conf.d
+            name: {{ .Chart.Name }}
+            subPath: config
+          - mountPath: /opt/cryostat.d/recordings.d
+            name: {{ .Chart.Name }}
+            subPath: flightrecordings
+          - mountPath: /opt/cryostat.d/templates.d
+            name: {{ .Chart.Name }}
+            subPath: templates
+          - mountPath: /opt/cryostat.d/clientlib.d
+            name: {{ .Chart.Name }}
+            subPath: clientlib
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -132,3 +145,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: {{ .Chart.Name }}
+        emptyDir: {}
