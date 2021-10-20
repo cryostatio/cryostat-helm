@@ -2,7 +2,6 @@
 {{- $svcName := index . 0 }}
 {{- $ := index . 1 }}
 {{- with index . 2 }}
-
 {{- $svcPort := .service.port -}}
 {{- if and .ingress.className (not (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .ingress.annotations "kubernetes.io/ingress.class") }}

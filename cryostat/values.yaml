@@ -12,7 +12,8 @@ core:
     tag: "2.0.0"
   service:
     type: ClusterIP
-    port: 8181
+    httpPort: 8181
+    jmxPort: 9091
   ingress:
     className: ""
     annotations: {}
