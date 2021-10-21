@@ -1,8 +1,8 @@
 {{- define "createIngress" }}
 {{- $svcName := index . 0 }}
-{{- $ := index . 1 }}
-{{- with index . 2 }}
-{{- $svcPort := .service.port -}}
+{{- $svcPort := index . 1 }}
+{{- $ := index . 2 }}
+{{- with index . 3 }}
 {{- if and .ingress.className (not (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .ingress.annotations "kubernetes.io/ingress.class" .ingress.className}}
@@ -65,5 +65,5 @@ spec:
 {{- end }}
 
 {{- $fullName := include "cryostat.fullname" . -}}
-{{- include "createIngress" (list $fullName $ .Values.core)}}
-{{- include "createIngress" (list (printf "%s-%s" $fullName "grafana") $ .Values.grafana)}}
+{{- include "createIngress" (list $fullName .Values.core.service.httpPort $ .Values.core)}}
+{{- include "createIngress" (list (printf "%s-%s" $fullName "grafana") .Values.grafana.service.port $ .Values.grafana)}}
