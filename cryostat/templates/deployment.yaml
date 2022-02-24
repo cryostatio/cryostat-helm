@@ -34,10 +34,6 @@ spec:
           image: "{{ .Values.core.image.repository }}:{{ .Values.core.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
-          - name: CRYOSTAT_SSL_PROXIED
-            value: "true"
-          - name: CRYOSTAT_ALLOW_UNTRUSTED_SSL
-            value: "true"
           - name: CRYOSTAT_WEB_PORT
             value: "8181"
           - name: CRYOSTAT_CONFIG_PATH
@@ -48,10 +44,12 @@ spec:
             value: /opt/cryostat.d/templates.d
           - name: CRYOSTAT_CLIENTLIB_PATH
             value: /opt/cryostat.d/clientlib.d
+          - name: CRYOSTAT_PROBE_TEMPLATE_PATH
+            value: /opt/cryostat.d/probes.d
           - name: CRYOSTAT_EXT_WEB_PORT
-            value: "{{ if .Values.core.ingress.tls }}443{{ else }}80{{ end }}"
+            value: "{{ if (and .Values.core.ingress.enabled .Values.core.ingress.tls) }}443{{ else }}80{{ end }}"
           - name: CRYOSTAT_WEB_HOST
-            value: "{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}"
+            value: "{{ if .Values.core.ingress.enabled }}{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           - name: CRYOSTAT_PLATFORM
             value: io.cryostat.platform.internal.KubeApiPlatformStrategy
           - name: CRYOSTAT_AUTH_MANAGER
@@ -59,11 +57,17 @@ spec:
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
           - name: GRAFANA_DASHBOARD_URL
-            value: "http{{ if .Values.grafana.ingress.tls }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}"
+            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if .Values.grafana.ingress.tls }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           - name: CRYOSTAT_DISABLE_SSL
             value: "true"
           - name: CRYOSTAT_DISABLE_JMX_AUTH
             value: "true"
+          - name: CRYOSTAT_ALLOW_UNTRUSTED_SSL
+            value: "true"
+          {{- if (and .Values.core.ingress.enabled .Values.core.ingress.tls) }}
+          - name: CRYOSTAT_SSL_PROXIED
+            value: "true"
+          {{- end }}
           ports:
             - containerPort: 8181
               protocol: TCP
@@ -95,6 +99,9 @@ spec:
           - mountPath: /opt/cryostat.d/clientlib.d
             name: {{ .Chart.Name }}
             subPath: clientlib
+          - mountPath: /opt/cryostat.d/probes.d
+            name: {{ .Chart.Name }}
+            subPath: probes
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
