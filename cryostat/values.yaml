@@ -124,6 +124,10 @@ fullnameOverride: ""
 # TODO Volumes
 # TODO Grafana auth
 
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
