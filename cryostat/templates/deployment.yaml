@@ -64,6 +64,8 @@ spec:
             value: "true"
           - name: CRYOSTAT_ALLOW_UNTRUSTED_SSL
             value: "true"
+          - name: CRYOSTAT_ENABLE_JDP_BROADCAST
+            value: "false"
           {{- if (and .Values.core.ingress.enabled .Values.core.ingress.tls) }}
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
