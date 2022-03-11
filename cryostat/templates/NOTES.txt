@@ -44,8 +44,8 @@
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
 {{- end }}
   export GRAFANA_CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[1].ports[0].containerPort}")
-{{- $envVars = append $envVars "GRAFANA_DASHBOARD_URL=http://127.0.0.1:$GRAFANA_CONTAINER_PORT"}}
-{{- $portForwards = append $portForwards "$GRAFANA_CONTAINER_PORT:$GRAFANA_CONTAINER_PORT" }}
+{{- $envVars = append $envVars "GRAFANA_DASHBOARD_URL=http://127.0.0.1:$GRAFANA_CONTAINER_PORT" "GRAFANA_DASHBOARD_EXT_URL=http://127.0.0.1:8081"}}
+{{- $portForwards = append $portForwards "8081:$GRAFANA_CONTAINER_PORT" }}
 {{- end }}
 
 {{- if not (empty $envVars) }}
