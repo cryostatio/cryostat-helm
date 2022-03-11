@@ -29,6 +29,17 @@ core:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+  route:
+    # Available only on OpenShift
+    enabled: false
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+      key: ""
+      caCertificate: ""
+      certificate: ""
+      destinationCACertificate: ""
   resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -72,6 +83,17 @@ grafana:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+  route:
+    # Available only on OpenShift
+    enabled: false
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+      key: ""
+      caCertificate: ""
+      certificate: ""
+      destinationCACertificate: ""
   resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

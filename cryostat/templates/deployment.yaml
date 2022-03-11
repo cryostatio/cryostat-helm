@@ -47,7 +47,7 @@ spec:
           - name: CRYOSTAT_PROBE_TEMPLATE_PATH
             value: /opt/cryostat.d/probes.d
           - name: CRYOSTAT_EXT_WEB_PORT
-            value: "{{ if (and .Values.core.ingress.enabled .Values.core.ingress.tls) }}443{{ else }}80{{ end }}"
+            value: "{{ if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls)) }}443{{ else }}80{{ end }}"
           - name: CRYOSTAT_WEB_HOST
             value: "{{ if .Values.core.ingress.enabled }}{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           - name: CRYOSTAT_PLATFORM
@@ -66,7 +66,7 @@ spec:
             value: "true"
           - name: CRYOSTAT_ENABLE_JDP_BROADCAST
             value: "false"
-          {{- if (and .Values.core.ingress.enabled .Values.core.ingress.tls) }}
+          {{- if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls)) }}
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
           {{- end }}
