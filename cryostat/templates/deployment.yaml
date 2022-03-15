@@ -31,7 +31,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: "{{ .Values.core.image.repository }}:{{ .Values.core.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.core.image.repository }}:{{ .Values.core.image.tag }}"
           imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
           - name: CRYOSTAT_WEB_PORT
@@ -107,7 +107,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
-          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
           imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
           env:
           - name: JFR_DATASOURCE_URL
@@ -126,7 +126,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "jfr-datasource" }}
           securityContext:
             {{- toYaml .Values.datasource.securityContext | nindent 12 }}
-          image: "{{ .Values.datasource.image.repository }}:{{ .Values.datasource.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.datasource.image.repository }}:{{ .Values.datasource.image.tag }}"
           imagePullPolicy: {{ .Values.datasource.image.pullPolicy }}
           env:
           - name: LISTEN_HOST

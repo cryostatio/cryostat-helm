@@ -1,14 +1,10 @@
-# Default values for cryostat.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 replicaCount: 1
 
+# Configuration for the core Cryostat application
 core:
   image:
     repository: "quay.io/cryostat/cryostat"
     pullPolicy: Always
-    # Overrides the image tag whose default is the chart appVersion.
     tag: "2.1.0-SNAPSHOT"
   service:
     type: ClusterIP
@@ -18,17 +14,12 @@ core:
     enabled: false
     className: ""
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     hosts:
       - host: cryostat.local
         paths:
           - path: /
             pathType: ImplementationSpecific
     tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
   route:
     # Available only on OpenShift
     enabled: false
@@ -41,29 +32,13 @@ core:
       certificate: ""
       destinationCACertificate: ""
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
   securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
+# Configuration for the customized Grafana instance for Cryostat
 grafana:
   image:
     repository: "quay.io/cryostat/cryostat-grafana-dashboard"
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
     tag: "2.0.0"
   service:
     type: ClusterIP
@@ -72,17 +47,12 @@ grafana:
     enabled: false
     className: ""
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     hosts:
       - host: cryostat-grafana.local
         paths:
           - path: /
             pathType: ImplementationSpecific
     tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
   route:
     # Available only on OpenShift
     enabled: false
@@ -95,56 +65,21 @@ grafana:
       certificate: ""
       destinationCACertificate: ""
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
   securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
+# Configuration for the JFR data source component, which translates recording
+# events into a format consumable by Grafana
 datasource:
   image:
     repository: "quay.io/cryostat/jfr-datasource"
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
     tag: "2.0.0"
   resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
   securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-# TODO RJMX auth
-# TODO Volumes
-# TODO Grafana auth
 
 rbac:
   # Specifies whether RBAC resources should be created
@@ -162,7 +97,6 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
 
 autoscaling:
   enabled: false
