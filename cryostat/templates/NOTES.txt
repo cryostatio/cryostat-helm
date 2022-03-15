@@ -62,6 +62,7 @@
 
 {{ $listNum }}. Forward local ports to the application's pod:
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
+  kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.fullname" . }}
   kubectl -n {{ .Release.Namespace }} port-forward $POD_NAME {{ join " " $portForwards }}
   {{- $listNum = add1 $listNum }}
 {{- end }}
