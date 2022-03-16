@@ -1,0 +1,103 @@
+# Configuration for the core Cryostat application
+core:
+  image:
+    repository: "quay.io/cryostat/cryostat"
+    pullPolicy: Always
+    tag: "2.1.0-SNAPSHOT"
+  service:
+    type: ClusterIP
+    httpPort: 8181
+    jmxPort: 9091
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: cryostat.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  route:
+    # Available only on OpenShift
+    enabled: false
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+      key: ""
+      caCertificate: ""
+      certificate: ""
+      destinationCACertificate: ""
+  resources: {}
+  securityContext: {}
+
+# Configuration for the customized Grafana instance for Cryostat
+grafana:
+  image:
+    repository: "quay.io/cryostat/cryostat-grafana-dashboard"
+    pullPolicy: IfNotPresent
+    tag: "2.0.0"
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: cryostat-grafana.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  route:
+    # Available only on OpenShift
+    enabled: false
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+      key: ""
+      caCertificate: ""
+      certificate: ""
+      destinationCACertificate: ""
+  resources: {}
+  securityContext: {}
+
+# Configuration for the JFR data source component, which translates recording
+# events into a format consumable by Grafana
+datasource:
+  image:
+    repository: "quay.io/cryostat/jfr-datasource"
+    pullPolicy: IfNotPresent
+    tag: "2.0.0"
+  resources: {}
+  securityContext: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

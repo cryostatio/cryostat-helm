@@ -1,2 +1,1 @@
-# cryostat-helm
-Helm Chart for Cryostat
+cryostat/README.md
