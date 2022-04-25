@@ -10,8 +10,7 @@ appVersion: "2.1.0-dev"
 
 home: "https://cryostat.io"
 
-# TODO Copy to this repo
-icon: "https://raw.githubusercontent.com/cryostatio/cryostat-operator/main/docs/images/cryostat-icon.svg"
+icon: "https://raw.githubusercontent.com/cryostatio/cryostat-helm/main/docs/images/cryostat-icon.svg"
 
 keywords:
 - flightrecorder
