@@ -121,11 +121,13 @@ datasource:
   ## @param datasource.securityContext Security Context for the JFR Data Source container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext: {}
 
+## @section Other Parameters
+
 ## @param imagePullSecrets [array] Image pull secrets to be used for the Cryostat deployment
 imagePullSecrets: []
 ## @param nameOverride Overrides the name of this Chart
 nameOverride: ""
-## @param fullnameOverride Overrides the fully qualified application name of "<release name>-<chart name>"
+## @param fullnameOverride Overrides the fully qualified application name of `[release name]-[chart name]`
 fullnameOverride: ""
 
 rbac:

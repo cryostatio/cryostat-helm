@@ -1,5 +1,5 @@
-# cryostat-helm
-Helm Chart for Cryostat
+# Cryostat Helm Chart
+A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and OpenShift
 
 ## Parameters
 
@@ -68,17 +68,23 @@ Helm Chart for Cryostat
 | `datasource.image.tag`        | Tag for the JFR Data Source container image                                                                                                                                       | `2.0.0`                           |
 | `datasource.resources`        | Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources) | `{}`                              |
 | `datasource.securityContext`  | Security Context for the JFR Data Source container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)     | `{}`                              |
-| `imagePullSecrets`            | Image pull secrets to be used for the Cryostat deployment                                                                                                                         | `[]`                              |
-| `nameOverride`                | Overrides the name of this Chart                                                                                                                                                  | `""`                              |
-| `fullnameOverride`            | Overrides the fully qualified application name of "<release name>-<chart name>"                                                                                                   | `""`                              |
-| `rbac.create`                 | Specifies whether RBAC resources should be created                                                                                                                                | `true`                            |
-| `serviceAccount.create`       | Specifies whether a service account should be created                                                                                                                             | `true`                            |
-| `serviceAccount.annotations`  | Annotations to add to the service account                                                                                                                                         | `{}`                              |
-| `serviceAccount.name`         | The name of the service account to use. If not set and create is true, a name is generated using the fullname template                                                            | `""`                              |
-| `podAnnotations`              | Annotations to be applied to the Cryostat Pod                                                                                                                                     | `{}`                              |
-| `podSecurityContext`          | Security Context for the Cryostat Pod. See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)                 | `{}`                              |
-| `nodeSelector`                | Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                | `{}`                              |
-| `tolerations`                 | Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                   | `[]`                              |
-| `affinity`                    | Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                         | `{}`                              |
+
+
+### Other Parameters
+
+| Name                         | Description                                                                                                                                                       | Value  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `imagePullSecrets`           | Image pull secrets to be used for the Cryostat deployment                                                                                                         | `[]`   |
+| `nameOverride`               | Overrides the name of this Chart                                                                                                                                  | `""`   |
+| `fullnameOverride`           | Overrides the fully qualified application name of `[release name]-[chart name]`                                                                                   | `""`   |
+| `rbac.create`                | Specifies whether RBAC resources should be created                                                                                                                | `true` |
+| `serviceAccount.create`      | Specifies whether a service account should be created                                                                                                             | `true` |
+| `serviceAccount.annotations` | Annotations to add to the service account                                                                                                                         | `{}`   |
+| `serviceAccount.name`        | The name of the service account to use. If not set and create is true, a name is generated using the fullname template                                            | `""`   |
+| `podAnnotations`             | Annotations to be applied to the Cryostat Pod                                                                                                                     | `{}`   |
+| `podSecurityContext`         | Security Context for the Cryostat Pod. See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context) | `{}`   |
+| `nodeSelector`               | Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                | `{}`   |
+| `tolerations`                | Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                   | `[]`   |
+| `affinity`                   | Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                         | `{}`   |
 
 
