@@ -76,11 +76,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: "/health"
+              path: "/health/liveness"
               port: 8181
           startupProbe:
             httpGet:
-              path: "/health"
+              path: "/health/liveness"
               port: 8181
             failureThreshold: 18
           resources:
