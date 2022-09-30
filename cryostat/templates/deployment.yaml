@@ -54,7 +54,7 @@ spec:
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
           - name: GRAFANA_DASHBOARD_URL
-            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.core.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
+            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           - name: CRYOSTAT_DISABLE_SSL
             value: "true"
           - name: CRYOSTAT_DISABLE_JMX_AUTH

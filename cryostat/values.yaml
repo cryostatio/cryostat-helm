@@ -70,6 +70,8 @@ grafana:
     type: ClusterIP
     ## @param grafana.service.port Port number to expose on the Service for Grafana's HTTP server
     port: 3000
+  ## @param grafana.sslProxied Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress
+  sslProxied: false
   ingress:
     ## @param grafana.ingress.enabled Whether to create an Ingress object for the Grafana service
     enabled: false
