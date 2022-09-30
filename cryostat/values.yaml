@@ -15,6 +15,8 @@ core:
     httpPort: 8181
     ## @param core.service.jmxPort Port number to expose on the Service for remote JMX connections to Cryostat
     jmxPort: 9091
+  ## @param core.sslProxied Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress
+  sslProxied: false
   ingress:
     ## @param core.ingress.enabled Whether to create an Ingress object for the Cryostat service
     enabled: false
