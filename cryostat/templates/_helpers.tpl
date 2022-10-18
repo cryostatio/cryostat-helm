@@ -60,3 +60,21 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Get or generate a default password for credentials database
+*/}}
+{{- define "cryostat.databasePassword" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace "cryostat-jmx-credentials-db") -}}
+{{- if $secret -}}
+{{/*
+   Use current password. Do not regenerate
+*/}}
+{{- $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
+{{- else -}}
+{{/*
+    Generate new password
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
