@@ -157,6 +157,11 @@
                     "type": "object",
                     "description": "Security Context for the Cryostat container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)",
                     "default": {}
+                },
+                "databaseSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret to extract password for credentials database.",
+                    "default": ""
                 }
             }
         },

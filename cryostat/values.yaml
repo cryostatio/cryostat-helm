@@ -52,6 +52,8 @@ core:
   resources: {}
   ## @param core.securityContext Security Context for the Cryostat container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext: {}
+  ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
+  databaseSecretName: ""
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat

@@ -67,6 +67,11 @@ spec:
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
           {{- end }}
+          - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{- default "cryostat-jmx-credentials-db" .Values.core.databaseSecretName -}}
+                key: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
           ports:
             - containerPort: 8181
               protocol: TCP

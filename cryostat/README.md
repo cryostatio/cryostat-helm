@@ -29,6 +29,7 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `core.route.tls.destinationCACertificate`      | Provides the contents of the CA certificate of the final destination when using reencrypt termination for the Cryostat application Route                                                        | `""`                        |
 | `core.resources`                               | Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)                      | `{}`                        |
 | `core.securityContext`                         | Security Context for the Cryostat container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)                          | `{}`                        |
+| `core.databaseSecretName`                      | Name of the secret to extract password for credentials database.                                                                                                                                | `""`                        |
 
 
 ### Grafana Container
