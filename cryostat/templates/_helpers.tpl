@@ -70,7 +70,7 @@ Get or generate a default password for credentials database
 {{/*
    Use current password. Do not regenerate
 */}}
-{{-  $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
+{{- $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
 {{- else -}}
 {{/*
     Generate new password

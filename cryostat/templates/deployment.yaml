@@ -70,8 +70,9 @@ spec:
           - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{- default "cryostat-jmx-credentials-db" .Values.core.databaseSecretName -}}
+                name: {{ default "cryostat-jmx-credentials-db" .Values.core.databaseSecretName }}
                 key: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
+                optional: false
           ports:
             - containerPort: 8181
               protocol: TCP
