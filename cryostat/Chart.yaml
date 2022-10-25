@@ -4,9 +4,9 @@ description: Securely manage JFR recordings for your containerized Java workload
 
 type: application
 
-version: "0.1.1"
+version: "0.1.2"
 
-appVersion: "latest"
+appVersion: "2.2"
 
 home: "https://cryostat.io"
 
