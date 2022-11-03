@@ -52,8 +52,14 @@ core:
       destinationCACertificate: ""
   ## @param core.resources Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
-  ## @param core.securityContext Security Context for the Cryostat container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
-  securityContext: {}
+  ## @param core.securityContext [object] Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip core.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip core.securityContext.capabilities
+    capabilities:
+      drop:
+      - ALL
   ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
   databaseSecretName: ""
 
@@ -109,8 +115,14 @@ grafana:
       destinationCACertificate: ""
   ## @param grafana.resources Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
-  ## @param grafana.securityContext Security Context for the Grafana container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
-  securityContext: {}
+  ## @param grafana.securityContext [object] Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip grafana.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip grafana.securityContext.capabilities
+    capabilities:
+      drop:
+      - ALL
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -124,8 +136,14 @@ datasource:
     tag: "cryostat-v2.2"
   ## @param datasource.resources Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
-  ## @param datasource.securityContext Security Context for the JFR Data Source container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
-  securityContext: {}
+  ## @param datasource.securityContext [object] Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip datasource.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip datasource.securityContext.capabilities
+    capabilities:
+      drop:
+      - ALL
 
 ## @section Other Parameters
 
@@ -151,8 +169,13 @@ serviceAccount:
 ## @param podAnnotations [object] Annotations to be applied to the Cryostat Pod
 podAnnotations: {}
 
-## @param podSecurityContext [object] Security Context for the Cryostat Pod. See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
-podSecurityContext: {}
+## @param podSecurityContext [object] Security Context for the Cryostat Pod. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
+podSecurityContext:
+  ## @skip podSecurityContext.runAsNonRoot
+  runAsNonRoot: true
+  ## @skip podSecurityContext.seccompProfile
+  seccompProfile:
+    type: RuntimeDefault
 
 ## @param nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}
