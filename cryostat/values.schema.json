@@ -45,6 +45,11 @@
                         }
                     }
                 },
+                "sslProxied": {
+                    "type": "boolean",
+                    "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
+                    "default": false
+                },
                 "ingress": {
                     "type": "object",
                     "properties": {
@@ -92,9 +97,7 @@
                             "type": "array",
                             "description": "TLS configuration for the Cryostat application Ingress. See: [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec)",
                             "default": [],
-                            "items": {
-                                "type": "object"
-                            }
+                            "items": {}
                         }
                     }
                 },
@@ -155,8 +158,28 @@
                 },
                 "securityContext": {
                     "type": "object",
-                    "description": "Security Context for the Cryostat container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)",
-                    "default": {}
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
                 },
                 "databaseSecretName": {
                     "type": "string",
@@ -206,11 +229,6 @@
                 "ingress": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether to create an Ingress object for the Grafana service",
-                            "default": false
-                        },
                         "hosts": {
                             "type": "array",
                             "description": "",
@@ -241,6 +259,11 @@
                                 }
                             }
                         },
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether to create an Ingress object for the Grafana service",
+                            "default": false
+                        },
                         "className": {
                             "type": "string",
                             "description": "Ingress class name for the Grafana Ingress",
@@ -250,11 +273,14 @@
                             "type": "array",
                             "description": "TLS configuration for the Grafana Ingress. See: [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec)",
                             "default": [],
-                            "items": {
-                                "type": "object"
-                            }
+                            "items": {}
                         }
                     }
+                },
+                "sslProxied": {
+                    "type": "boolean",
+                    "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
+                    "default": false
                 },
                 "route": {
                     "type": "object",
@@ -306,14 +332,34 @@
                         }
                     }
                 },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
                 "resources": {
                     "type": "object",
                     "description": "Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
-                },
-                "securityContext": {
-                    "type": "object",
-                    "description": "Security Context for the Grafana container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)",
                     "default": {}
                 }
             }
@@ -321,6 +367,31 @@
         "datasource": {
             "type": "object",
             "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
                 "image": {
                     "type": "object",
                     "properties": {
@@ -345,11 +416,26 @@
                     "type": "object",
                     "description": "Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                     "default": {}
-                },
-                "securityContext": {
+                }
+            }
+        },
+        "podSecurityContext": {
+            "type": "object",
+            "properties": {
+                "seccompProfile": {
                     "type": "object",
-                    "description": "Security Context for the JFR Data Source container. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)",
-                    "default": {}
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "",
+                            "default": "RuntimeDefault"
+                        }
+                    }
+                },
+                "runAsNonRoot": {
+                    "type": "boolean",
+                    "description": "",
+                    "default": true
                 }
             }
         },
@@ -357,9 +443,7 @@
             "type": "array",
             "description": "Image pull secrets to be used for the Cryostat deployment",
             "default": [],
-            "items": {
-                "type": "object"
-            }
+            "items": {}
         },
         "nameOverride": {
             "type": "string",
@@ -400,9 +484,7 @@
             "type": "array",
             "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
             "default": [],
-            "items": {
-                "type": "object"
-            }
+            "items": {}
         }
     }
 }
