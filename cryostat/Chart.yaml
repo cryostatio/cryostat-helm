@@ -6,7 +6,13 @@ type: application
 
 version: "0.2.0"
 
+<<<<<<< HEAD
 appVersion: "2.2.0"
+=======
+kubeVersion: ">= 1.19.0"
+
+appVersion: "latest"
+>>>>>>> 6790773 (chore(chart): specify kubeVersion constraints (#47))
 
 home: "https://cryostat.io"
 
