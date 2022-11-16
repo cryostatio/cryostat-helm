@@ -16,12 +16,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the main Cryostat container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "latest"
+                            "default": "2.2.0"
                         }
                     }
                 },
@@ -202,12 +202,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the Grafana container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "latest"
+                            "default": "2.2.0"
                         }
                     }
                 },
@@ -403,12 +403,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the JFR Data Source container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "latest"
+                            "default": "2.2.0"
                         }
                     }
                 },
