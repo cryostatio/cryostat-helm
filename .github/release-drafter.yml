@@ -1,16 +1,24 @@
-name-template: 'v$RESOLVED_VERSION 🌈'
+name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
+
+template: |
+    # What's Changed
+
+    $CHANGES
+
+    **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION  
+
 categories:
     - title: '🚀 Features'
       collapse-after: 5
       label: 'feat'
-    - title: 'Fixes'
+    - title: '🔧 Fixes'
       collapse-after: 5
       label: 'fix'
-    - title: 'Documentation'
+    - title: '📄 Documentation'
       collapse-after: 5
       label: 'docs'
-    - title: 'Maintenance'
+    - title: '⚙️ Maintenance'
       collapse-after: 5
       labels:
           - 'chore'
@@ -52,7 +60,3 @@ autolabeler:
     - label: 'test'
       title: 
         - '/^test:/'
-
-template: |
-    ## What's Changed
-    $CHANGES
