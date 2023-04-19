@@ -63,6 +63,8 @@ spec:
             value: "true"
           - name: CRYOSTAT_ENABLE_JDP_BROADCAST
             value: "false"
+          - name: CRYOSTAT_K8S_NAMESPACES
+            value: "{{ .Release.Namespace }}"
           {{- if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls) (.Values.core.sslProxied)) }}
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
