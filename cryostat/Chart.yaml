@@ -6,7 +6,7 @@ type: application
 
 version: "0.2.0"
 
-kubeVersion: ">= 1.19.0"
+kubeVersion: ">= 1.19.0-0"
 
 appVersion: "latest"
 
