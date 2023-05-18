@@ -72,7 +72,7 @@ grafana:
     ## @param grafana.image.pullPolicy Image pull policy for the Grafana container image
     pullPolicy: IfNotPresent
     ## @param grafana.image.tag Tag for the Grafana container image
-    tag: "cryostat-v2.3.0"
+    tag: "2.3.0"
   service:
     ## @param grafana.service.type Type of Service to create for Grafana
     type: ClusterIP

@@ -207,7 +207,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "cryostat-v2.3.0"
+                            "default": "2.3.0"
                         }
                     }
                 },
