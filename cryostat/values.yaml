@@ -147,6 +147,9 @@ datasource:
 
 ## @section Other Parameters
 
+## @param minimal Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source
+minimal: false
+
 ## @param imagePullSecrets [array] Image pull secrets to be used for the Cryostat deployment
 imagePullSecrets: []
 ## @param nameOverride Overrides the name of this Chart

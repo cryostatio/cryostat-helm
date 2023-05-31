@@ -51,10 +51,12 @@ spec:
             value: io.cryostat.platform.internal.KubeApiPlatformStrategy
           - name: CRYOSTAT_AUTH_MANAGER
             value: io.cryostat.net.NoopAuthManager
+          {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
           - name: GRAFANA_DASHBOARD_URL
             value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
+          {{- end }}
           - name: CRYOSTAT_DISABLE_SSL
             value: "true"
           - name: CRYOSTAT_DISABLE_JMX_AUTH
@@ -109,6 +111,7 @@ spec:
           - mountPath: /opt/cryostat.d/probes.d
             name: {{ .Chart.Name }}
             subPath: probes
+        {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -147,6 +150,7 @@ spec:
               - http://127.0.0.1:8080
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
