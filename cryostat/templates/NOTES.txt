@@ -83,7 +83,7 @@
 {{- else if contains "NodePort" .Values.core.service.type }}
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
-  echo http://$SERVICE_IP:{{ .Values.core.service.port }}
+  echo http://$SERVICE_IP:{{ .Values.core.service.httpPort }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
   http://127.0.0.1:8080
 {{- end }}
