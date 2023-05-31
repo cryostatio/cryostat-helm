@@ -68,6 +68,6 @@ spec:
 {{- if .Values.core.ingress.enabled }}
 {{- include "createIngress" (list $fullName .Values.core.service.httpPort $ .Values.core)}}
 {{- end }}
-{{- if .Values.grafana.ingress.enabled }}
+{{- if and (not .Values.minimal) .Values.grafana.ingress.enabled }}
 {{- include "createIngress" (list (printf "%s-%s" $fullName "grafana") .Values.grafana.service.port $ .Values.grafana)}}
 {{- end }}

@@ -26,6 +26,7 @@
 {{- $portForwards = prepend $portForwards "8080:$CONTAINER_PORT" }}
 {{- end }}
 
+{{- if not .Values.minimal }}
 {{- if .Values.grafana.route.enabled }}
   export GRAFANA_ROUTE_HOST=$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }}-grafana -o jsonpath="{.status.ingress[0].host}")
 {{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_URL=http{{ if .Values.grafana.route.tls.enabled }}s{{ end }}://$GRAFANA_ROUTE_HOST" . ) }}
@@ -52,6 +53,8 @@
 {{- $envVars = concat $envVars ( list "GRAFANA_DASHBOARD_URL=http://127.0.0.1:$GRAFANA_CONTAINER_PORT" "GRAFANA_DASHBOARD_EXT_URL=http://127.0.0.1:8081" )}}
 {{- $portForwards = append $portForwards "8081:$GRAFANA_CONTAINER_PORT" }}
 {{- end }}
+{{- end }}
+
 
 {{- if not (empty $envVars) }}
   kubectl -n {{ .Release.Namespace }} set env deploy --containers={{ .Chart.Name }} {{ include "cryostat.fullname" . }} {{ join " " $envVars }}

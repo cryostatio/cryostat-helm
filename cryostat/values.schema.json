@@ -439,6 +439,11 @@
                 }
             }
         },
+        "minimal": {
+            "type": "boolean",
+            "description": "Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source",
+            "default": false
+        },
         "imagePullSecrets": {
             "type": "array",
             "description": "Image pull secrets to be used for the Cryostat deployment",
