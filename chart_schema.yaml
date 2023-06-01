@@ -1,0 +1,17 @@
+#  Chart.yaml schema
+apiVersion: str(required=True)
+name: str()
+description: str(required=True)
+type: str()
+version: str()
+kubeVersion: str(required=True)
+appVersion: str(required=True)
+home: str(required=True)
+icon: str(required=True)
+keywords: list(str(), required=True)
+sources: list(str(), required=True)
+maintainers: list(include('maintainer'), required=True)
+---
+maintainer:
+  name: str(required=True)
+  url: str(required=True)
