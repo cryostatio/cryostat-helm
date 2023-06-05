@@ -1,0 +1,75 @@
+name: CI
+
+concurrency:
+  group: ci-${{ github.run_id }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+    branches:
+      - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
+
+env:
+  TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
+
+jobs:
+  lint-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.11.2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          check-latest: true
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.4.0
+      - name: Lint chart
+        run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
+  test-chart:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fail if safe-to-test label NOT applied
+      if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+      run: exit 1
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Set up Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: v3.11.2
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        check-latest: true
+    - uses: helm/chart-testing-action@v2.4.0
+    - name: Set up Kind cluster
+      run: kind create cluster -n ci-${{ github.run_id }}
+    - name: Install and test chart
+      run: |
+        kubectl create ns helm-test
+        ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=helm-test --config ct.yaml
+    - name: Clean up Kind cluster 
+      run: kind delete cluster -n ci-${{ github.run_id }}

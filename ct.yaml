@@ -1,0 +1,5 @@
+# ct configuration
+chart-dirs:
+  - charts
+check-version-increment: false
+validate-maintainers: false
