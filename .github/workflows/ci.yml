@@ -26,7 +26,7 @@ on:
       - cryostat-v[0-9]+.[0-9]+
 
 env:
-  TARGET_BRANCH: ${{ github.base_ref || github.ref }}
+  TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
 
 jobs:
   lint-chart:
@@ -46,7 +46,7 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
       - name: Lint chart
-        run: ct lint --target-branch ${TARGET_BRANCH##*/} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
+        run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
   test-chart:
     runs-on: ubuntu-latest
     steps:
@@ -70,6 +70,6 @@ jobs:
     - name: Install and test chart
       run: |
         kubectl create ns helm-test
-        ct install --target-branch ${TARGET_BRANCH##*/} --upgrade --namespace=helm-test --config ct.yaml
+        ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=helm-test --config ct.yaml
     - name: Clean up Kind cluster 
       run: kind delete cluster -n ci-${{ github.run_id }}
