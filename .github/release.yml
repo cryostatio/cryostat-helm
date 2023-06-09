@@ -1,0 +1,17 @@
+changelog:
+  categories:
+    - title: '🚀 Features'
+      label: 'feat'
+    - title: '🔧 Fixes'
+      label: 'fix'
+    - title: '📄 Documentation'
+      label: 'docs'
+    - title: '⚙️ Maintenance'
+      labels:
+        - 'chore'
+        - 'ci'
+        - 'cleanup'
+        - 'perf'
+        - 'refactor'
+        - 'style'
+        - 'test'
