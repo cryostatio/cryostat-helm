@@ -27,6 +27,8 @@ jobs:
         with:
           fallback: 0.1.0
       - name: Generate release notes
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
           gh api --method POST \
             -H "Accept: application/vnd.github+json" \
