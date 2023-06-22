@@ -36,7 +36,7 @@ jobs:
             /repos/${GITHUB_REPOSITORY}/releases/generate-notes \
             -f tag_name="${{ steps.release-version.outputs.tag }}" \
             -f target_commitish="${GITHUB_REF_NAME}" \
-            -f previous_tag_name="${{ steps.previous-version.outputs.tag }}" | jq -r .body > .github/release-notes.md
+            -f previous_tag_name="${{ steps.previous-version.outputs.tag }}" | jq -r .body > charts/cryostat/release-notes.md
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
