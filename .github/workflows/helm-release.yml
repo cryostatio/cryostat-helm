@@ -17,6 +17,24 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Get release version
+        id: release-version
+        run: |
+          echo "tag=v$(yq .version charts/cryostat/Chart.yaml)" >> $GITHUB_OUTPUT
+      - name: Get previous version
+        id: previous-version
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: 0.1.0
+      - name: Generate release notes
+        run: |
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${GITHUB_REPOSITORY}/releases/generate-notes \
+            -f tag_name="${{ steps.release-version.outputs.tag }}" \
+            -f target_commitish="${GITHUB_REF_NAME}" \
+            -f previous_tag_name="${{ steps.previous-version.outputs.tag }}" | jq -r .body > .github/release-notes.md
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
