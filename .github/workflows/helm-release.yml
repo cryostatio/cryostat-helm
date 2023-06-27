@@ -24,7 +24,7 @@ jobs:
         id: previous-version
         run: |
           # Filter tags by regex, combine with the Chart version, sort by version number, and output the preceeding version.
-          chart_version="$(yq .version charts/cryostat/Chart.yaml)"
+          chart_version="${{ steps.release-version.outputs.tag }}"
           previous_version="$({ echo v${chart_version}; git tag -l | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'; } | sort -V | grep -B1 "${chart_version}" | head -n1)"
           echo "tag=${previous_version}" >> $GITHUB_OUTPUT
       - name: Generate release notes
