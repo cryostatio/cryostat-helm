@@ -8,7 +8,6 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    # if: ${{ github.repository_owner == 'cryostatio' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -23,9 +22,11 @@ jobs:
           echo "tag=v$(yq .version charts/cryostat/Chart.yaml)" >> $GITHUB_OUTPUT
       - name: Get previous version
         id: previous-version
-        uses: WyriHaximus/github-action-get-previous-tag@v1
-        with:
-          fallback: 0.1.0
+        run: |
+          # Filter tags by regex, combine with the Chart version, sort by version number, and output the preceeding version.
+          chart_version="$(yq .version charts/cryostat/Chart.yaml)"
+          previous_version="$({ echo v${chart_version}; git tag -l | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'; } | sort -V | grep -B1 "${chart_version}" | head -n1)"
+          echo "tag=${previous_version}" >> $GITHUB_OUTPUT
       - name: Generate release notes
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
