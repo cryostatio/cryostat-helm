@@ -164,5 +164,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      {{- if .Values.pvc.enabled }}
+      - name: {{ .Chart.Name }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-persistent-volumeclaim
+      {{- end }}
+      {{- if not .Values.pvc.enabled }}
       - name: {{ .Chart.Name }}
         emptyDir: {}
+      {{- end }}

@@ -188,3 +188,9 @@ tolerations: []
 
 ## @param affinity [object] Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 affinity: {}
+
+pvc:
+  ## @param pvc.enabled Specify whether to use persistentVolumeClaim or EmptyDir storage
+  enabled: false
+  ## @param pvc.storage Storage size to request for the persistentVolumeClaim
+  storage: 500Mi
