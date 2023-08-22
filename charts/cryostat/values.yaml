@@ -194,7 +194,7 @@ pvc:
   enabled: false
   ## @param pvc.annotations [object] Annotations to add to the persistentVolumeClaim
   annotations: {}
-  ## @param pvc.storage Storage size to request for the persistentVolumeClaim. 
+  ## @param pvc.storage Storage size to request for the persistentVolumeClaim
   storage: 500Mi
   ## @param pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
   accessModes: ReadWriteOnce
