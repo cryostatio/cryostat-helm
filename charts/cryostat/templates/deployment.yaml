@@ -81,9 +81,9 @@ spec:
           - name: CRYOSTAT_HIBERNATE_DIALECT
             value: org.hibernate.dialect.H2Dialect
           - name: CRYOSTAT_JDBC_USERNAME
-            value: 
+            value: {{ include "cryostat.fullname" . }}
           - name: CRYOSTAT_JDBC_PASSWORD
-            value: 
+            value: {{ include "cryostat.fullname" . }}
           {{- end }}
           - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
             valueFrom:
