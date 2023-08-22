@@ -71,6 +71,20 @@ spec:
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
           {{- end }}
+          {{- if .Values.pvc.enabled }}
+          - name: CRYOSTAT_JDBC_URL
+            value: jdbc:h2:file:/opt/cryostat.d/conf.d/h2;INIT=create domain if not exists jsonb as varchar
+          - name: CRYOSTAT_HBM2DDL
+            value: update
+          - name: CRYOSTAT_JDBC_DRIVER
+            value: org.h2.Driver
+          - name: CRYOSTAT_HIBERNATE_DIALECT
+            value: org.hibernate.dialect.H2Dialect
+          - name: CRYOSTAT_JDBC_USERNAME
+            value: 
+          - name: CRYOSTAT_JDBC_PASSWORD
+            value: 
+          {{- end }}
           - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -167,7 +181,7 @@ spec:
       {{- if .Values.pvc.enabled }}
       - name: {{ .Chart.Name }}
         persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-persistent-volumeclaim
+          claimName: {{ .Release.Name }}
       {{- end }}
       {{- if not .Values.pvc.enabled }}
       - name: {{ .Chart.Name }}
