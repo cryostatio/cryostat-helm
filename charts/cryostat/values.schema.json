@@ -490,6 +490,31 @@
             "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
             "default": [],
             "items": {}
+        },
+        "pvc": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Specify whether to use persistentVolumeClaim or EmptyDir storage",
+                    "default": false
+                },
+                "storage": {
+                    "type": "string",
+                    "description": "Storage size to request for the persistentVolumeClaim",
+                    "default": "500Mi"
+                },
+                "accessModes": {
+                    "type": "array",
+                    "description": "Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
+                    "default": [
+                        "ReadWriteOnce"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         }
     }
 }
