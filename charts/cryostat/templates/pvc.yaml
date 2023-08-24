@@ -1,8 +1,8 @@
-{{- if .Values.pvc.enabled }}
+{{- if ((.Values.pvc).enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "cryostat.fullname" . }}
   {{- $labels := include "cryostat.labels" $ | nindent 4 }}
   labels: {{ $labels }}
   {{- with .Values.pvc.annotations }}
@@ -10,7 +10,10 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  accessModes: {{ .Values.pvc.accessModes }}
+  {{- with .Values.pvc.accessModes }}
+  accessModes: 
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.pvc.storage }}

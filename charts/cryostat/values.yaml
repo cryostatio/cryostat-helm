@@ -197,7 +197,8 @@ pvc:
   ## @param pvc.storage Storage size to request for the persistentVolumeClaim
   storage: 500Mi
   ## @param pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  accessModes: ReadWriteOnce
+  accessModes: 
+    - ReadWriteOnce
   ## @param pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
   selector: {}
   ## @param pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
