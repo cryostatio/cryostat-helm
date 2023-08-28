@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
 spec:
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "cryostat.selectorLabels" . | nindent 6 }}
@@ -70,6 +73,20 @@ spec:
           {{- if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls) (.Values.core.sslProxied)) }}
           - name: CRYOSTAT_SSL_PROXIED
             value: "true"
+          {{- end }}
+          {{- if ((.Values.pvc).enabled) }}
+          - name: CRYOSTAT_JDBC_URL
+            value: jdbc:h2:file:/opt/cryostat.d/conf.d/h2;INIT=create domain if not exists jsonb as varchar
+          - name: CRYOSTAT_HBM2DDL
+            value: update
+          - name: CRYOSTAT_JDBC_DRIVER
+            value: org.h2.Driver
+          - name: CRYOSTAT_HIBERNATE_DIALECT
+            value: org.hibernate.dialect.H2Dialect
+          - name: CRYOSTAT_JDBC_USERNAME
+            value: {{ include "cryostat.fullname" . }}
+          - name: CRYOSTAT_JDBC_PASSWORD
+            value: {{ include "cryostat.fullname" . }}
           {{- end }}
           - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
             valueFrom:
@@ -164,5 +181,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      {{- if ((.Values.pvc).enabled) }}
+      - name: {{ .Chart.Name }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}
+      {{- end }}
+      {{- if not ((.Values.pvc).enabled) }}
       - name: {{ .Chart.Name }}
         emptyDir: {}
+      {{- end }}
