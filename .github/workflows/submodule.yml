@@ -14,10 +14,17 @@ jobs:
     if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: cryostatio/cryostatio.github.io
         token: "${{ secrets.SUBMODULE_TOKEN }}"
+    - name: Import GPG key
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
     - name: Update submodule to latest commit
       run: |
         git submodule update --init
@@ -28,5 +35,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git add --all
         git_hash="$(git rev-parse --short :helm-charts)"
-        git commit -m "build(helm-charts): update submodule to $git_hash" || echo "No changes to commit"
+        git commit -S -m "build(helm-charts): update submodule to $git_hash" || echo "No changes to commit"
         git push
