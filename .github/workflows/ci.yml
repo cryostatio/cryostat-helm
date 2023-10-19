@@ -71,5 +71,5 @@ jobs:
       run: |
         kubectl create ns helm-test
         ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=helm-test --config ct.yaml
-    - name: Clean up Kind cluster 
+    - name: Clean up Kind cluster
       run: kind delete cluster -n ci-${{ github.run_id }}
