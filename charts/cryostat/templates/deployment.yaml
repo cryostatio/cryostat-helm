@@ -93,7 +93,7 @@ spec:
                 key: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
                 optional: false
           - name: CRYOSTAT_AUTH_MANAGER
-          {{- if and .Values.authentication.basicAuth.enabled }}
+          {{- if (.Values.authentication).basicAuth.enabled }}
             value: io.cryostat.net.BasicAuthManager
           {{- else }}
             value: io.cryostat.net.NoopAuthManager
@@ -132,7 +132,7 @@ spec:
           - mountPath: /opt/cryostat.d/probes.d
             name: {{ .Chart.Name }}
             subPath: probes
-          {{- if and .Values.authentication.basicAuth.enabled }}
+          {{- if (.Values.authentication).basicAuth.enabled }}
           - mountPath: /opt/cryostat.d/conf.d/cryostat-users.properties
             name: basic-auth-properties
             subPath: cryostat-users.properties
@@ -200,7 +200,7 @@ spec:
       - name: {{ .Chart.Name }}
         emptyDir: {}
       {{- end }}
-      {{- if and .Values.authentication.basicAuth.enabled }}
+      {{- if (.Values.authentication).basicAuth.enabled }}
       - name: basic-auth-properties
         secret:
           secretName: {{ .Values.authentication.basicAuth.secretName }}
