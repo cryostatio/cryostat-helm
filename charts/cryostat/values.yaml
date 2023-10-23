@@ -149,7 +149,7 @@ datasource:
 
 authentication:
   basicAuth:
-    ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users
+    ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
     enabled: false
     ## @param authentication.basicAuth.secretName Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**
     secretName: ""

@@ -427,7 +427,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Whether Cryostat should use basic authentication for users",
+                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
                             "default": false
                         },
                         "secretName": {
