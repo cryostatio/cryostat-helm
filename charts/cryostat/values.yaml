@@ -145,6 +145,17 @@ datasource:
       drop:
       - ALL
 
+## @section Authentication
+
+authentication:
+  basicAuth:
+    ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
+    enabled: false
+    ## @param authentication.basicAuth.secretName Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**
+    secretName: ""
+    ## @param authentication.basicAuth.filename Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax "user=passHex", where "user" is the username and "passHex" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**
+    filename: ""
+
 ## @section Other Parameters
 
 ## @param minimal Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source
