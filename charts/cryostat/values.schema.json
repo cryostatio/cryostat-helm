@@ -419,6 +419,31 @@
                 }
             }
         },
+        "authentication": {
+            "type": "object",
+            "properties": {
+                "basicAuth": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
+                            "default": false
+                        },
+                        "secretName": {
+                            "type": "string",
+                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        },
+                        "filename": {
+                            "type": "string",
+                            "description": "Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax \"user=passHex\", where \"user\" is the username and \"passHex\" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
         "podSecurityContext": {
             "type": "object",
             "properties": {
