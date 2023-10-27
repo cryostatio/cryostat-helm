@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "latest"
+                            "default": "2.4.0-snapshot"
                         }
                     }
                 },
@@ -207,7 +207,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "latest"
+                            "default": "cryostat-v2.4"
                         }
                     }
                 },
@@ -408,7 +408,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "latest"
+                            "default": "2.4.0-snapshot"
                         }
                     }
                 },
