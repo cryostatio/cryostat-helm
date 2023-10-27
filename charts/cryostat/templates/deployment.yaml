@@ -52,8 +52,6 @@ spec:
             value: "{{ if .Values.core.ingress.enabled }}{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           - name: CRYOSTAT_PLATFORM
             value: io.cryostat.platform.internal.KubeApiPlatformStrategy
-          - name: CRYOSTAT_AUTH_MANAGER
-            value: io.cryostat.net.NoopAuthManager
           {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
@@ -94,6 +92,12 @@ spec:
                 name: {{ default (printf "%s-jmx-credentials-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
                 optional: false
+          - name: CRYOSTAT_AUTH_MANAGER
+          {{- if (.Values.authentication).basicAuth.enabled }}
+            value: io.cryostat.net.BasicAuthManager
+          {{- else }}
+            value: io.cryostat.net.NoopAuthManager
+          {{- end }}
           ports:
             - containerPort: 8181
               protocol: TCP
@@ -128,6 +132,12 @@ spec:
           - mountPath: /opt/cryostat.d/probes.d
             name: {{ .Chart.Name }}
             subPath: probes
+          {{- if (.Values.authentication).basicAuth.enabled }}
+          - mountPath: /opt/cryostat.d/conf.d/cryostat-users.properties
+            name: basic-auth-properties
+            subPath: cryostat-users.properties
+            readOnly: true
+          {{- end }}
         {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
@@ -189,4 +199,12 @@ spec:
       {{- if not ((.Values.pvc).enabled) }}
       - name: {{ .Chart.Name }}
         emptyDir: {}
+      {{- end }}
+      {{- if (.Values.authentication).basicAuth.enabled }}
+      - name: basic-auth-properties
+        secret:
+          secretName: {{ .Values.authentication.basicAuth.secretName }}
+          items:
+            - key: {{ .Values.authentication.basicAuth.filename }}
+              path: cryostat-users.properties
       {{- end }}
