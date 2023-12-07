@@ -64,7 +64,7 @@ jobs:
       with:
         python-version: '3.9'
         check-latest: true
-    - uses: helm/chart-testing-action@v2.4.0
+    - uses: helm/chart-testing-action@v2.6.1
     - name: Set up Kind cluster
       run: kind create cluster -n ci-${{ github.run_id }}
     - name: Install and test chart
