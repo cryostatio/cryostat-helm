@@ -44,7 +44,7 @@ jobs:
           python-version: '3.9'
           check-latest: true
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.1
       - name: Lint chart
         run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
   test-chart:
@@ -64,7 +64,7 @@ jobs:
       with:
         python-version: '3.9'
         check-latest: true
-    - uses: helm/chart-testing-action@v2.4.0
+    - uses: helm/chart-testing-action@v2.6.1
     - name: Set up Kind cluster
       run: kind create cluster -n ci-${{ github.run_id }}
     - name: Install and test chart
