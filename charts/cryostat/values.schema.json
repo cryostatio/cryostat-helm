@@ -16,12 +16,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the main Cryostat container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "2.4.0"
+                            "default": "2.4.1-snapshot"
                         }
                     }
                 },
@@ -202,12 +202,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the Grafana container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "2.4.0"
+                            "default": "cryostat-v2.4"
                         }
                     }
                 },
@@ -403,12 +403,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the JFR Data Source container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "2.4.0"
+                            "default": "2.4.1-snapshot"
                         }
                     }
                 },
