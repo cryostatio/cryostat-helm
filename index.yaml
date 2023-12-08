@@ -2,6 +2,38 @@ apiVersion: v1
 entries:
   cryostat:
   - apiVersion: v2
+    appVersion: 2.4.0
+    created: "2023-12-08T18:38:12.203016543Z"
+    description: Securely manage JFR recordings for your containerized Java workloads
+    digest: a99f310e6aea13e4d2cca2931faee6c1ce1e7cfaee5827d129acd8d87fcdd042
+    home: https://cryostat.io
+    icon: https://raw.githubusercontent.com/cryostatio/cryostat-helm/main/docs/images/cryostat-icon.svg
+    keywords:
+    - flightrecorder
+    - java
+    - jdk
+    - jfr
+    - jmc
+    - missioncontrol
+    - monitoring
+    - profiling
+    - diagnostic
+    kubeVersion: '>= 1.19.0-0'
+    maintainers:
+    - name: The Cryostat Community
+      url: https://groups.google.com/g/cryostat-development
+    name: cryostat
+    sources:
+    - https://github.com/cryostatio/cryostat
+    - https://github.com/cryostatio/cryostat-core
+    - https://github.com/cryostatio/cryostat-web
+    - https://github.com/cryostatio/jfr-datasource
+    - https://github.com/cryostatio/cryostat-grafana-dashboard
+    type: application
+    urls:
+    - https://github.com/cryostatio/cryostat-helm/releases/download/v0.4.0/cryostat-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     appVersion: 2.3.1
     created: "2023-09-11T22:14:31.921476831Z"
     description: Securely manage JFR recordings for your containerized Java workloads
@@ -191,4 +223,4 @@ entries:
     urls:
     - https://github.com/cryostatio/cryostat-helm/releases/download/v0.1.1/cryostat-0.1.1.tgz
     version: 0.1.1
-generated: "2023-09-11T22:14:31.921503233Z"
+generated: "2023-12-08T18:38:12.203047671Z"
