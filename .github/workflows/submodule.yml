@@ -1,9 +1,14 @@
 name: submodule
 
 on:
-  push:
-    branches:
-      - gh-pages
+  workflow_call:
+    secrets:
+      SUBMODULE_TOKEN:
+        required: true
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
 
 defaults:
   run:
