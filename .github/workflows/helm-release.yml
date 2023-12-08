@@ -46,3 +46,12 @@ jobs:
           version: v1.5.0
           charts_dir: charts
           config: .github/helm-release-config.yml
+  
+  update-helm-repo:
+    uses: ./.github/workflows/submodule.yml
+    needs: helm-release
+    if: github.repository_owner == 'cryostatio'
+    secrets:
+      SUBMODULE_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
