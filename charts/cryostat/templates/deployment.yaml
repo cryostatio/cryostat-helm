@@ -112,7 +112,11 @@ spec:
           - name: POSTGRESQL_DATABASE
             value: cryostat3
           - name: PG_ENCRYPT_KEY
-            value: REPLACEME
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-db-encryption-key" .Release.Name) .Values.core.databaseSecretName }}
+                key: ENCRYPTION_KEY
+                optional: false
           ports:
             - containerPort: 5432
               protocol: TCP
