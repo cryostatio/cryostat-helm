@@ -62,9 +62,9 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Get or generate a default password for credentials database
+Get or generate a default encryption key for credentials database
 */}}
-{{- define "cryostat.databasePassword" -}}
+{{- define "cryostat.databaseEncryptionKey" -}}
 {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-encryption-key" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
