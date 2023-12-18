@@ -55,8 +55,7 @@ spec:
           - name: QUARKUS_DATASOURCE_PASSWORD
             value: cryostat3
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: jdbc:postgresql://db:5432/cryostat3
-            value: "jdbc:postgresql://localhost:5432/cryostat3"
+            value: jdbc:postgresql://localhost:5432/cryostat3
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
