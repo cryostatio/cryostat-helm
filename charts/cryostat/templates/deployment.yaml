@@ -60,7 +60,7 @@ spec:
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: "http://localhost:4566"
+            value: "http://localhost:9000"
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION
@@ -68,13 +68,13 @@ spec:
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
             value: static
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
-            value: unused
+            value: minioroot # TODO
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
-            value: unused
+            value: minioroot # TODO
           - name: AWS_ACCESS_KEY_ID
-            value: unused
+            value: minioroot # TODO
           - name: AWS_SECRET_ACCESS_KEY
-            value: unused
+            value: minioroot # TODO
           {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
@@ -102,7 +102,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "db" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: quay.io/cryostat/cryostat-db:latest # TODO
+          image: quay.io/cryostat/cryostat-db:latest # TODO pin to a particular version
           imagePullPolicy: Always
           env:
           - name: POSTGRESQL_USER
@@ -119,17 +119,19 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "s3" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: docker.io/localstack/localstack:latest # TODO
+          image: docker.io/minio/minio:latest # TODO pin to a particular version
           imagePullPolicy: Always
+          args:
+          - server
+          - /data
+          # TODO add persistent volume
           env:
-          - name: SERVICES
-            value: s3
-          - name: START_WEB
-            value: "1"
-          - name: DEFAULT_REGION
-            value: us-east-1
-          - name: PORT_WEB_UI
-            value: "4577"
+          - name: MINIO_ROOT_USER
+            value: minioroot # TODO
+          - name: MINIO_ROOT_PASSWORD
+            value: minioroot # TODO
+          - name: MINIO_DEFAULT_BUCKETS
+            value: archivedrecordings
         {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
