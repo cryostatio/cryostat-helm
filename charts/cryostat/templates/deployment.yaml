@@ -40,6 +40,14 @@ spec:
             value: 0.0.0.0
           - name: QUARKUS_HTTP_PORT
             value: "8181"
+          - name: QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ALLOW_X_FORWARDED
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_HOST
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX
+            value: 'true'
           - name: QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION
             value: drop-and-create
           - name: QUARKUS_DATASOURCE_USERNAME
