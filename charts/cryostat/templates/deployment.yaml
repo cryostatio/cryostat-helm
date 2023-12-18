@@ -56,11 +56,11 @@ spec:
             value: cryostat3
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: jdbc:postgresql://db:5432/cryostat3
-            value: {{ printf "jdbc:postgresql://%s-%s:5432/cryostat3" $fullName "db" }}
+            value: "jdbc:postgresql://localhost:5432/cryostat3"
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: {{ printf "http://%s-%s:4566" $fullName "s3" }}
+            value: "http://localhost:4566"
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION
@@ -99,6 +99,37 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+        - name: {{ printf "%s-%s" .Chart.Name "db" }}
+          securityContext:
+            {{- toYaml .Values.core.securityContext | nindent 12 }}
+          image: quay.io/cryostat/cryostat-db:latest # TODO
+          imagePullPolicy: Always
+          env:
+          - name: POSTGRESQL_USER
+            value: cryostat3
+          - name: POSTGRESQL_PASSWORD
+            value: cryostat3
+          - name: POSTGRESQL_DATABASE
+            value: cryostat3
+          - name: PG_ENCRYPT_KEY
+            value: REPLACEME
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+        - name: {{ printf "%s-%s" .Chart.Name "s3" }}
+          securityContext:
+            {{- toYaml .Values.core.securityContext | nindent 12 }}
+          image: docker.io/localstack/localstack:latest # TODO
+          imagePullPolicy: Always
+          env:
+          - name: SERVICES
+            value: s3
+          - name: START_WEB
+            value: "1"
+          - name: DEFAULT_REGION
+            value: us-east-1
+          - name: PORT_WEB_UI
+            value: "4577"
         {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
