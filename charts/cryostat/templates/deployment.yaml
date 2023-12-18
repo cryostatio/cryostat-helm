@@ -59,7 +59,7 @@ spec:
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: "http://localhost:9000"
+            value: http://localhost:9000
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION
