@@ -124,6 +124,8 @@ spec:
           args:
           - server
           - /data
+          - --address
+          - localhost:9000
           # TODO add persistent volume
           env:
           - name: MINIO_ROOT_USER
