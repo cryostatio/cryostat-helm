@@ -62,6 +62,24 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Get or generate a default connection key for credentials database
+*/}}
+{{- define "cryostat.databaseConnectionKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-connection-key" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current password. Do not regenerate
+*/}}
+{{- $secret.data.CONNECTION_KEY -}}
+{{- else -}}
+{{/*
+    Generate new password
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get or generate a default encryption key for credentials database
 */}}
 {{- define "cryostat.databaseEncryptionKey" -}}

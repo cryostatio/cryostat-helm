@@ -53,7 +53,11 @@ spec:
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat3
           - name: QUARKUS_DATASOURCE_PASSWORD
-            value: cryostat3 # TODO generate this and store in/mount from Secret
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                key: CONNECTION_KEY
+                optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: jdbc:postgresql://localhost:5432/cryostat3
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
@@ -115,7 +119,11 @@ spec:
           - name: POSTGRESQL_USER
             value: cryostat3
           - name: POSTGRESQL_PASSWORD
-            value: cryostat3 # TODO generate this and store in/mount from Secret
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                key: CONNECTION_KEY
+                optional: false
           - name: POSTGRESQL_DATABASE
             value: cryostat3
           - name: PG_ENCRYPT_KEY
