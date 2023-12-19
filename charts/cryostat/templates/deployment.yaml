@@ -101,7 +101,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "db" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: quay.io/cryostat/cryostat-db:latest # TODO pin to a particular version
+          image: quay.io/cryostat/cryostat-db:2023-12-19
           imagePullPolicy: Always
           env:
           - name: POSTGRESQL_USER
