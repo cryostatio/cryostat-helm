@@ -134,7 +134,7 @@ spec:
           imagePullPolicy: Always
           args:
           - server
-          - /data
+          - /tmp
           - --address
           - localhost:9000
           # TODO add persistent volume
