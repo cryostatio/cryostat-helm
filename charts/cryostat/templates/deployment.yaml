@@ -130,8 +130,8 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "s3" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: docker.io/minio/minio:RELEASE.2023-12-14T18-51-57Z # TODO make this configurable
-          imagePullPolicy: IfNotPresent
+          image: quay.io/cryostat/cryostat-storage:2023-12-19 # TODO make this configurable
+          imagePullPolicy: Always
           args:
           - server
           - /data
