@@ -78,3 +78,21 @@ Get or generate a default encryption key for credentials database
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Get or generate a default secret key for object storage
+*/}}
+{{- define "cryostat.objectStorageSecretKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage-secret-key" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current secret. Do not regenerate
+*/}}
+{{- $secret.data.SECRET_KEY -}}
+{{- else -}}
+{{/*
+    Generate new secret
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}

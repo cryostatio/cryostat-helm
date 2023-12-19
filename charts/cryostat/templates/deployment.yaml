@@ -67,13 +67,21 @@ spec:
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
             value: static
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
-            value: minioroot # TODO generate this and store in/mount from Secret
-          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
-            value: minioroot # TODO generate this and store in/mount from Secret
+            value: cryostat
           - name: AWS_ACCESS_KEY_ID
-            value: minioroot # TODO generate this and store in/mount from Secret
+            value: cryostat
+          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                key: SECRET_KEY
+                optional: false
           - name: AWS_SECRET_ACCESS_KEY
-            value: minioroot # TODO generate this and store in/mount from Secret
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                key: SECRET_KEY
+                optional: false
           {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8080
@@ -140,9 +148,13 @@ spec:
           # TODO add persistent volume
           env:
           - name: MINIO_ROOT_USER
-            value: minioroot # TODO
+            value: cryostat
           - name: MINIO_ROOT_PASSWORD
-            value: minioroot # TODO
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                key: SECRET_KEY
+                optional: false
           - name: MINIO_DEFAULT_BUCKETS
             value: archivedrecordings
           readinessProbe:
