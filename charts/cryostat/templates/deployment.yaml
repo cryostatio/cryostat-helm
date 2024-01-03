@@ -37,6 +37,7 @@ spec:
           - --http-address=0.0.0.0:4180
           - --https-address=
           - --htpasswd-file=/etc/htpasswd/htpasswd
+          - --request-logging=true
           image: quay.io/openshift/origin-oauth-proxy:latest
           imagePullPolicy: Always
           name: {{ .Chart.Name }}-proxy
