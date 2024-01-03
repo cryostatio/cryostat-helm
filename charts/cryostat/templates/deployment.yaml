@@ -30,6 +30,26 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        - args:
+          - --upstream=http://localhost:8181
+          - --cookie-secret=SECRET
+          - --openshift-service-account=default
+          - --http-address=0.0.0.0:4180
+          - --https-address=
+          - --htpasswd-file=/etc/htpasswd/htpasswd
+          image: quay.io/openshift/origin-oauth-proxy:latest
+          imagePullPolicy: Always
+          name: {{ .Chart.Name }}-proxy
+          ports:
+          - containerPort: 4180
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/htpasswd
+            name: htpasswd
+            readOnly: true
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
@@ -224,6 +244,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      - name: htpasswd
+        secret:
+          defaultMode: 420
+          secretName: basic-auth
       {{- if ((.Values.pvc).enabled) }}
       - name: {{ .Chart.Name }}
         persistentVolumeClaim:

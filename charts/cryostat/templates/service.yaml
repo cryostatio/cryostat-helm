@@ -17,6 +17,10 @@ spec:
       targetPort: 9091
       protocol: TCP
       name: jfr-jmx
+    - port: 4180
+      targetPort: 4180
+      protocol: TCP
+      name: proxy
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
 ---
