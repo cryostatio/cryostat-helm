@@ -38,7 +38,7 @@ spec:
           - --https-address=
           - --htpasswd-file=/etc/htpasswd/htpasswd
           - --request-logging=true
-          image: quay.io/openshift/origin-oauth-proxy:latest
+          image: quay.io/andrewazores/openshift-oauth-proxy:test-6
           imagePullPolicy: Always
           name: {{ .Chart.Name }}-proxy
           ports:
@@ -69,6 +69,8 @@ spec:
             value: 'true'
           - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX
             value: 'true'
+          - name: QUARKUS_HTTP_TRUSTED_PROXIES
+            value: localhost:4180
           - name: QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION
             value: drop-and-create
           - name: QUARKUS_DATASOURCE_USERNAME
