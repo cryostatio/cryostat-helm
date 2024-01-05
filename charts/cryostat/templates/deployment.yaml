@@ -143,11 +143,11 @@ spec:
               - cryostat3
               - -d
               - cryostat3
-        - name: {{ printf "%s-%s" .Chart.Name "s3" }}
+        - name: {{ printf "%s-%s" .Chart.Name "storage" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: quay.io/cryostat/cryostat-storage:2023-12-19 # TODO make this configurable
-          imagePullPolicy: Always
+          image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag }}"
+          imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
           args:
           - server
           - /tmp
@@ -171,6 +171,10 @@ spec:
               - mc
               - ready
               - local
+          resources:
+            {{- toYaml .Values.storage.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.storage.securityContext | nindent 12 }}
         {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
