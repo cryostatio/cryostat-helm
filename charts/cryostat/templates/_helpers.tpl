@@ -68,12 +68,12 @@ Get or generate a default connection key for credentials database
 {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-connection-key" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
-   Use current password. Do not regenerate
+   Use current key. Do not regenerate
 */}}
 {{- $secret.data.CONNECTION_KEY -}}
 {{- else -}}
 {{/*
-    Generate new password
+    Generate new key
 */}}
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}
@@ -86,12 +86,12 @@ Get or generate a default encryption key for credentials database
 {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-encryption-key" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
-   Use current password. Do not regenerate
+   Use current key. Do not regenerate
 */}}
 {{- $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
 {{- else -}}
 {{/*
-    Generate new password
+    Generate new key
 */}}
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}
