@@ -39,14 +39,13 @@ jobs:
             -f target_commitish="${GITHUB_REF_NAME}" \
             -f previous_tag_name="${{ steps.previous-version.outputs.tag }}" | jq -r .body > charts/cryostat/release-notes.md
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          version: v1.5.0
           charts_dir: charts
           config: .github/helm-release-config.yml
-  
+
   update-helm-repo:
     uses: ./.github/workflows/submodule.yml
     needs: helm-release
