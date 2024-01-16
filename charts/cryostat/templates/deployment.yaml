@@ -63,7 +63,7 @@ spec:
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: http://localhost:9000
+            value: http://localhost:8333
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION
@@ -88,7 +88,7 @@ spec:
                 optional: false
           {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
-            value: http://127.0.0.1:8080
+            value: http://127.0.0.1:8800
           - name: GRAFANA_DASHBOARD_URL
             value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           {{- end }}
@@ -113,7 +113,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "db" }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
-          image: quay.io/cryostat/cryostat-db:2023-12-19
+          image: quay.io/cryostat/cryostat-db:2024-01-16
           imagePullPolicy: Always
           env:
           - name: POSTGRESQL_USER
@@ -148,29 +148,35 @@ spec:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
           image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag }}"
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
-          args:
-          - server
-          - /tmp
-          - --address
-          - localhost:9000
-          # TODO add persistent volume
           env:
-          - name: MINIO_ROOT_USER
+          - name: CRYOSTAT_ACCESS_KEY
             value: cryostat
-          - name: MINIO_ROOT_PASSWORD
+          - name: CRYOSTAT_SECRET_KEY
             valueFrom:
               secretKeyRef:
                 name: {{ printf "%s-storage-secret-key" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
-          - name: MINIO_DEFAULT_BUCKETS
-            value: archivedrecordings
-          readinessProbe:
-            exec:
-              command:
-              - mc
-              - ready
-              - local
+          # TODO add persistent volume
+          - name: DATA_DIR
+            value: /tmp
+          - name: IP_BIND
+            value: 0.0.0.0
+          ports:
+            - containerPort: 8333
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: "/status"
+              port: 8333
+            periodSeconds: 10
+            failureThreshold: 2
+          startupProbe:
+            httpGet:
+              path: "/status"
+              port: 8333
+            periodSeconds: 10
+            failureThreshold: 9
           resources:
             {{- toYaml .Values.storage.resources | nindent 12 }}
           securityContext:
@@ -183,7 +189,7 @@ spec:
           imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
           env:
           - name: JFR_DATASOURCE_URL
-            value: http://127.0.0.1:8080
+            value: http://127.0.0.1:8800
           - name: GF_AUTH_ANONYMOUS_ENABLED
             value: "true"
           ports:
@@ -203,15 +209,17 @@ spec:
           env:
           - name: LISTEN_HOST
             value: 127.0.0.1
+          - name: QUARKUS_HTTP_PORT
+            value: "8800"
           ports:
-          - containerPort: 8080
+          - containerPort: 8800
             protocol: TCP
           livenessProbe:
             exec:
               command:
               - curl
               - --fail
-              - http://127.0.0.1:8080
+              - http://127.0.0.1:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
         {{- end }}
