@@ -135,6 +135,10 @@ spec:
           ports:
             - containerPort: 5432
               protocol: TCP
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: {{ .Chart.Name }}
+            subPath: postgres
           readinessProbe:
             exec:
               command:
