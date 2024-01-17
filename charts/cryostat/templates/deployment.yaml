@@ -149,6 +149,8 @@ spec:
           image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag }}"
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
           env:
+          - name: CRYOSTAT_BUCKETS
+            value: archivedrecordings,archivedreports
           - name: CRYOSTAT_ACCESS_KEY
             value: cryostat
           - name: CRYOSTAT_SECRET_KEY
@@ -157,14 +159,24 @@ spec:
                 name: {{ printf "%s-storage-secret-key" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
-          # TODO add persistent volume
           - name: DATA_DIR
-            value: /tmp
+            value: /data
+          # TODO tune these or make them configurable. Ideally the single seaweed volume server should consume the entire PVC
+          - name: VOLUME_PREALLOCATE
+            value: "false"
+          - name: VOLUME_SIZE_LIMIT_MB
+            value: "500"
+          - name: VOLUME_MAX
+            value: "16"
           - name: IP_BIND
             value: 0.0.0.0
           ports:
             - containerPort: 8333
               protocol: TCP
+          volumeMounts:
+          - mountPath: /data
+            name: {{ .Chart.Name }}
+            subPath: seaweed
           livenessProbe:
             httpGet:
               path: "/status"
