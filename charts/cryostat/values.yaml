@@ -93,7 +93,7 @@ storage:
     ## @param storage.image.pullPolicy Image pull policy for the storage container image
     pullPolicy: Always
     ## @param storage.image.tag Tag for the storage container image
-    tag: "2023-12-19"
+    tag: "latest"
   ## @param storage.resources Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
