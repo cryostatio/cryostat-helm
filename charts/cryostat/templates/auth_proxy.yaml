@@ -10,7 +10,6 @@ services:
           cpus: "0.1"
           memory: 1024M
     image: ${OAUTH2_PROXY_IMAGE:-quay.io/oauth2-proxy/oauth2-proxy:latest}
-    command: --alpha-config=./auth_proxy_alpha_config.yaml
     ports:
       - "8080:8080"
     hostname: auth
