@@ -18,13 +18,3 @@ services:
       kompose.service.expose: "auth"
     environment:
       OAUTH2_PROXY_HTPASSWD_FILE: ./auth_proxy_htpasswd
-      OAUTH2_PROXY_HTPASSWD_USER_GROUP: write
-      OAUTH2_PROXY_REDIRECT_URL: http://localhost:8080/oauth2/callback
-      OAUTH2_PROXY_COOKIE_SECRET: __24_BYTE_COOKIE_SECRET_
-    restart: unless-stopped
-    healthcheck:
-      test: wget -q --spider http://localhost:8080/ping || exit 1
-      interval: 10s
-      retries: 3
-      start_period: 30s
-      timeout: 5s
