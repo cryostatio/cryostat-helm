@@ -1,0 +1,30 @@
+version: "3"
+services:
+  auth:
+    depends_on:
+      cryostat:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 1024M
+    image: ${OAUTH2_PROXY_IMAGE:-quay.io/oauth2-proxy/oauth2-proxy:latest}
+    command: --alpha-config=./auth_proxy_alpha_config.yaml
+    ports:
+      - "8080:8080"
+    hostname: auth
+    labels:
+      kompose.service.expose: "auth"
+    environment:
+      OAUTH2_PROXY_HTPASSWD_FILE: ./auth_proxy_htpasswd
+      OAUTH2_PROXY_HTPASSWD_USER_GROUP: write
+      OAUTH2_PROXY_REDIRECT_URL: http://localhost:8080/oauth2/callback
+      OAUTH2_PROXY_COOKIE_SECRET: __24_BYTE_COOKIE_SECRET_
+    restart: unless-stopped
+    healthcheck:
+      test: wget -q --spider http://localhost:8080/ping || exit 1
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
