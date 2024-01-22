@@ -188,17 +188,32 @@
                 }
             }
         },
-        "storage": {
+        "db": {
             "type": "object",
             "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the database container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for thedatabasestorage container image",
+                            "default": "latest"
+                        }
+                    }
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
-                        },
                         "capabilities": {
                             "type": "object",
                             "properties": {
@@ -213,6 +228,46 @@
                                     }
                                 }
                             }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource requests/limits for thedatabasestorage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "default": {}
+                }
+            }
+        },
+        "storage": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
                         }
                     }
                 },
@@ -232,7 +287,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "2023-12-19"
+                            "default": "latest"
                         }
                     }
                 },
@@ -246,51 +301,6 @@
         "grafana": {
             "type": "object",
             "properties": {
-                "securityContext": {
-                    "type": "object",
-                    "properties": {
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
-                        },
-                        "capabilities": {
-                            "type": "object",
-                            "properties": {
-                                "drop": {
-                                    "type": "array",
-                                    "description": "",
-                                    "default": [
-                                        "ALL"
-                                    ],
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the Grafana container image",
-                            "default": "quay.io/cryostat/cryostat-grafana-dashboard"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the Grafana container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the Grafana container image",
-                            "default": "latest"
-                        }
-                    }
-                },
                 "ingress": {
                     "type": "object",
                     "properties": {
@@ -342,6 +352,26 @@
                         }
                     }
                 },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the Grafana container image",
+                            "default": "quay.io/cryostat/cryostat-grafana-dashboard"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the Grafana container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the Grafana container image",
+                            "default": "latest"
+                        }
+                    }
+                },
                 "service": {
                     "type": "object",
                     "properties": {
@@ -361,6 +391,31 @@
                     "type": "boolean",
                     "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
                     "default": false
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
                 },
                 "route": {
                     "type": "object",
