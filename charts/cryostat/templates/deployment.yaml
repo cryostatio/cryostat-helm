@@ -194,6 +194,16 @@ spec:
           securityContext:
             {{- toYaml .Values.storage.securityContext | nindent 12 }}
         {{- if not .Values.minimal }}
+        - name: {{ printf "%s-%s" .Chart.Name "auth-proxy" }}
+          securityContext:
+            {{- toYaml .Values.authProxy.securityContext | nindent 12 }}
+          image: "{{ .Values.authProxy.image.repository }}:{{ .Values.authProxy.image.tag }}"
+          imagePullPolicy: {{ .Values.authProxy.image.pullPolicy }}
+          args:
+            - "--config=/etc/oauth2_proxy/oauth2_proxy.cfg"
+          volumeMounts:
+            - mountPath: /etc/oauth2_proxy
+              name: {{ auth-proxy-config }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -257,3 +267,6 @@ spec:
       - name: {{ .Chart.Name }}
         emptyDir: {}
       {{- end }}
+      - name: auth-proxy-config
+        secret:
+          secretName: {{ .Release.Name }}-auth-proxy-secret

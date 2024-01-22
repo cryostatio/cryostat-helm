@@ -59,7 +59,7 @@ core:
     ## @skip core.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
   ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
   databaseSecretName: ""
 
@@ -164,7 +164,7 @@ grafana:
     ## @skip grafana.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -185,7 +185,7 @@ datasource:
     ## @skip datasource.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Authentication
 
@@ -197,6 +197,16 @@ authentication:
     secretName: ""
     ## @param authentication.basicAuth.filename Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax "user=passHex", where "user" is the username and "passHex" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**
     filename: ""
+
+oauth2Proxy:
+  ## @param authentication.oauth2Proxy.enabled Whether Cryostat should use OAuth2 Proxy for authentication. When true, Cryostat will authenticate users via OAuth2 Proxy.
+  enabled: true
+  ## @param authentication.oauth2Proxy.htpasswdFile Path to the htpasswd file for additional user authentication
+  htpasswdFile: "templates/auth_proxy_htpasswd"
+  ## @param authentication.oauth2Proxy.cookieSecret Secret key for encrypting OAuth2 Proxy cookies
+  cookieSecret: __24_BYTE_COOKIE_SECRET_
+  ## @param authentication.oauth2Proxy.redirectURL OAuth2 Proxy redirect URL (e.g., "https://cryostat.yourdomain.com/oauth2/callback")
+  redirectURL: "http://localhost:8181/oauth2/callback"
 
 ## @section Other Parameters
 
