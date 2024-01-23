@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "latest"
+                            "default": "3.0.0-snapshot"
                         }
                     }
                 },
@@ -188,7 +188,7 @@
                 }
             }
         },
-        "grafana": {
+        "db": {
             "type": "object",
             "properties": {
                 "image": {
@@ -196,36 +196,111 @@
                     "properties": {
                         "repository": {
                             "type": "string",
-                            "description": "Repository for the Grafana container image",
-                            "default": "quay.io/cryostat/cryostat-grafana-dashboard"
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
                         },
                         "pullPolicy": {
                             "type": "string",
-                            "description": "Image pull policy for the Grafana container image",
+                            "description": "Image pull policy for the database container image",
                             "default": "Always"
                         },
                         "tag": {
                             "type": "string",
-                            "description": "Tag for the Grafana container image",
+                            "description": "Tag for thedatabasestorage container image",
                             "default": "latest"
                         }
                     }
                 },
-                "service": {
+                "securityContext": {
                     "type": "object",
                     "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "Type of Service to create for Grafana",
-                            "default": "ClusterIP"
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
                         },
-                        "port": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service for Grafana's HTTP server",
-                            "default": 3000
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
                         }
                     }
                 },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource requests/limits for thedatabasestorage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "default": {}
+                }
+            }
+        },
+        "storage": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the storage container image",
+                            "default": "quay.io/cryostat/cryostat-storage"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the storage container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the storage container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "default": {}
+                }
+            }
+        },
+        "grafana": {
+            "type": "object",
+            "properties": {
                 "ingress": {
                     "type": "object",
                     "properties": {
@@ -277,10 +352,70 @@
                         }
                     }
                 },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the Grafana container image",
+                            "default": "quay.io/cryostat/cryostat-grafana-dashboard"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the Grafana container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the Grafana container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for Grafana",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service for Grafana's HTTP server",
+                            "default": 3000
+                        }
+                    }
+                },
                 "sslProxied": {
                     "type": "boolean",
                     "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
                     "default": false
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
                 },
                 "route": {
                     "type": "object",
@@ -329,31 +464,6 @@
                                     "default": ""
                                 }
                             }
-                        }
-                    }
-                },
-                "securityContext": {
-                    "type": "object",
-                    "properties": {
-                        "capabilities": {
-                            "type": "object",
-                            "properties": {
-                                "drop": {
-                                    "type": "array",
-                                    "description": "",
-                                    "default": [
-                                        "ALL"
-                                    ],
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
                         }
                     }
                 },
@@ -419,6 +529,26 @@
                 }
             }
         },
+        "podSecurityContext": {
+            "type": "object",
+            "properties": {
+                "seccompProfile": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "",
+                            "default": "RuntimeDefault"
+                        }
+                    }
+                },
+                "runAsNonRoot": {
+                    "type": "boolean",
+                    "description": "",
+                    "default": true
+                }
+            }
+        },
         "authentication": {
             "type": "object",
             "properties": {
@@ -441,26 +571,6 @@
                             "default": ""
                         }
                     }
-                }
-            }
-        },
-        "podSecurityContext": {
-            "type": "object",
-            "properties": {
-                "seccompProfile": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "",
-                            "default": "RuntimeDefault"
-                        }
-                    }
-                },
-                "runAsNonRoot": {
-                    "type": "boolean",
-                    "description": "",
-                    "default": true
                 }
             }
         },

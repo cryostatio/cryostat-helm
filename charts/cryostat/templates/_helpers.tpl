@@ -62,18 +62,54 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Get or generate a default password for credentials database
+Get or generate a default connection key for credentials database
 */}}
-{{- define "cryostat.databasePassword" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-jmx-credentials-db" .Release.Name)) -}}
+{{- define "cryostat.databaseConnectionKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-connection-key" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
-   Use current password. Do not regenerate
+   Use current key. Do not regenerate
+*/}}
+{{- $secret.data.CONNECTION_KEY -}}
+{{- else -}}
+{{/*
+    Generate new key
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get or generate a default encryption key for credentials database
+*/}}
+{{- define "cryostat.databaseEncryptionKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db-encryption-key" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current key. Do not regenerate
 */}}
 {{- $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
 {{- else -}}
 {{/*
-    Generate new password
+    Generate new key
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get or generate a default secret key for object storage
+*/}}
+{{- define "cryostat.objectStorageSecretKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage-secret-key" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current secret. Do not regenerate
+*/}}
+{{- $secret.data.SECRET_KEY -}}
+{{- else -}}
+{{/*
+    Generate new secret
 */}}
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}

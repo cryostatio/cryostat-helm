@@ -1,3 +1,5 @@
+{{- $fullName := include "cryostat.fullname" . -}}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,69 +36,53 @@ spec:
           image: "{{ .Values.core.image.repository }}:{{ .Values.core.image.tag }}"
           imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
-          - name: CRYOSTAT_WEB_PORT
+          - name: QUARKUS_HTTP_HOST
+            value: 0.0.0.0
+          - name: QUARKUS_HTTP_PORT
             value: "8181"
-          - name: CRYOSTAT_CONFIG_PATH
-            value: /opt/cryostat.d/conf.d
-          - name: CRYOSTAT_ARCHIVE_PATH
-            value: /opt/cryostat.d/recordings.d
-          - name: CRYOSTAT_TEMPLATE_PATH
-            value: /opt/cryostat.d/templates.d
-          - name: CRYOSTAT_CLIENTLIB_PATH
-            value: /opt/cryostat.d/clientlib.d
-          - name: CRYOSTAT_PROBE_TEMPLATE_PATH
-            value: /opt/cryostat.d/probes.d
-          - name: CRYOSTAT_EXT_WEB_PORT
-            value: "{{ if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls) (.Values.core.sslProxied)) }}443{{ else }}80{{ end }}"
-          - name: CRYOSTAT_WEB_HOST
-            value: "{{ if .Values.core.ingress.enabled }}{{ with index .Values.core.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
-          - name: CRYOSTAT_PLATFORM
-            value: io.cryostat.platform.internal.KubeApiPlatformStrategy
-          {{- if not .Values.minimal }}
-          - name: GRAFANA_DATASOURCE_URL
-            value: http://127.0.0.1:8080
-          - name: GRAFANA_DASHBOARD_URL
-            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
-          {{- end }}
-          - name: CRYOSTAT_DISABLE_SSL
-            value: "true"
-          - name: CRYOSTAT_DISABLE_JMX_AUTH
-            value: "true"
-          - name: CRYOSTAT_ALLOW_UNTRUSTED_SSL
-            value: "true"
-          - name: CRYOSTAT_ENABLE_JDP_BROADCAST
-            value: "false"
-          - name: CRYOSTAT_K8S_NAMESPACES
-            value: "{{ .Release.Namespace }}"
-          {{- if (or (and .Values.core.route.enabled .Values.core.route.tls.enabled) (and .Values.core.ingress.enabled .Values.core.ingress.tls) (.Values.core.sslProxied)) }}
-          - name: CRYOSTAT_SSL_PROXIED
-            value: "true"
-          {{- end }}
-          {{- if ((.Values.pvc).enabled) }}
-          - name: CRYOSTAT_JDBC_URL
-            value: jdbc:h2:file:/opt/cryostat.d/conf.d/h2;INIT=create domain if not exists jsonb as varchar
-          - name: CRYOSTAT_HBM2DDL
-            value: update
-          - name: CRYOSTAT_JDBC_DRIVER
-            value: org.h2.Driver
-          - name: CRYOSTAT_HIBERNATE_DIALECT
-            value: org.hibernate.dialect.H2Dialect
-          - name: CRYOSTAT_JDBC_USERNAME
-            value: {{ include "cryostat.fullname" . }}
-          - name: CRYOSTAT_JDBC_PASSWORD
-            value: {{ include "cryostat.fullname" . }}
-          {{- end }}
-          - name: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
+          - name: QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ALLOW_X_FORWARDED
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_HOST
+            value: 'true'
+          - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX
+            value: 'true'
+          - name: QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION
+            value: drop-and-create
+          - name: QUARKUS_DATASOURCE_USERNAME
+            value: cryostat3
+          - name: QUARKUS_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ default (printf "%s-jmx-credentials-db" .Release.Name) .Values.core.databaseSecretName }}
-                key: CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD
+                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                key: CONNECTION_KEY
                 optional: false
-          - name: CRYOSTAT_AUTH_MANAGER
-          {{- if (.Values.authentication).basicAuth.enabled }}
-            value: io.cryostat.net.BasicAuthManager
-          {{- else }}
-            value: io.cryostat.net.NoopAuthManager
+          - name: QUARKUS_DATASOURCE_JDBC_URL
+            value: jdbc:postgresql://localhost:5432/cryostat3
+          - name: STORAGE_BUCKETS_ARCHIVES_NAME
+            value: archivedrecordings
+          - name: QUARKUS_S3_ENDPOINT_OVERRIDE
+            value: http://localhost:8333
+          - name: QUARKUS_S3_PATH_STYLE_ACCESS
+            value: "true"
+          - name: QUARKUS_S3_AWS_REGION
+            value: us-east-1
+          - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
+            value: static
+          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
+            value: cryostat
+          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                key: SECRET_KEY
+                optional: false
+          {{- if not .Values.minimal }}
+          - name: GRAFANA_DATASOURCE_URL
+            value: http://127.0.0.1:8800
+          - name: GRAFANA_DASHBOARD_URL
+            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
           {{- end }}
           ports:
             - containerPort: 8181
@@ -116,28 +102,93 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+        - name: {{ printf "%s-%s" .Chart.Name "db" }}
+          securityContext:
+            {{- toYaml .Values.core.securityContext | nindent 12 }}
+          image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
+          imagePullPolicy: {{ .Values.db.image.pullPolicy }}
+          env:
+          - name: POSTGRESQL_USER
+            value: cryostat3
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                key: CONNECTION_KEY
+                optional: false
+          - name: POSTGRESQL_DATABASE
+            value: cryostat3
+          - name: PG_ENCRYPT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-db-encryption-key" .Release.Name) .Values.core.databaseSecretName }}
+                key: ENCRYPTION_KEY
+                optional: false
+          ports:
+            - containerPort: 5432
+              protocol: TCP
           volumeMounts:
-          - mountPath: /opt/cryostat.d/conf.d
+          - mountPath: /var/lib/pgsql/data
             name: {{ .Chart.Name }}
-            subPath: config
-          - mountPath: /opt/cryostat.d/recordings.d
+            subPath: postgres
+          readinessProbe:
+            exec:
+              command:
+              - pg_isready
+              - -U
+              - cryostat3
+              - -d
+              - cryostat3
+        - name: {{ printf "%s-%s" .Chart.Name "storage" }}
+          securityContext:
+            {{- toYaml .Values.core.securityContext | nindent 12 }}
+          image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag }}"
+          imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
+          env:
+          - name: CRYOSTAT_BUCKETS
+            value: archivedrecordings,archivedreports
+          - name: CRYOSTAT_ACCESS_KEY
+            value: cryostat
+          - name: CRYOSTAT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                key: SECRET_KEY
+                optional: false
+          - name: DATA_DIR
+            value: /data
+          # TODO tune these or make them configurable. Ideally the single seaweed volume server should consume the entire PVC
+          - name: VOLUME_PREALLOCATE
+            value: "false"
+          - name: VOLUME_SIZE_LIMIT_MB
+            value: "500"
+          - name: VOLUME_MAX
+            value: "16"
+          - name: IP_BIND
+            value: 0.0.0.0
+          ports:
+            - containerPort: 8333
+              protocol: TCP
+          volumeMounts:
+          - mountPath: /data
             name: {{ .Chart.Name }}
-            subPath: flightrecordings
-          - mountPath: /opt/cryostat.d/templates.d
-            name: {{ .Chart.Name }}
-            subPath: templates
-          - mountPath: /opt/cryostat.d/clientlib.d
-            name: {{ .Chart.Name }}
-            subPath: clientlib
-          - mountPath: /opt/cryostat.d/probes.d
-            name: {{ .Chart.Name }}
-            subPath: probes
-          {{- if (.Values.authentication).basicAuth.enabled }}
-          - mountPath: /opt/cryostat.d/conf.d/cryostat-users.properties
-            name: basic-auth-properties
-            subPath: cryostat-users.properties
-            readOnly: true
-          {{- end }}
+            subPath: seaweed
+          livenessProbe:
+            httpGet:
+              path: "/status"
+              port: 8333
+            periodSeconds: 10
+            failureThreshold: 2
+          startupProbe:
+            httpGet:
+              path: "/status"
+              port: 8333
+            periodSeconds: 10
+            failureThreshold: 9
+          resources:
+            {{- toYaml .Values.storage.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.storage.securityContext | nindent 12 }}
         {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
@@ -146,7 +197,7 @@ spec:
           imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
           env:
           - name: JFR_DATASOURCE_URL
-            value: http://127.0.0.1:8080
+            value: http://127.0.0.1:8800
           - name: GF_AUTH_ANONYMOUS_ENABLED
             value: "true"
           ports:
@@ -166,15 +217,17 @@ spec:
           env:
           - name: LISTEN_HOST
             value: 127.0.0.1
+          - name: QUARKUS_HTTP_PORT
+            value: "8800"
           ports:
-          - containerPort: 8080
+          - containerPort: 8800
             protocol: TCP
           livenessProbe:
             exec:
               command:
               - curl
               - --fail
-              - http://127.0.0.1:8080
+              - http://127.0.0.1:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
         {{- end }}
@@ -199,12 +252,4 @@ spec:
       {{- if not ((.Values.pvc).enabled) }}
       - name: {{ .Chart.Name }}
         emptyDir: {}
-      {{- end }}
-      {{- if (.Values.authentication).basicAuth.enabled }}
-      - name: basic-auth-properties
-        secret:
-          secretName: {{ .Values.authentication.basicAuth.secretName }}
-          items:
-            - key: {{ .Values.authentication.basicAuth.filename }}
-              path: cryostat-users.properties
       {{- end }}
