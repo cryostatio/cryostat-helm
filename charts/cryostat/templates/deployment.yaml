@@ -199,8 +199,6 @@ spec:
             {{- toYaml .Values.authProxy.securityContext | nindent 12 }}
           image: "{{ .Values.authProxy.image.repository }}:{{ .Values.authProxy.image.tag }}"
           imagePullPolicy: {{ .Values.authProxy.image.pullPolicy }}
-          args:
-            - "--config=/etc/oauth2_proxy/oauth2_proxy.cfg"
           volumeMounts:
             - mountPath: /etc/oauth2_proxy
               name: {{ auth-proxy-config }}
