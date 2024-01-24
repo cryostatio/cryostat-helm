@@ -200,7 +200,7 @@ spec:
           image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
           imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
           env:
-            - name: redirectURL
+            - name: OAUTH2_PROXY_REDIRECT_URL
               value: "http://localhost:8181/oauth2/callback"
           volumeMounts:
             - name: auth-proxy-config
