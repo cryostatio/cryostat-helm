@@ -114,3 +114,14 @@ Get or generate a default secret key for object storage
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Generate a default value for cookieSecret.
+*/}}
+{{- define "cryostat.defaultCookieSecret" -}}
+{{- if .Values.oauth2Proxy.cookieSecret }}
+{{- .Values.oauth2Proxy.cookieSecret | quote }}
+{{- else }}
+{{- (randAlphaNum 24) | b64enc | quote }}
+{{- end }}
+{{- end }}

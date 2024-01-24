@@ -204,9 +204,22 @@ oauth2Proxy:
   ## @param authentication.oauth2Proxy.htpasswdFile Path to the htpasswd file for additional user authentication
   htpasswdFile: "templates/auth_proxy_htpasswd"
   ## @param authentication.oauth2Proxy.cookieSecret Secret key for encrypting OAuth2 Proxy cookies
-  cookieSecret: __24_BYTE_COOKIE_SECRET_
-  ## @param authentication.oauth2Proxy.redirectURL OAuth2 Proxy redirect URL (e.g., "https://cryostat.yourdomain.com/oauth2/callback")
-  redirectURL: "http://localhost:8181/oauth2/callback"
+  cookieSecret: { { include "cryostat.defaultCookieSecret" . } }
+  image:
+    ## @param authentication.oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
+    repository: "quay.io/cryostat/oauth2-proxy"
+    ## @param authentication.oauth2Proxy.image.pullPolicy Image pull policy for the OAuth2 Proxy container image
+    pullPolicy: Always
+    ## @param authentication.oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
+    tag: "latest"
+  ## @param authentication.oauth2proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip authentication.oauth2proxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip authentication.oauth2proxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
 
 ## @section Other Parameters
 

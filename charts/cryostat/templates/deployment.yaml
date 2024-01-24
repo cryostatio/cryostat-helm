@@ -194,14 +194,23 @@ spec:
           securityContext:
             {{- toYaml .Values.storage.securityContext | nindent 12 }}
         {{- if not .Values.minimal }}
-        - name: {{ printf "%s-%s" .Chart.Name "auth-proxy" }}
+        - name: {{ printf "%s-%s" .Chart.Name "oauth2proxy" }}
           securityContext:
-            {{- toYaml .Values.authProxy.securityContext | nindent 12 }}
-          image: "{{ .Values.authProxy.image.repository }}:{{ .Values.authProxy.image.tag }}"
-          imagePullPolicy: {{ .Values.authProxy.image.pullPolicy }}
+            {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
+          image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
+          imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
+          env:
+            - name: CRYOSTAT_OAUTH2PROXY_URL
+              value: "http://localhost:8181/oauth2/callback"
           volumeMounts:
-            - mountPath: /etc/oauth2_proxy
-              name: {{ auth-proxy-config }}
+            - name: auth-proxy-config
+              mountPath: /etc/oauth2_proxy
+              readOnly: true
+            {{- if .Values.authentication.basicAuth.enabled }}
+            - name: basic-auth-secret
+              mountPath: /etc/oauth2_proxy/basic-auth-secret
+              readOnly: true
+            {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -268,3 +277,8 @@ spec:
       - name: auth-proxy-config
         secret:
           secretName: {{ .Release.Name }}-auth-proxy-secret
+      {{- if .Values.authentication.basicAuth.enabled }}
+      - name: basic-auth-secret
+        secret:
+          secretName: {{ .Values.authentication.basicAuth.secretName }}
+      {{- end }}
