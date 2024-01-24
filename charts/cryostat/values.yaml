@@ -82,7 +82,7 @@ db:
     ## @skip db.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Storage Container
 ## @extra Configuration for Cryostat's object storage provider
@@ -103,7 +103,7 @@ storage:
     ## @skip storage.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat
@@ -207,7 +207,7 @@ oauth2Proxy:
   cookieSecret: { { include "cryostat.defaultCookieSecret" . } }
   image:
     ## @param authentication.oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
-    repository: "quay.io/cryostat/oauth2-proxy"
+    repository: "quay.io/oauth2-proxy/oauth2-proxy"
     ## @param authentication.oauth2Proxy.image.pullPolicy Image pull policy for the OAuth2 Proxy container image
     pullPolicy: Always
     ## @param authentication.oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
