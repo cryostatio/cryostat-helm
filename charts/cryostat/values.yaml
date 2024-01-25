@@ -203,8 +203,6 @@ oauth2Proxy:
   enabled: true
   ## @param authentication.oauth2Proxy.htpasswdFile Path to the htpasswd file for additional user authentication
   htpasswdFile: "templates/auth_proxy_htpasswd"
-  ## @param authentication.oauth2Proxy.cookieSecret Secret key for encrypting OAuth2 Proxy cookies
-  cookieSecret: { { include "cryostat.defaultCookieSecret" . } }
   image:
     ## @param authentication.oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
     repository: "quay.io/oauth2-proxy/oauth2-proxy"
