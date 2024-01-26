@@ -116,12 +116,28 @@ Get or generate a default secret key for object storage
 {{- end -}}
 
 {{/*
-Generate a default value for cookieSecret.
+Generate or retrieve a default value for cookieSecret.
 */}}
-{{- define "cryostat.defaultCookieSecret" -}}
-{{- if .Values.oauth2Proxy.cookieSecret }}
-{{- .Values.oauth2Proxy.cookieSecret | quote }}
-{{- else }}
-{{- (randAlphaNum 24) | b64enc | quote }}
+{{- define "cryostat.cookieSecret" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-cookie-secret" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use the current secret. Do not regenerate.
+*/}}
+{{- $secret.data.COOKIE_SECRET | b64dec | quote -}}
+{{- else -}}
+{{/*
+    Generate a new secret.
+*/}}
+{{- $newSecret := randAlphaNum 24 | b64enc -}}
+{{- $newSecret | quote -}}
 {{- end }}
+{{- end }}
+
+{{/*
+Encode a string to base64.
+*/}}
+{{- define "cryostat.base64Encode" -}}
+{{- $data := . -}}
+{{- printf "%s" $data | b64enc | quote -}}
 {{- end }}

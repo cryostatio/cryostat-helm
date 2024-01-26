@@ -218,6 +218,8 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
+  upstreamConfig:
+    proxyRawPath: true
 
 ## @section Other Parameters
 
