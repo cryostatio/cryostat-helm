@@ -133,11 +133,3 @@ Generate or retrieve a default value for cookieSecret.
 {{- $newSecret | quote -}}
 {{- end }}
 {{- end }}
-
-{{/*
-Encode a string to base64.
-*/}}
-{{- define "cryostat.base64Encode" -}}
-{{- $data := . -}}
-{{- printf "%s" $data | b64enc | quote -}}
-{{- end }}

@@ -202,7 +202,10 @@ oauth2Proxy:
   ## @param authentication.oauth2Proxy.enabled Whether Cryostat should use OAuth2 Proxy for authentication. When true, Cryostat will authenticate users via OAuth2 Proxy.
   enabled: true
   ## @param authentication.oauth2Proxy.htpasswdFile Path to the htpasswd file for additional user authentication
-  htpasswdFile: "templates/auth_proxy_htpasswd"
+  htpasswdFile: "auth_proxy_htpasswd"
+  alphaConfig:
+    enabled: true
+    configFile: "templates/auth_proxy_alpha_config.yaml"
   image:
     ## @param authentication.oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
     repository: "quay.io/oauth2-proxy/oauth2-proxy"
@@ -218,8 +221,6 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
-  upstreamConfig:
-    proxyRawPath: true
 
 ## @section Other Parameters
 

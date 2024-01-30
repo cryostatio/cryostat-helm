@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-proxy-alpha-config
+data:
+  server: |
+    BindAddress: http://0.0.0.0:4180
+  upstreamConfig: |
+    proxyRawPath: true

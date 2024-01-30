@@ -3,5 +3,4 @@ kind: Secret
 metadata:
   name: {{ .Release.Name }}-auth-proxy-secret
 data:
-  auth_proxy_htpasswd: {{ include "cryostat.base64Encode" (.Files.Get "auth_proxy_htpasswd") }}
-  alphaconfig.cfg: {{ include "cryostat.base64Encode" "proxy-raw-path=true" }}
+  auth_proxy_htpasswd: {{ .Files.Get "auth_proxy_htpasswd" | b64enc | quote }}

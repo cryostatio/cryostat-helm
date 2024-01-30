@@ -198,6 +198,8 @@ spec:
           securityContext:
             {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
           image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
+          args:
+            - "--alpha-config=/etc/oauth2_proxy/auth_proxy_alpha_config/auth_proxy_alpha_config.yaml"
           imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
           env:
             - name: OAUTH2_PROXY_REDIRECT_URL
@@ -212,12 +214,12 @@ spec:
               value: "CLIENT_SECRET"
             - name: OAUTH2_PROXY_EMAIL_DOMAINS
               value: "*"
-            - name: UPSTREAM_CONFIG
-              value: {{ include "cryostat.base64Encode" "proxyRawPath: true" }}
           volumeMounts:
             - name: auth-proxy-config
               mountPath: /etc/oauth2_proxy
               readOnly: true
+            - name: alpha-config
+              mountPath: /etc/oauth2_proxy/auth_proxy_alpha_config
             {{- if .Values.authentication.basicAuth.enabled }}
             - name: basic-auth-secret
               mountPath: /etc/oauth2_proxy/basic-auth-secret
@@ -286,6 +288,9 @@ spec:
       - name: {{ .Chart.Name }}
         emptyDir: {}
       {{- end }}
+      - name: alpha-config
+        configMap:
+          name: auth-proxy-alpha-config
       - name: auth-proxy-config
         secret:
           secretName: {{ .Release.Name }}-auth-proxy-secret
@@ -294,3 +299,4 @@ spec:
         secret:
           secretName: {{ .Values.authentication.basicAuth.secretName }}
       {{- end }}
+      
