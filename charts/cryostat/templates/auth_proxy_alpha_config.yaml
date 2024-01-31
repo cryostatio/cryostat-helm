@@ -3,7 +3,27 @@ kind: ConfigMap
 metadata:
   name: auth-proxy-alpha-config
 data:
-  server: |
-    BindAddress: http://0.0.0.0:4180
   upstreamConfig: |
-    proxyRawPath: true
+    server:
+      BindAddress: http://0.0.0.0:8080
+    upstreamConfig:
+      proxyRawPath: true
+      upstreams:
+        - id: cryostat
+          path: /
+          uri: http://cryostat:8181
+        - id: grafana
+          path: /grafana/
+          uri: http://grafana:3000
+        - id: storage
+          path: ^/storage/(.*)$
+          rewriteTarget: /$1
+          uri: http://s3:3000
+          passHostHeader: false
+          proxyWebSockets: false
+    providers:
+      - id: dummy
+        name: Unused - Sign In Below
+        clientId: CLIENT_ID
+        clientSecret: CLIENT_SECRET
+        provider: google
