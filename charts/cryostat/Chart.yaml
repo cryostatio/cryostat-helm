@@ -15,23 +15,23 @@ home: "https://cryostat.io"
 icon: "https://raw.githubusercontent.com/cryostatio/cryostat-helm/main/docs/images/cryostat-icon.svg"
 
 keywords:
-  - flightrecorder
-  - java
-  - jdk
-  - jfr
-  - jmc
-  - missioncontrol
-  - monitoring
-  - profiling
-  - diagnostic
+- flightrecorder
+- java
+- jdk
+- jfr
+- jmc
+- missioncontrol
+- monitoring
+- profiling
+- diagnostic
 
 sources:
-  - https://github.com/cryostatio/cryostat
-  - https://github.com/cryostatio/cryostat-core
-  - https://github.com/cryostatio/cryostat-web
-  - https://github.com/cryostatio/jfr-datasource
-  - https://github.com/cryostatio/cryostat-grafana-dashboard
+- https://github.com/cryostatio/cryostat
+- https://github.com/cryostatio/cryostat-core
+- https://github.com/cryostatio/cryostat-web
+- https://github.com/cryostatio/jfr-datasource
+- https://github.com/cryostatio/cryostat-grafana-dashboard
 
 maintainers:
-  - name: The Cryostat Community
-    url: https://groups.google.com/g/cryostat-development
+- name: The Cryostat Community
+  url: https://groups.google.com/g/cryostat-development
