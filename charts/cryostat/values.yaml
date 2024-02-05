@@ -205,7 +205,7 @@ oauth2Proxy:
   htpasswdFile: "auth_proxy_htpasswd"
   alphaConfig:
     enabled: true
-    configFile: "templates/auth_proxy_alpha_config.yaml"
+    configFile: "templates/alpha_config.yaml"
   image:
     ## @param authentication.oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
     repository: "quay.io/oauth2-proxy/oauth2-proxy"

@@ -3,4 +3,4 @@ kind: Secret
 metadata:
   name: {{ .Release.Name }}-auth-proxy-secret
 data:
-  auth_proxy_htpasswd: {{ .Files.Get "auth_proxy_htpasswd" | b64enc | quote }}
+  auth_proxy_htpasswd: {{ .Files.Get ".oauth2proxy.htpasswdFile" | b64enc | quote }}

@@ -199,7 +199,7 @@ spec:
             {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
           image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
           args:
-            - "--alpha-config=/etc/oauth2_proxy/auth_proxy_alpha_config/upstreamConfig"
+            - "--alpha-config=/etc/oauth2_proxy/alpha_config/alpha_config.yaml"
           imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
           env:
             - name: OAUTH2_PROXY_REDIRECT_URL
@@ -213,7 +213,7 @@ spec:
               mountPath: /etc/oauth2_proxy
               readOnly: true
             - name: alpha-config
-              mountPath: /etc/oauth2_proxy/auth_proxy_alpha_config
+              mountPath: /etc/oauth2_proxy/alpha_config
             {{- if .Values.authentication.basicAuth.enabled }}
             - name: basic-auth-secret
               mountPath: /etc/oauth2_proxy/basic-auth-secret
@@ -284,7 +284,7 @@ spec:
       {{- end }}
       - name: alpha-config
         configMap:
-          name: auth-proxy-alpha-config
+          name: {{ .Release.Name }}-alpha-config
       - name: auth-proxy-config
         secret:
           secretName: {{ .Release.Name }}-auth-proxy-secret
