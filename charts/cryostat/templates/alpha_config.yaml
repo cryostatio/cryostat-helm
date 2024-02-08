@@ -5,7 +5,7 @@ metadata:
 data:
   alpha_config.yaml: |-
     server:
-      BindAddress: http://0.0.0.0:8080
+      BindAddress: http://0.0.0.0:4180
     upstreamConfig:
       proxyRawPath: true
       upstreams:
