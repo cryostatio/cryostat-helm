@@ -98,6 +98,8 @@ storage:
   resources: {}
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
+    ## @skip storage.securityContext.runAsUser
+    runAsUser: 1000
     ## @skip storage.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
     ## @skip storage.securityContext.capabilities
