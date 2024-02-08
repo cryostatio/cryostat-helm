@@ -10,7 +10,7 @@ spec:
   type: {{ .Values.core.service.type }}
   ports:
     - port: {{ .Values.core.service.httpPort }}
-      targetPort: 8181
+      targetPort: 4180
       protocol: TCP
       name: cryostat-http
     - port: {{ .Values.core.service.jmxPort }}
