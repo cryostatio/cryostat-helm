@@ -208,10 +208,12 @@ spec:
               value: {{ include "cryostat.cookieSecret" . }}
             - name: OAUTH2_PROXY_EMAIL_DOMAINS
               value: "*"
-            - name: OAUTH2_PROXY_HTPASSWD_FILE
-              value: /etc/oauth2_proxy/auth_proxy_htpasswd
             - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
               value: write
+            {{- if not .Values.authentication.basicAuth.enabled }}
+            - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+              value: ".*"
+          {{- end }}
           volumeMounts:
             - name: auth-proxy-config
               mountPath: /etc/oauth2_proxy

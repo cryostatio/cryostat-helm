@@ -3,6 +3,4 @@ kind: Secret
 metadata:
   name: {{ .Release.Name }}-auth-proxy-secret
 data:
-  # auth_proxy_htpasswd: {{ .Files.Get ".oauth2proxy.htpasswdFile" | b64enc | quote }}
-  # FIXME this is a hack, the user definition should be pulled out of values.yaml: .authentication.basicAuth
-  auth_proxy_htpasswd: {{ "user:$2y$05$.p1/68oBWKX1FhAtZOArYOoNoMqsB4yuUNXGOeSATHPq3geKqEaZS" | b64enc | quote }}
+    auth_proxy_htpasswd: {{ .Values.authentication.basicAuth.secretName | b64enc | quote }}
