@@ -208,21 +208,22 @@ spec:
               value: {{ include "cryostat.cookieSecret" . }}
             - name: OAUTH2_PROXY_EMAIL_DOMAINS
               value: "*"
+            {{- if .Values.authentication.basicAuth.enabled }}
             - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
               value: write
+            - name: OAUTH2_PROXY_HTPASSWD_FILE
+              value: /etc/oauth2_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
+            {{- end }}
             {{- if not .Values.authentication.basicAuth.enabled }}
             - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
               value: ".*"
-          {{- end }}
+            {{- end }}
           volumeMounts:
-            - name: auth-proxy-config
-              mountPath: /etc/oauth2_proxy
-              readOnly: true
             - name: alpha-config
               mountPath: /etc/oauth2_proxy/alpha_config
             {{- if .Values.authentication.basicAuth.enabled }}
-            - name: basic-auth-secret
-              mountPath: /etc/oauth2_proxy/basic-auth-secret
+            - name: {{ .Release.Name }}-htpasswd
+              mountPath: /etc/oauth2_proxy/basicauth
               readOnly: true
             {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
@@ -291,11 +292,8 @@ spec:
       - name: alpha-config
         configMap:
           name: {{ .Release.Name }}-alpha-config
-      - name: auth-proxy-config
-        secret:
-          secretName: {{ .Release.Name }}-auth-proxy-secret
       {{- if .Values.authentication.basicAuth.enabled }}
-      - name: basic-auth-secret
+      - name: {{ .Release.Name }}-htpasswd
         secret:
           secretName: {{ .Values.authentication.basicAuth.secretName }}
       {{- end }}

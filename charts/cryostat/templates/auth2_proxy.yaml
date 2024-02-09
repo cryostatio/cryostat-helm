@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .Release.Name }}-auth-proxy-secret
-data:
-    auth_proxy_htpasswd: {{ .Values.authentication.basicAuth.secretName | b64enc | quote }}
