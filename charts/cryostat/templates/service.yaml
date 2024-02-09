@@ -20,7 +20,6 @@ spec:
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
 ---
-{{- if not .Values.minimal }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,4 +35,3 @@ spec:
       name: grafana-http
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
-{{- end -}}

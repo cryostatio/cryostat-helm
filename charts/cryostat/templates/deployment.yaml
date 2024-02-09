@@ -82,12 +82,10 @@ spec:
                 optional: false
           - name: AWS_SECRET_ACCESS_KEY
             value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
-          {{- if not .Values.minimal }}
           - name: GRAFANA_DATASOURCE_URL
             value: http://127.0.0.1:8800
           - name: GRAFANA_DASHBOARD_URL
-            value: "{{ if .Values.grafana.ingress.enabled }}http{{ if (or (.Values.grafana.ingress.tls) (.Values.grafana.sslProxied)) }}s{{ end }}://{{ with index .Values.grafana.ingress.hosts 0 }}{{ .host }}{{ end }}{{ end }}"
-          {{- end }}
+            value: http://127.0.0.1:3000
           ports:
             - containerPort: 8181
               protocol: TCP
@@ -193,7 +191,6 @@ spec:
             {{- toYaml .Values.storage.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.storage.securityContext | nindent 12 }}
-        {{- if not .Values.minimal }}
         - name: {{ printf "%s-%s" .Chart.Name "oauth2proxy" }}
           securityContext:
             {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
@@ -232,10 +229,16 @@ spec:
           image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}"
           imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
           env:
-          - name: JFR_DATASOURCE_URL
-            value: http://127.0.0.1:8800
           - name: GF_AUTH_ANONYMOUS_ENABLED
             value: "true"
+          - name: GF_SERVER_DOMAIN
+            value: localhost
+          - name: GF_SERVER_ROOT_URL
+            value: http://localhost:4180/grafana/
+          - name: GF_SERVER_SERVE_FROM_SUB_PATH
+            value: "true"
+          - name: JFR_DATASOURCE_URL
+            value: http://127.0.0.1:8800
           ports:
           - containerPort: 3000
             protocol: TCP
@@ -266,7 +269,6 @@ spec:
               - http://127.0.0.1:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

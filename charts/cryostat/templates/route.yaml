@@ -48,6 +48,3 @@ spec:
 {{- if .Values.core.route.enabled }}
 {{- include "createRoute" (list $fullName 4180 $ .Values.core)}}
 {{- end }}
-{{- if and (not .Values.minimal) .Values.grafana.route.enabled }}
-{{- include "createRoute" (list (printf "%s-%s" $fullName "grafana") 3000 $ .Values.grafana)}}
-{{- end }}

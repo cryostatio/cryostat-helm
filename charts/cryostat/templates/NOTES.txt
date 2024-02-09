@@ -1,13 +1,13 @@
 {{- $envVars := list }}
 {{- $portForwards := list }}
 {{- $listNum := 1 }}
-{{- if not (and .Values.core.ingress.enabled .Values.grafana.ingress.enabled) }}
+{{- if not .Values.core.ingress.enabled }}
 {{ $listNum }}. Tell Cryostat how to serve external traffic:
 {{- $listNum = add1 $listNum }}
   ```
 {{- if .Values.core.route.enabled }}
   export ROUTE_HOST=$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} -o jsonpath="{.status.ingress[0].host}")
-{{- $envVars = list "STORAGE_EXT_URL=http://$ROUTE_HOST/storage" }}
+{{- $envVars = list ( tpl "STORAGE_EXT_URL=http{{ if .Values.core.route.tls.enabled }}s{{ end  }}://$ROUTE_HOST/storage" . ) }}
 {{- else if .Values.core.ingress.enabled }}
 {{- /* Do nothing */}}
 {{- else if contains "NodePort" .Values.core.service.type }}
@@ -27,25 +27,20 @@
 {{- end }}
 
 {{- if not .Values.minimal }}
-{{- if .Values.grafana.route.enabled }}
-  export GRAFANA_ROUTE_HOST=$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }}-grafana -o jsonpath="{.status.ingress[0].host}")
-{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_URL=http{{ if .Values.grafana.route.tls.enabled }}s{{ end }}://$GRAFANA_ROUTE_HOST" . ) }}
-{{- else if .Values.grafana.ingress.enabled }}
-{{- /* Do nothing */}}
-{{- else if contains "NodePort" .Values.grafana.service.type }}
+{{- if .Values.core.route.enabled }}
+{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http{{ if .Values.core.route.tls.enabled }}s{{ end }}://$ROUTE_HOST/grafana/" . ) }}
+{{- else if .Values.core.ingress.enabled }}
 {{- if not (contains "NodePort" .Values.core.service.type) }}
   export NODE_IP=$(kubectl get nodes -n {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
 {{- end }}
   export GRAFANA_NODE_PORT=$(kubectl get -n {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "cryostat.fullname" . }}-grafana)
 {{- $envVars = append $envVars "GRAFANA_DASHBOARD_URL=http://$NODE_IP:$GRAFANA_NODE_PORT"}}
-{{- else if contains "LoadBalancer" .Values.grafana.service.type }}
 {{- if not (contains "LoadBalancer" .Values.core.service.type) }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
            You can watch the status of by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }} svc/{{ include "cryostat.fullname" . }}-grafana'
 {{- end }}
   export GRAFANA_SERVICE_IP=$(kubectl get svc -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }}-grafana --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-{{- $envVars = append $envVars (printf "GRAFANA_DASHBOARD_URL=http://$GRAFANA_SERVICE_IP:%v" .Values.grafana.service.port) }}
-{{- else if contains "ClusterIP" .Values.grafana.service.type }}
+{{- $envVars = append $envVars (printf "GRAFANA_DASHBOARD_URL=http://$GRAFANA_SERVICE_IP:%v" .Values.core.service.port) }}
 {{- if not (contains "ClusterIP" .Values.core.service.type) }}
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
 {{- end }}
