@@ -71,9 +71,9 @@ db:
     repository: "quay.io/cryostat/cryostat-db"
     ## @param db.image.pullPolicy Image pull policy for the database container image
     pullPolicy: Always
-    ## @param db.image.tag Tag for thedatabasestorage container image
+    ## @param db.image.tag Tag for the database container image
     tag: "latest"
-  ## @param db.resources Resource requests/limits for thedatabasestorage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
+  ## @param db.resources Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
