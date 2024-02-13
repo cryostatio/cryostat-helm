@@ -529,23 +529,53 @@
                 }
             }
         },
-        "podSecurityContext": {
+        "oauth2Proxy": {
             "type": "object",
             "properties": {
-                "seccompProfile": {
+                "securityContext": {
                     "type": "object",
                     "properties": {
-                        "type": {
-                            "type": "string",
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
                             "description": "",
-                            "default": "RuntimeDefault"
+                            "default": false
                         }
                     }
                 },
-                "runAsNonRoot": {
-                    "type": "boolean",
-                    "description": "",
-                    "default": true
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the OAuth2 Proxy container image",
+                            "default": "quay.io/oauth2-proxy/oauth2-proxy"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the OAuth2 Proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the OAuth2 Proxy container image",
+                            "default": "latest"
+                        }
+                    }
                 }
             }
         },
@@ -567,10 +597,30 @@
                         },
                         "filename": {
                             "type": "string",
-                            "description": "Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax \"user=passHex\", where \"user\" is the username and \"passHex\" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**",
+                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
                             "default": ""
                         }
                     }
+                }
+            }
+        },
+        "podSecurityContext": {
+            "type": "object",
+            "properties": {
+                "seccompProfile": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "",
+                            "default": "RuntimeDefault"
+                        }
+                    }
+                },
+                "runAsNonRoot": {
+                    "type": "boolean",
+                    "description": "",
+                    "default": true
                 }
             }
         },

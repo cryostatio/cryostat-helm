@@ -114,3 +114,22 @@ Get or generate a default secret key for object storage
 {{- (randAlphaNum 32) | b64enc | quote -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Generate or retrieve a default value for cookieSecret.
+*/}}
+{{- define "cryostat.cookieSecret" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-cookie-secret" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use the current secret. Do not regenerate.
+*/}}
+{{- $secret.data.COOKIE_SECRET | b64dec | quote -}}
+{{- else -}}
+{{/*
+    Generate a new secret.
+*/}}
+{{- $newSecret := randAlphaNum 24 | b64enc -}}
+{{- $newSecret | quote -}}
+{{- end }}
+{{- end }}

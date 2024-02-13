@@ -7,7 +7,7 @@
   ```
 {{- if .Values.core.route.enabled }}
   export ROUTE_HOST=$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} -o jsonpath="{.status.ingress[0].host}")
-{{- $envVars = list "STORAGE_EXT_URL=$ROUTE_HOST" }}
+{{- $envVars = list "STORAGE_EXT_URL=http://$ROUTE_HOST/storage" }}
 {{- else if .Values.core.ingress.enabled }}
 {{- /* Do nothing */}}
 {{- else if contains "NodePort" .Values.core.service.type }}

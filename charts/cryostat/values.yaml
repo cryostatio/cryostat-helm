@@ -59,7 +59,7 @@ core:
     ## @skip core.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
   ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
   databaseSecretName: ""
 
@@ -82,7 +82,7 @@ db:
     ## @skip db.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Storage Container
 ## @extra Configuration for Cryostat's object storage provider
@@ -103,7 +103,7 @@ storage:
     ## @skip storage.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat
@@ -164,7 +164,7 @@ grafana:
     ## @skip grafana.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -185,7 +185,7 @@ datasource:
     ## @skip datasource.securityContext.capabilities
     capabilities:
       drop:
-      - ALL
+        - ALL
 
 ## @section Authentication
 
@@ -195,8 +195,27 @@ authentication:
     enabled: false
     ## @param authentication.basicAuth.secretName Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**
     secretName: ""
-    ## @param authentication.basicAuth.filename Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax "user=passHex", where "user" is the username and "passHex" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**
+    ## @param authentication.basicAuth.filename Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax "user:passHash", where "user" is the username and "passHash" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**
     filename: ""
+
+## @section OAuth2 Proxy
+
+oauth2Proxy:
+  image:
+    ## @param oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
+    repository: "quay.io/oauth2-proxy/oauth2-proxy"
+    ## @param oauth2Proxy.image.pullPolicy Image pull policy for the OAuth2 Proxy container image
+    pullPolicy: Always
+    ## @param oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
+    tag: "latest"
+  ## @param oauth2proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip oauth2Proxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
 
 ## @section Other Parameters
 
