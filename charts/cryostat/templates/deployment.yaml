@@ -37,7 +37,7 @@ spec:
           imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
           - name: QUARKUS_HTTP_HOST
-            value: 0.0.0.0
+            value: localhost
           - name: QUARKUS_HTTP_PORT
             value: "8181"
           - name: QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING
