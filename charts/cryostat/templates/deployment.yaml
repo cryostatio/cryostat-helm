@@ -118,9 +118,9 @@ spec:
           - name: AWS_SECRET_ACCESS_KEY
             value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
           - name: GRAFANA_DATASOURCE_URL
-            value: http://127.0.0.1:8800
+            value: http://localhost:8800
           - name: GRAFANA_DASHBOARD_URL
-            value: http://127.0.0.1:3000
+            value: http://localhost:3000
           ports:
             - containerPort: 8181
               protocol: TCP
@@ -241,7 +241,7 @@ spec:
           - name: GF_SERVER_SERVE_FROM_SUB_PATH
             value: "true"
           - name: JFR_DATASOURCE_URL
-            value: http://127.0.0.1:8800
+            value: http://localhost:8800
           ports:
           - containerPort: 3000
             protocol: TCP
@@ -258,7 +258,7 @@ spec:
           imagePullPolicy: {{ .Values.datasource.image.pullPolicy }}
           env:
           - name: LISTEN_HOST
-            value: 127.0.0.1
+            value: localhost
           - name: QUARKUS_HTTP_PORT
             value: "8800"
           ports:
@@ -269,7 +269,7 @@ spec:
               command:
               - curl
               - --fail
-              - http://127.0.0.1:8800
+              - http://localhost:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
