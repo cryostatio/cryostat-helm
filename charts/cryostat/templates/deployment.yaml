@@ -150,7 +150,7 @@ spec:
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
           env:
           - name: CRYOSTAT_BUCKETS
-            value: archivedrecordings,archivedreports
+            value: archivedrecordings,archivedreports,eventtemplates
           - name: CRYOSTAT_ACCESS_KEY
             value: cryostat
           - name: CRYOSTAT_SECRET_KEY
