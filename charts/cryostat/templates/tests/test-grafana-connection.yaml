@@ -13,6 +13,6 @@ spec:
       command:
         - '/bin/bash'
         - '-ec'
-        - curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}-grafana:{{ .Values.grafana.service.port }}/api/health
+        - curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}:{{ .Values.core.service.httpPort }}/grafana/api/health
   restartPolicy: Never
 
