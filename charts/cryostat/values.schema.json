@@ -206,7 +206,7 @@
                         },
                         "tag": {
                             "type": "string",
-                            "description": "Tag for thedatabasestorage container image",
+                            "description": "Tag for the database container image",
                             "default": "latest"
                         }
                     }
@@ -238,7 +238,7 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for thedatabasestorage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "description": "Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                     "default": {}
                 }
             }
