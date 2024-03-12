@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "cryostat.fullname" . }}-test-grafana-connection"
+  name: "{{ include "cryostat.fullname" . }}-test-storage-connection"
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
   annotations:
@@ -13,5 +13,5 @@ spec:
       command:
         - '/bin/bash'
         - '-exc'
-        - curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}:{{ .Values.core.service.httpPort }}/grafana/api/health
+        - curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}:{{ .Values.core.service.httpPort }}/storage/
   restartPolicy: Never
