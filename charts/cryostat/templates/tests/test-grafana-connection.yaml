@@ -12,7 +12,7 @@ spec:
       image: registry.access.redhat.com/ubi8/ubi:latest
       command:
         - '/bin/bash'
-        - '-ec'
+        - '-exc'
         - curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}:{{ .Values.core.service.httpPort }}/grafana/api/health
   restartPolicy: Never
 
