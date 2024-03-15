@@ -206,7 +206,7 @@
                         },
                         "tag": {
                             "type": "string",
-                            "description": "Tag for thedatabasestorage container image",
+                            "description": "Tag for the database container image",
                             "default": "latest"
                         }
                     }
@@ -238,7 +238,7 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for thedatabasestorage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "description": "Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                     "default": {}
                 }
             }
@@ -301,54 +301,28 @@
         "grafana": {
             "type": "object",
             "properties": {
-                "ingress": {
+                "securityContext": {
                     "type": "object",
                     "properties": {
-                        "hosts": {
-                            "type": "array",
-                            "description": "",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "host": {
-                                        "type": "string",
-                                        "description": ""
-                                    },
-                                    "paths": {
-                                        "type": "array",
-                                        "description": "",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "path": {
-                                                    "type": "string",
-                                                    "description": ""
-                                                },
-                                                "pathType": {
-                                                    "type": "string",
-                                                    "description": ""
-                                                }
-                                            }
-                                        }
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
                                     }
                                 }
                             }
                         },
-                        "enabled": {
+                        "allowPrivilegeEscalation": {
                             "type": "boolean",
-                            "description": "Whether to create an Ingress object for the Grafana service",
+                            "description": "",
                             "default": false
-                        },
-                        "className": {
-                            "type": "string",
-                            "description": "Ingress class name for the Grafana Ingress",
-                            "default": ""
-                        },
-                        "tls": {
-                            "type": "array",
-                            "description": "TLS configuration for the Grafana Ingress. See: [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec)",
-                            "default": [],
-                            "items": {}
                         }
                     }
                 },
@@ -384,86 +358,6 @@
                             "type": "number",
                             "description": "Port number to expose on the Service for Grafana's HTTP server",
                             "default": 3000
-                        }
-                    }
-                },
-                "sslProxied": {
-                    "type": "boolean",
-                    "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
-                    "default": false
-                },
-                "securityContext": {
-                    "type": "object",
-                    "properties": {
-                        "capabilities": {
-                            "type": "object",
-                            "properties": {
-                                "drop": {
-                                    "type": "array",
-                                    "description": "",
-                                    "default": [
-                                        "ALL"
-                                    ],
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
-                        }
-                    }
-                },
-                "route": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether to create a Route object for the Grafana service. Available only on OpenShift",
-                            "default": false
-                        },
-                        "tls": {
-                            "type": "object",
-                            "properties": {
-                                "enabled": {
-                                    "type": "boolean",
-                                    "description": "Whether to secure the Grafana Route with TLS. See: [TLSConfig](https://docs.openshift.com/container-platform/4.10/rest_api/network_apis/route-route-openshift-io-v1.html#spec-tls)",
-                                    "default": true
-                                },
-                                "termination": {
-                                    "type": "string",
-                                    "description": "Type of TLS termination to use for the Grafana Route. One of: `edge`, `passthrough`, `reencrypt`",
-                                    "default": "edge"
-                                },
-                                "insecureEdgeTerminationPolicy": {
-                                    "type": "string",
-                                    "description": "Specify how to handle insecure traffic for the Grafana Route. One of: `Allow`, `Disable`, `Redirect`",
-                                    "default": "Redirect"
-                                },
-                                "key": {
-                                    "type": "string",
-                                    "description": "Custom private key to use when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "certificate": {
-                                    "type": "string",
-                                    "description": "Custom certificate to use when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "caCertificate": {
-                                    "type": "string",
-                                    "description": "Custom CA certificate to use, if needed to complete the certificate chain, when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "destinationCACertificate": {
-                                    "type": "string",
-                                    "description": "Provides the contents of the CA certificate of the final destination when using reencrypt termination for the Grafana Route",
-                                    "default": ""
-                                }
-                            }
                         }
                     }
                 },
@@ -623,11 +517,6 @@
                     "default": true
                 }
             }
-        },
-        "minimal": {
-            "type": "boolean",
-            "description": "Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source",
-            "default": false
         },
         "imagePullSecrets": {
             "type": "array",
