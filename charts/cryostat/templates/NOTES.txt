@@ -15,6 +15,8 @@
   export NODE_IP=$(kubectl get nodes -n {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   export NODE_PORT=$(kubectl get -n {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "cryostat.fullname" . }})
 {{- $envVars = list "QUARKUS_HTTP_HOST=$NODE_IP" }}
+{{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$NODE_IP:$NODE_PORT/storage/" . ) }}
+{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$NODE_IP:$NODE_PORT/grafana/" . ) }}
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
            You can watch the status by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }}'
