@@ -17,7 +17,7 @@
 {{- $envVars = list "QUARKUS_HTTP_HOST=$NODE_IP" }}
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }} svc/{{ include "cryostat.fullname" . }}-grafana'
+           You can watch the status of by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
 {{- $envVars = list "QUARKUS_HTTP_HOST=$SERVICE_IP" }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
