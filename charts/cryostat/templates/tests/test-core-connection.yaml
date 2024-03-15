@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "cryostat.fullname" . }}-test-connection"
+  name: "{{ include "cryostat.fullname" . }}-test-core-connection"
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
   annotations:
@@ -12,13 +12,15 @@ spec:
       image: registry.access.redhat.com/ubi8/ubi:latest
       command:
         - '/bin/bash'
-        - '-ec'
+        - '-exc'
         - >
           dnf install --disableplugin=subscription-manager -yq jq;
           curl -sSf --retry 10 --retry-connrefused -o /tmp/out.json http://{{ include "cryostat.fullname" . }}:{{ .Values.core.service.httpPort }}/health;
           cat /tmp/out.json;
-          jq -e '{{ printf "(.cryostatVersion | test(\"^v%s\")) and .datasourceAvailable == %t" (.Chart.AppVersion | squote) (not .Values.minimal) }}' /tmp/out.json;
-          {{- if not .Values.minimal }}
-          curl -sSf --retry 10 --retry-connrefused http://{{ include "cryostat.fullname" . }}-grafana:{{ .Values.grafana.service.port }}/api/health
+          {{- if hasSuffix "-dev" .Chart.AppVersion }}
+          jq -e '{{ printf "(.cryostatVersion | test(\"^v%s-snapshot$\"))" (.Chart.AppVersion | trimSuffix "-dev" | squote) }}' /tmp/out.json;
+          {{- else }}
+          jq -e '{{ printf "(.cryostatVersion | test(\"^v%s\"))" (.Chart.AppVersion | squote) }}' /tmp/out.json;
           {{- end }}
+          jq -e '.datasourceAvailable' /tmp/out.json
   restartPolicy: Never
