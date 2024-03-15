@@ -17,9 +17,11 @@
 {{- $envVars = list "QUARKUS_HTTP_HOST=$NODE_IP" }}
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }}'
+           You can watch the status by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
 {{- $envVars = list "QUARKUS_HTTP_HOST=$SERVICE_IP" }}
+{{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$SERVICE_IP:{{ .Values.core.service.httpPort }}/storage/" . ) }}
+{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$SERVICE_IP:{{ .Values.core.service.httpPort }}/grafana/" . ) }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
   export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
