@@ -15,7 +15,7 @@
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
     {{- if .Values.authentication.basicAuth.enabled }}
-    - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth
+    - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
     {{- end }}
     - --request-logging=true
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
