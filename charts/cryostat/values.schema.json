@@ -473,9 +473,69 @@
                 }
             }
         },
+        "openshiftOauthProxy": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the OpenShift OAuth Proxy container image",
+                            "default": "quay.io/openshift/origin-oauth-proxy"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the OpenShift OAuth Proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the OpenShift OAuth Proxy container image",
+                            "default": "latest"
+                        }
+                    }
+                }
+            }
+        },
         "authentication": {
             "type": "object",
             "properties": {
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "default": false
+                        }
+                    }
+                },
                 "basicAuth": {
                     "type": "object",
                     "properties": {
