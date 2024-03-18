@@ -18,7 +18,6 @@
     {{- if .Values.authentication.basicAuth.enabled }}
     - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
     {{- end }}
-    - --request-logging=true
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
     - containerPort: 4180
