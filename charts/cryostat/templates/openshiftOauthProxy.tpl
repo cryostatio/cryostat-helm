@@ -4,6 +4,7 @@
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 12 }}
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
   args:
+    - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
     - --upstream=http://localhost:8333/storage/
