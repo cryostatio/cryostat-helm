@@ -65,12 +65,12 @@ core:
     kubernetes:
       ## @param core.discovery.kubernetes.enabled Enables Kubernetes API discovery mechanism
       enabled: true
-      ## @param core.discovery.kubernetes.namespaces List of namespaces whose workloads the Cryostat application should be permitted to access and profile.
-      namespaces: []
-      ## @param core.discovery.kubernetes.portNames List of port names that the Cryostat application should look for in order to consider a target as JMX connectable
-      portNames: []
-      ## @param core.discovery.kubernetes.portNumbers List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
-      portNumbers: []
+      ## @param core.discovery.kubernetes.namespaces [array] List of namespaces whose workloads the Cryostat application should be permitted to access and profile.
+      namespaces: ["."]
+      ## @param core.discovery.kubernetes.portNames [array] List of port names that the Cryostat application should look for in order to consider a target as JMX connectable
+      portNames: ["jfr-jmx"]
+      ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
+      portNumbers: [9091]
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database

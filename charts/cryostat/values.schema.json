@@ -187,6 +187,11 @@
                         "kubernetes": {
                             "type": "object",
                             "properties": {
+                                "portNumbers[0]": {
+                                    "type": "number",
+                                    "description": "",
+                                    "default": 9091
+                                },
                                 "enabled": {
                                     "type": "boolean",
                                     "description": "Enables Kubernetes API discovery mechanism",
@@ -195,20 +200,22 @@
                                 "namespaces": {
                                     "type": "array",
                                     "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile.",
-                                    "default": [],
-                                    "items": {}
+                                    "default": [
+                                        "."
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 },
                                 "portNames": {
                                     "type": "array",
                                     "description": "List of port names that the Cryostat application should look for in order to consider a target as JMX connectable",
-                                    "default": [],
-                                    "items": {}
-                                },
-                                "portNumbers": {
-                                    "type": "array",
-                                    "description": "List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable",
-                                    "default": [],
-                                    "items": {}
+                                    "default": [
+                                        "jfr-jmx"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 }
                             }
                         }
