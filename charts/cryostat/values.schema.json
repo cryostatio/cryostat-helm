@@ -180,32 +180,45 @@
                     "type": "string",
                     "description": "Name of the secret to extract password for credentials database.",
                     "default": ""
+                },
+                "discovery": {
+                    "type": "object",
+                    "properties": {
+                        "kubernetes": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enables Kubernetes API discovery mechanism",
+                                    "default": true
+                                },
+                                "namespaces": {
+                                    "type": "array",
+                                    "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile.",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "portNames": {
+                                    "type": "array",
+                                    "description": "List of port names that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "portNumbers": {
+                                    "type": "array",
+                                    "description": "List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
         "db": {
             "type": "object",
             "properties": {
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the database container image",
-                            "default": "quay.io/cryostat/cryostat-db"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the database container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the database container image",
-                            "default": "latest"
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -228,6 +241,26 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the database container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the database container image",
+                            "default": "latest"
                         }
                     }
                 },

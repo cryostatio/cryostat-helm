@@ -60,6 +60,17 @@ core:
         - ALL
   ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
   databaseSecretName: ""
+  ## @extra core.discovery Configuration options to the Cryostat application's target discovery mechanisms
+  discovery:
+    kubernetes:
+      ## @param core.discovery.kubernetes.enabled Enables Kubernetes API discovery mechanism
+      enabled: true
+      ## @param core.discovery.kubernetes.namespaces List of namespaces whose workloads the Cryostat application should be permitted to access and profile.
+      namespaces: []
+      ## @param core.discovery.kubernetes.portNames List of port names that the Cryostat application should look for in order to consider a target as JMX connectable
+      portNames: []
+      ## @param core.discovery.kubernetes.portNumbers List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
+      portNumbers: []
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database
