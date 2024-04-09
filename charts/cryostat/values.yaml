@@ -184,7 +184,7 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
-          #
+
 ## @section OpenShift OAuth Proxy
 
 openshiftOauthProxy:
