@@ -33,6 +33,6 @@ subjects:
 {{- end -}}
 {{- $watchNs = compact $watchNs | uniq -}}
 {{- range $ns := $watchNs }}
-{{- include "createRolebinding" (list $ns $) }}
+{{ include "createRolebinding" (list $ns $) }}
 {{- end -}}
 {{- end -}}
