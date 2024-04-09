@@ -270,7 +270,7 @@ spec:
       {{- if .Values.authentication.basicAuth.enabled }}
       - name: {{ .Release.Name }}-htpasswd
         secret:
-          defaultMode: 420
+          defaultMode: 0440
           secretName: {{ .Values.authentication.basicAuth.secretName }}
       {{- end }}
       {{- if .Values.authentication.openshift.enabled }}
