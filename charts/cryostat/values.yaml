@@ -155,6 +155,9 @@ datasource:
 ## @section Authentication
 
 authentication:
+  openshift:
+    ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.
+    enabled: false
   basicAuth:
     ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
     enabled: false
@@ -178,6 +181,25 @@ oauth2Proxy:
     ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
     ## @skip oauth2Proxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
+
+## @section OpenShift OAuth Proxy
+
+openshiftOauthProxy:
+  image:
+    ## @param openshiftOauthProxy.image.repository Repository for the OpenShift OAuth Proxy container image
+    repository: "quay.io/openshift/origin-oauth-proxy"
+    ## @param openshiftOauthProxy.image.pullPolicy Image pull policy for the OpenShift OAuth Proxy container image
+    pullPolicy: Always
+    ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
+    tag: "latest"
+  ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip openshiftOauthProxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip openshiftOauthProxy.securityContext.capabilities
     capabilities:
       drop:
         - ALL

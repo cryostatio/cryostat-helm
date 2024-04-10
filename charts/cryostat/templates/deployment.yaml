@@ -30,41 +30,11 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
-          securityContext:
-            {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
-          image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
-          args:
-            - "--alpha-config=/etc/oauth2_proxy/alpha_config/alpha_config.yaml"
-          imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
-          env:
-            - name: OAUTH2_PROXY_REDIRECT_URL
-              value: "http://localhost:4180/oauth2/callback"
-            - name: OAUTH2_PROXY_COOKIE_SECRET
-              value: {{ include "cryostat.cookieSecret" . }}
-            - name: OAUTH2_PROXY_EMAIL_DOMAINS
-              value: "*"
-            {{- if .Values.authentication.basicAuth.enabled }}
-            - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
-              value: write
-            - name: OAUTH2_PROXY_HTPASSWD_FILE
-              value: /etc/oauth2_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
-            {{- end }}
-            {{- if not .Values.authentication.basicAuth.enabled }}
-            - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
-              value: ".*"
-            {{- end }}
-          ports:
-            - containerPort: 4180
-              protocol: TCP
-          volumeMounts:
-            - name: alpha-config
-              mountPath: /etc/oauth2_proxy/alpha_config
-            {{- if .Values.authentication.basicAuth.enabled }}
-            - name: {{ .Release.Name }}-htpasswd
-              mountPath: /etc/oauth2_proxy/basicauth
-              readOnly: true
-            {{- end }}
+        {{- if .Values.authentication.openshift.enabled }}
+        {{- include "openshiftOauthProxy" . | nindent 8 }}
+        {{- else }}
+        {{- include "oauth2Proxy" . | nindent 8 }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
@@ -300,5 +270,11 @@ spec:
       {{- if .Values.authentication.basicAuth.enabled }}
       - name: {{ .Release.Name }}-htpasswd
         secret:
+          defaultMode: 0440
           secretName: {{ .Values.authentication.basicAuth.secretName }}
+      {{- end }}
+      {{- if .Values.authentication.openshift.enabled }}
+      - name: {{ .Release.Name }}-proxy-tls
+        secret:
+          secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
