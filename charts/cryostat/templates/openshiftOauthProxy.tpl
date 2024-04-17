@@ -17,6 +17,7 @@
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
     - --openshift-sar={{ tpl ( .Values.openshiftOauthProxy.access | toJson ) . }}
+    - --openshift-delegate-urls={"/":{"group":"","resource":"pods/exec","verb":"create"}}
     {{- if .Values.authentication.basicAuth.enabled }}
     - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
     {{- end }}
