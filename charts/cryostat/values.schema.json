@@ -468,6 +468,41 @@
                 }
             }
         },
+        "authentication": {
+            "type": "object",
+            "properties": {
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "default": false
+                        }
+                    }
+                },
+                "basicAuth": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
+                            "default": false
+                        },
+                        "secretName": {
+                            "type": "string",
+                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        },
+                        "filename": {
+                            "type": "string",
+                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
         "openshiftOauthProxy": {
             "type": "object",
             "properties": {
@@ -515,39 +550,49 @@
                             "default": "latest"
                         }
                     }
-                }
-            }
-        },
-        "authentication": {
-            "type": "object",
-            "properties": {
-                "openshift": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
-                            "default": false
+                },
+                "accessReview": {
+                    "type": "array",
+                    "description": "The OpenShift Namespace that the SubjectAccessReview will be performed for.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "namespace": {
+                                "type": "string",
+                                "description": "The OpenShift Namespace that the SubjectAccessReview will be performed for."
+                            },
+                            "group": {
+                                "type": "string",
+                                "description": "The OpenShift resource group that the SubjectAccessReview will be performed for"
+                            },
+                            "resource": {
+                                "type": "string",
+                                "description": "The OpenShift resource that the SubjectAccessReview will be performed for"
+                            },
+                            "verb": {
+                                "type": "string",
+                                "description": "The OpenShift resource verb that the SubjectAccessReview will be performed for"
+                            }
                         }
                     }
                 },
-                "basicAuth": {
+                "tokenReview": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
-                            "default": false
-                        },
-                        "secretName": {
+                        "group": {
                             "type": "string",
-                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "description": "The OpenShift resource group that the TokenReview will be performed for",
                             "default": ""
                         },
-                        "filename": {
+                        "resource": {
                             "type": "string",
-                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
-                            "default": ""
+                            "description": "The OpenShift resource that the TokenReview will be performed for",
+                            "default": "pods/exec"
+                        },
+                        "verb": {
+                            "type": "string",
+                            "description": "The OpenShift resource verb that the TokenReview will be performed for",
+                            "default": "create"
                         }
                     }
                 }

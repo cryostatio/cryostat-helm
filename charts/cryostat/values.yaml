@@ -193,17 +193,15 @@ openshiftOauthProxy:
     pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
     tag: "latest"
-  ## @param openshiftOauthProxy.accessReview Access control configurations for the OpenShift OAuth Proxy interactive users
   accessReview:
-      ## @param openshiftOauthProxy.accessReview.namespace The OpenShift Namespace that the SubjectAccessReview will be performed for. If empty, this will default to the Namespace that the chart is installed into
+      ## @param openshiftOauthProxy.accessReview[0].namespace The OpenShift Namespace that the SubjectAccessReview will be performed for.
     - namespace: "{{ .Release.Namespace }}"
-      ## @param openshiftOauthProxy.accessReview.group The OpenShift resource group that the SubjectAccessReview will be performed for
+      ## @param openshiftOauthProxy.accessReview[0].group The OpenShift resource group that the SubjectAccessReview will be performed for
       group: ""
-      ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview will be performed for
+      ## @param openshiftOauthProxy.accessReview[0].resource The OpenShift resource that the SubjectAccessReview will be performed for
       resource: "pods/exec"
-      ## @param openshiftOauthProxy.accessReview.verb The OpenShift resource verb that the SubjectAccessReview will be performed for
+      ## @param openshiftOauthProxy.accessReview[0].verb The OpenShift resource verb that the SubjectAccessReview will be performed for
       verb: "create"
-  ## @param openshiftOauthProxy.token Access control configuration for the OpenShift OAuth Proxy programmatic clients
   tokenReview:
     ## @param openshiftOauthProxy.tokenReview.group The OpenShift resource group that the TokenReview will be performed for
     group: ""
