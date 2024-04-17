@@ -1,3 +1,7 @@
+{{- define "subjectAccessReview" -}}
+{{- $dict := dict "namespace" ( .Values.openshiftOauthProxy.access.namespace | default .Release.Namespace ) "resource" .Values.openshiftOauthProxy.access.resource "verb" .Values.openshiftOauthProxy.access.verb -}}
+{{- toJson $dict -}}
+{{- end -}}
 {{- define "openshiftOauthProxy" }}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
@@ -16,6 +20,8 @@
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
+    # --openshift-sar='{"namespace": "{{- if .Values.openshiftOauthProxy.access.namespace -}}{{- .Values.openshiftOauthProxy.access.namespace -}}{{- else -}}{{- .Release.Namespace -}}{{- end -}}", "resource": "{{- .Values.openshiftOauthProxy.access.resource -}}", "verb": "{{- .Values.openshiftOauthProxy.access.verb -}}"}'
+    - --openshift-sar={{ include "subjectAccessReview" . }}
     {{- if .Values.authentication.basicAuth.enabled }}
     - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
     {{- end }}
