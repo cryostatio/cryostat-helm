@@ -195,12 +195,12 @@ openshiftOauthProxy:
     tag: "latest"
   ## @param openshiftOauthProxy.access Access control configuration for the OpenShift OAuth Proxy
   access:
-    ## @param openshiftOauthProxy.access.namespace The OpenShift Namespace that the SubjectAccessReview will be performed for. If empty, this will default to the Namespace that the chart is installed into
-    namespace: "{{ .Release.Namespace }}"
-    ## @param openshiftOauthProxy.access.namespace The OpenShift resource that the SubjectAccessReview will be performed for
-    resource: "pods/exec"
-    ## @param openshiftOauthProxy.access.namespace The OpenShift resource verb that the SubjectAccessReview will be performed for
-    verb: "create"
+      ## @param openshiftOauthProxy.access.namespace The OpenShift Namespace that the SubjectAccessReview will be performed for. If empty, this will default to the Namespace that the chart is installed into
+    - namespace: "{{ .Release.Namespace }}"
+      ## @param openshiftOauthProxy.access.namespace The OpenShift resource that the SubjectAccessReview will be performed for
+      resource: "pods/exec"
+      ## @param openshiftOauthProxy.access.namespace The OpenShift resource verb that the SubjectAccessReview will be performed for
+      verb: "create"
   ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip openshiftOauthProxy.securityContext.allowPrivilegeEscalation
