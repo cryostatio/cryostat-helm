@@ -111,7 +111,7 @@ spec:
             {{- toYaml .Values.core.resources | nindent 12 }}
         - name: {{ printf "%s-%s" .Chart.Name "db" }}
           securityContext:
-            {{- toYaml .Values.core.securityContext | nindent 12 }}
+            {{- toYaml .Values.db.securityContext | nindent 12 }}
           image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
           imagePullPolicy: {{ .Values.db.image.pullPolicy }}
           env:
@@ -148,7 +148,7 @@ spec:
               - cryostat3
         - name: {{ printf "%s-%s" .Chart.Name "storage" }}
           securityContext:
-            {{- toYaml .Values.core.securityContext | nindent 12 }}
+            {{- toYaml .Values.storage.securityContext | nindent 12 }}
           image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag }}"
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
           env:
