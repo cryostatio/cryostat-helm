@@ -591,17 +591,17 @@
                     "properties": {
                         "group": {
                             "type": "string",
-                            "description": "The OpenShift resource group that the TokenReview will be performed for",
+                            "description": "The OpenShift resource group that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": ""
                         },
                         "resource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the TokenReview will be performed for",
+                            "description": "The OpenShift resource that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": "pods/exec"
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource verb that the TokenReview will be performed for",
+                            "description": "The OpenShift resource verb that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": "create"
                         }
                     }

@@ -206,11 +206,11 @@ openshiftOauthProxy:
       ## @param openshiftOauthProxy.accessReview[0].verb The OpenShift resource verb that the SubjectAccessReview will be performed for
       verb: "create"
   tokenReview:
-    ## @param openshiftOauthProxy.tokenReview.group The OpenShift resource group that the TokenReview will be performed for
+    ## @param openshiftOauthProxy.tokenReview.group The OpenShift resource group that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
     group: ""
-    ## @param openshiftOauthProxy.tokenReview.resource The OpenShift resource that the TokenReview will be performed for
+    ## @param openshiftOauthProxy.tokenReview.resource The OpenShift resource that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
     resource: "pods/exec"
-    ## @param openshiftOauthProxy.tokenReview.verb The OpenShift resource verb that the TokenReview will be performed for
+    ## @param openshiftOauthProxy.tokenReview.verb The OpenShift resource verb that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
     verb: "create"
   ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
