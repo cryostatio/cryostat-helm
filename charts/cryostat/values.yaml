@@ -156,6 +156,9 @@ authentication:
   openshift:
     ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.
     enabled: false
+    clusterRole:
+      ## @param authentication.openshift.clusterRole.name The name of the ClusterRole to bind for the OpenShift OAuth Proxy
+      name: system:auth-delegator
   basicAuth:
     ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
     enabled: false

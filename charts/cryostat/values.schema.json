@@ -478,6 +478,16 @@
                             "type": "boolean",
                             "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
                             "default": false
+                        },
+                        "clusterRole": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the ClusterRole to bind for the OpenShift OAuth Proxy",
+                                    "default": "system:auth-delegator"
+                                }
+                            }
                         }
                     }
                 },
