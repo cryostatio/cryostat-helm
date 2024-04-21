@@ -12,7 +12,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "cryostat.fullname" . }}
+  name: {{ include "cryostat.fullname" . }}-namespaced
 subjects:
 - kind: ServiceAccount
   name: {{ include "cryostat.serviceAccountName" . }}
@@ -20,13 +20,11 @@ subjects:
 {{- end -}}
 {{- end -}}
 
-{{- if .Values.rbac.create -}}
-{{- $ := . -}}
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
 {{- $watchNs := list -}}
-{{- $ownNs := .Release.Namespace -}}
 {{- range .Values.core.discovery.kubernetes.namespaces -}}
 {{- if eq . "." -}}
-{{- $watchNs = append $watchNs $ownNs -}}
+{{- $watchNs = append $watchNs $.Release.Namespace -}}
 {{- else -}}
 {{- $watchNs = append $watchNs . -}}
 {{- end -}}

@@ -1,8 +1,8 @@
-{{- if .Values.rbac.create -}}
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "cryostat.fullname" . }}
+  name: {{ include "cryostat.fullname" . }}-namespaced
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
 rules:
