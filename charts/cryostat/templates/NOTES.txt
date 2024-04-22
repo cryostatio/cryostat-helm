@@ -29,7 +29,6 @@
   export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
   export CRYOSTAT_WEB_HOST=localhost
 {{- $envVars = list "QUARKUS_HTTP_HOST=$CRYOSTAT_WEB_HOST" }}
-{{- $envVars = append $envVars ( tpl "QUARKUS_HTTP_HOST=$CRYOSTAT_WEB_HOST" . ) }}
 {{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$CRYOSTAT_WEB_HOST:8080/storage/" . ) }}
 {{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$CRYOSTAT_WEB_HOST:8080/grafana/" . ) }}
 {{- $portForwards = prepend $portForwards "8080:$CONTAINER_PORT" }}
