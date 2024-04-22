@@ -96,11 +96,11 @@ spec:
             value: "true"
           {{- with .Values.core.discovery.kubernetes }}
           - name: CRYOSTAT_DISCOVERY_K8S_NAMESPACES
-            value: {{ join "," .namespaces  | quote }}
+            value: {{ join "," (.namespaces | compact | uniq)  | quote }}
           - name: CRYOSTAT_DISCOVERY_K8S_PORT_NAMES
-            value: {{ join "," .portNames  | quote }}
+            value: {{ join "," (.portNames | compact | uniq)  | quote }}
           - name: CRYOSTAT_DISCOVERY_K8S_PORT_NUMBERS
-            value: {{ join "," .portNumbers | quote }}
+            value: {{ join "," (.portNumbers | compact | uniq) | quote }}
           {{- end }}
           {{- end }}
           ports:
