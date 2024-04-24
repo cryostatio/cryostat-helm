@@ -17,7 +17,7 @@
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
     - --openshift-sar={{ tpl ( .Values.openshiftOauthProxy.accessReview | toJson ) . }}
-    - --openshift-delegate-urls={"/api":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }}, "/storage":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }}, "/grafana":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }} }
+    - --openshift-delegate-urls={"/health":{},"/api":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }}, "/storage":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }}, "/grafana":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }} }
     {{- if .Values.authentication.basicAuth.enabled }}
     - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
     {{- end }}
