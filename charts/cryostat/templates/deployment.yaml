@@ -95,11 +95,11 @@ spec:
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED
             value: "true"
           {{- with .Values.core.discovery.kubernetes }}
-          - name: CRYOSTAT_DISCOVERY_K8S_NAMESPACES
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
             value: {{ join "," (.namespaces | compact | uniq)  | quote }}
-          - name: CRYOSTAT_DISCOVERY_K8S_PORT_NAMES
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES
             value: {{ join "," (.portNames | compact | uniq)  | quote }}
-          - name: CRYOSTAT_DISCOVERY_K8S_PORT_NUMBERS
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS
             value: {{ join "," (.portNumbers | compact | uniq) | quote }}
           {{- end }}
           {{- end }}
