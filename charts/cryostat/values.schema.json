@@ -561,7 +561,7 @@
                         }
                     }
                 },
-                "accessReview": {
+                "subjectAccessReview": {
                     "type": "array",
                     "description": "The OpenShift resource group that the SubjectAccessReview will be performed for",
                     "items": {
@@ -598,42 +598,42 @@
                         }
                     }
                 },
-                "tokenReview": {
+                "tokenAccessReview": {
                     "type": "object",
                     "properties": {
                         "group": {
                             "type": "string",
-                            "description": "The OpenShift resource group that the TokenReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
+                            "description": "The OpenShift resource group that the TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": ""
                         },
                         "resource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the TokenReview will be performed for.",
+                            "description": "The OpenShift resource that the TokenAccessReview will be performed for.",
                             "default": "pods"
                         },
                         "subresource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the TokenReview will be performed for.",
+                            "description": "The OpenShift resource that the TokenAccessReview will be performed for.",
                             "default": "exec"
                         },
                         "name": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the TokenReview will be performed for.",
+                            "description": "The OpenShift resource name that the TokenAccessReview will be performed for.",
                             "default": ""
                         },
                         "namespace": {
                             "type": "string",
-                            "description": "The OpenShift namespace that the TokenReview will be performed for.",
+                            "description": "The OpenShift namespace that the TokenAccessReview will be performed for.",
                             "default": "{{ .Release.Namespace }}"
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the TokenReview will be performed for.",
+                            "description": "The OpenShift resource name that the TokenAccessReview will be performed for.",
                             "default": "create"
                         },
                         "version": {
                             "type": "string",
-                            "description": "The OpenShift resource version that the TokenReview will be performed for.",
+                            "description": "The OpenShift resource version that the TokenAccessReview will be performed for.",
                             "default": ""
                         }
                     }
