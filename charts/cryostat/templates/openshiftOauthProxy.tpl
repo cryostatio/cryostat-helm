@@ -16,8 +16,8 @@
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
-    - --openshift-sar={{ tpl ( .Values.openshiftOauthProxy.accessReview | toJson ) . }}
-    - --openshift-delegate-urls={"/":{{ tpl ( .Values.openshiftOauthProxy.tokenReview | toJson ) . }}}
+    - --openshift-sar={{ tpl ( .Values.openshiftOauthProxy.subjectAccessReview | toJson ) . }}
+    - --openshift-delegate-urls={"/":{{ tpl ( .Values.openshiftOauthProxy.tokenAccessReview | toJson ) . }}}
     - --bypass-auth-for=^/health(/liveness)?$
     {{- if .Values.authentication.basicAuth.enabled }}
     - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
