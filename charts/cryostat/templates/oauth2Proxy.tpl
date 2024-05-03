@@ -22,7 +22,7 @@
     {{- if not .Values.authentication.basicAuth.enabled }}
     - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
       value: ".*"
-    {{- if else }}
+    {{- else }}
     - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
       value: "^/health(/liveness)?$"
     {{- end }}
