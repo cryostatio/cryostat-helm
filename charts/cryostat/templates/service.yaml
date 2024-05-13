@@ -6,7 +6,7 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
-  {{- if .Values.authentication.openshift.enabled }}
+  {{- if (.Values.authentication.openshift).enabled }}
   annotations:
     service.alpha.openshift.io/serving-cert-secret-name: {{ .Release.Name }}-proxy-tls
   {{- end }}
