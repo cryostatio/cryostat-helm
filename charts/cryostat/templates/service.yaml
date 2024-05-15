@@ -21,9 +21,5 @@ spec:
       targetPort: 8443
       protocol: TCP
       name: cryostat-https
-    - port: {{ .Values.core.service.jmxPort }}
-      targetPort: 9091
-      protocol: TCP
-      name: jfr-jmx
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
