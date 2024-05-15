@@ -32,30 +32,27 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `core.securityContext`                         | Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                        |
 | `core.databaseSecretName`                      | Name of the secret to extract password for credentials database.                                                                                                                                                                                                                                               | `""`                        |
 
-
 ### Database Container
 
 | Name                  | Description                                                                                                                                                                                                                                                                                                    | Value                          |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| `Configuration`       | for Cryostat's database                                                                                                                                                                                                                                                                                        |                                |
+| `db`                  | Configuration for Cryostat's database                                                                                                                                                                                                                                                                          |                                |
 | `db.image.repository` | Repository for the database container image                                                                                                                                                                                                                                                                    | `quay.io/cryostat/cryostat-db` |
 | `db.image.pullPolicy` | Image pull policy for the database container image                                                                                                                                                                                                                                                             | `Always`                       |
 | `db.image.tag`        | Tag for the database container image                                                                                                                                                                                                                                                                           | `latest`                       |
 | `db.resources`        | Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)                                                                                                                                     | `{}`                           |
 | `db.securityContext`  | Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                           |
 
-
 ### Storage Container
 
 | Name                       | Description                                                                                                                                                                                                                                                                                                   | Value                               |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `Configuration`            | for Cryostat's object storage provider                                                                                                                                                                                                                                                                        |                                     |
+| `storage`                  | Configuration for Cryostat's object storage provider                                                                                                                                                                                                                                                          |                                     |
 | `storage.image.repository` | Repository for the storage container image                                                                                                                                                                                                                                                                    | `quay.io/cryostat/cryostat-storage` |
 | `storage.image.pullPolicy` | Image pull policy for the storage container image                                                                                                                                                                                                                                                             | `Always`                            |
 | `storage.image.tag`        | Tag for the storage container image                                                                                                                                                                                                                                                                           | `latest`                            |
 | `storage.resources`        | Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)                                                                                                                                     | `{}`                                |
 | `storage.securityContext`  | Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                |
-
 
 ### Grafana Container
 
@@ -70,7 +67,6 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `grafana.resources`        | Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)                                                                                                                                     | `{}`                                          |
 | `grafana.securityContext`  | Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                          |
 
-
 ### JFR Data Source Container
 
 | Name                          | Description                                                                                                                                                                                                                                                                                                           | Value                             |
@@ -82,7 +78,6 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `datasource.resources`        | Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)                                                                                                                                     | `{}`                              |
 | `datasource.securityContext`  | Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                              |
 
-
 ### Authentication
 
 | Name                                  | Description                                                                                                                                                                                                                                                                                                                                               | Value   |
@@ -91,7 +86,6 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `authentication.basicAuth.enabled`    | Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication                                                                                                                                                                                                                              | `false` |
 | `authentication.basicAuth.secretName` | Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**                                                                                                                                                                                                                                       | `""`    |
 | `authentication.basicAuth.filename`   | Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax "user:passHash", where "user" is the username and "passHash" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)** | `""`    |
-
 
 ### OAuth2 Proxy
 
@@ -102,7 +96,6 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `oauth2Proxy.image.tag`        | Tag for the OAuth2 Proxy container image                                                                                                                                                                                                                                                                           | `latest`                            |
 | `oauth2Proxy.securityContext`  | Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                |
 
-
 ### OpenShift OAuth Proxy
 
 | Name                                   | Description                                                                                                                                                                                                                                                                                                                 | Value                                  |
@@ -111,7 +104,6 @@ A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and Op
 | `openshiftOauthProxy.image.pullPolicy` | Image pull policy for the OpenShift OAuth Proxy container image                                                                                                                                                                                                                                                             | `Always`                               |
 | `openshiftOauthProxy.image.tag`        | Tag for the OpenShift OAuth Proxy container image                                                                                                                                                                                                                                                                           | `latest`                               |
 | `openshiftOauthProxy.securityContext`  | Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                   |
-
 
 ### Other Parameters
 
