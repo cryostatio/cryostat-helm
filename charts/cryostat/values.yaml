@@ -64,7 +64,7 @@ core:
   databaseSecretName: ""
 
 ## @section Database Container
-## @extra Configuration for Cryostat's database
+## @extra db Configuration for Cryostat's database
 db:
   image:
     ## @param db.image.repository Repository for the database container image
@@ -85,7 +85,7 @@ db:
         - ALL
 
 ## @section Storage Container
-## @extra Configuration for Cryostat's object storage provider
+## @extra storage Configuration for Cryostat's object storage provider
 storage:
   image:
     ## @param storage.image.repository Repository for the storage container image
