@@ -37,11 +37,6 @@
                             "type": "number",
                             "description": "Port number to expose on the Service for Cryostat's HTTP server",
                             "default": 8181
-                        },
-                        "jmxPort": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service for remote JMX connections to Cryostat",
-                            "default": 9091
                         }
                     }
                 },
