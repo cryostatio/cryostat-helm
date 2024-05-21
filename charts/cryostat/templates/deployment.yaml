@@ -164,13 +164,6 @@ spec:
                 optional: false
           - name: DATA_DIR
             value: /data
-          # TODO tune these or make them configurable. Ideally the single seaweed volume server should consume the entire PVC
-          - name: VOLUME_PREALLOCATE
-            value: "false"
-          - name: VOLUME_SIZE_LIMIT_MB
-            value: "500"
-          - name: VOLUME_MAX
-            value: "16"
           - name: IP_BIND
             value: 0.0.0.0
           ports:
