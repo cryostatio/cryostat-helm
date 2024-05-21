@@ -1,11 +1,11 @@
 {{- define "oauth2Proxy" }}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
-    {{- toYaml .Values.oauth2Proxy.securityContext | nindent 12 }}
-  image: "{{ .Values.oauth2Proxy.image.repository }}:{{ .Values.oauth2Proxy.image.tag }}"
+    {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 12 }}
+  image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
   args:
     - "--alpha-config=/etc/oauth2_proxy/alpha_config/alpha_config.yaml"
-  imagePullPolicy: {{ .Values.oauth2Proxy.image.pullPolicy }}
+  imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
     - name: OAUTH2_PROXY_REDIRECT_URL
       value: "http://localhost:4180/oauth2/callback"

@@ -88,7 +88,7 @@ Get or generate a default encryption key for credentials database
 {{/*
    Use current key. Do not regenerate
 */}}
-{{- $secret.data.CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD -}}
+{{- $secret.data.ENCRYPTION_KEY -}}
 {{- else -}}
 {{/*
     Generate new key
