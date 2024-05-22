@@ -65,12 +65,18 @@ core:
     kubernetes:
       ## @param core.discovery.kubernetes.enabled Enables Kubernetes API discovery mechanism
       enabled: true
-      ## @param core.discovery.kubernetes.namespaces [array] List of namespaces whose workloads the Cryostat application should be permitted to access and profile.
-      namespaces: ["."]
+      ## @param core.discovery.kubernetes.installNamespaceDisabled When false and `namespaces` is empty, the Cryostat application will default to discovery targets in the install namespace (i.e. `{{ .Release.Namespace }}`)
+      installNamespaceDisabled: false
+      ## @param core.discovery.kubernetes.namespaces [array] List of namespaces whose workloads the Cryostat application should be permitted to access and profile
+      namespaces: []
+      ## @param core.discovery.kubernetes.builtInPortNamesDisabled When false and `portNames` is empty, the Cryostat application will use the default port name `jfr-jmx` to look for JMX connectable targets.
+      builtInPortNamesDisabled: false
       ## @param core.discovery.kubernetes.portNames [array] List of port names that the Cryostat application should look for in order to consider a target as JMX connectable
-      portNames: ["jfr-jmx"]
+      portNames: []
+      ## @param core.discovery.kubernetes.builtInPortNumbersDisabled When false and `portNumbers` is empty, the Cryostat application will use the default port number `9091` to look for JMX connectable targets.
+      builtInPortNumbersDisabled: false
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
-      portNumbers: [9091]
+      portNumbers: []
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database

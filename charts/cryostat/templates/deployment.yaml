@@ -96,11 +96,11 @@ spec:
             value: "true"
           {{- with .Values.core.discovery.kubernetes }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
-            value: {{ join "," (.namespaces | compact | uniq)  | quote }}
+            value: {{ include "cryostat.commaSepList" (list .namespaces $.Release.Namespace .installNamespaceDisabled) }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES
-            value: {{ join "," (.portNames | compact | uniq)  | quote }}
+            value: {{ include "cryostat.commaSepList" (list .portNames "jmx-jfr" .builtInPortNamesDisabled) }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS
-            value: {{ join "," (.portNumbers | compact | uniq) | quote }}
+            value: {{ include "cryostat.commaSepList" (list .portNumbers 9091 .builtInPortNumbersDisabled) }}
           {{- end }}
           {{- end }}
           ports:

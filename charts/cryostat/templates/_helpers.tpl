@@ -133,3 +133,16 @@ Generate or retrieve a default value for cookieSecret.
 {{- $newSecret | quote -}}
 {{- end }}
 {{- end }}
+
+{{/*
+    Get sanitinized list or defaults (if not disabled) as comma-separated list
+*/}}
+{{- define "cryostat.commaSepList" -}}
+{{- $l := index . 0 -}}
+{{- $default := index . 1 -}}
+{{- $disableDefaults := index . 2 -}}
+{{- if and (not $l) (not $disableDefaults) -}}
+{{- $l = list $default -}}
+{{- end -}}
+{{- join "," (default list $l | compact | uniq)  | quote -}}
+{{- end -}}
