@@ -196,35 +196,20 @@ openshiftOauthProxy:
     pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
     tag: "latest"
-  subjectAccessReview:
-      ## @param openshiftOauthProxy.subjectAccessReview[0].group The OpenShift resource group that the SubjectAccessReview will be performed for
-    - group: ""
-      ## @param openshiftOauthProxy.subjectAccessReview[0].resource The OpenShift resource that the SubjectAccessReview will be performed for
-      resource: "pods"
-      ## @param openshiftOauthProxy.subjectAccessReview[0].subresource The OpenShift subresource that the SubjectAccessReview will be performed for
-      subresource: "exec"
-      ## @param openshiftOauthProxy.subjectAccessReview[0].name The OpenShift resource name that the SubjectAccessReview will be performed for
-      name: ""
-      ## @param openshiftOauthProxy.subjectAccessReview[0].namespace The OpenShift Namespace that the SubjectAccessReview will be performed for.
-      namespace: "{{ .Release.Namespace }}"
-      ## @param openshiftOauthProxy.subjectAccessReview[0].verb The OpenShift resource verb that the SubjectAccessReview will be performed for
-      verb: "create"
-      ## @param openshiftOauthProxy.subjectAccessReview[0].version The OpenShift resource version that the SubjectAccessReview will be performed for
-      version: ""
-  tokenAccessReview:
-    ## @param openshiftOauthProxy.tokenAccessReview.group The OpenShift resource group that the TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
+  accessReview:
+    ## @param openshiftOauthProxy.accessReview.group The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
     group: ""
-    ## @param openshiftOauthProxy.tokenAccessReview.resource The OpenShift resource that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
     resource: "pods"
-    ## @param openshiftOauthProxy.tokenAccessReview.subresource The OpenShift resource that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.subresource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
     subresource: "exec"
-    ## @param openshiftOauthProxy.tokenAccessReview.name The OpenShift resource name that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.name The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
     name: ""
-    ## @param openshiftOauthProxy.tokenAccessReview.namespace The OpenShift namespace that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.namespace The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.
     namespace: "{{ .Release.Namespace }}"
-    ## @param openshiftOauthProxy.tokenAccessReview.verb The OpenShift resource name that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.verb The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
     verb: "create"
-    ## @param openshiftOauthProxy.tokenAccessReview.version The OpenShift resource version that the TokenAccessReview will be performed for.
+    ## @param openshiftOauthProxy.accessReview.version The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.
     version: ""
   ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:

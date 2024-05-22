@@ -516,26 +516,6 @@
         "openshiftOauthProxy": {
             "type": "object",
             "properties": {
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the OpenShift OAuth Proxy container image",
-                            "default": "quay.io/openshift/origin-oauth-proxy"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the OpenShift OAuth Proxy container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "latest"
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -561,79 +541,62 @@
                         }
                     }
                 },
-                "subjectAccessReview": {
-                    "type": "array",
-                    "description": "The OpenShift resource group that the SubjectAccessReview will be performed for",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "group": {
-                                "type": "string",
-                                "description": "The OpenShift resource group that the SubjectAccessReview will be performed for"
-                            },
-                            "resource": {
-                                "type": "string",
-                                "description": "The OpenShift resource that the SubjectAccessReview will be performed for"
-                            },
-                            "subresource": {
-                                "type": "string",
-                                "description": "The OpenShift subresource that the SubjectAccessReview will be performed for"
-                            },
-                            "name": {
-                                "type": "string",
-                                "description": "The OpenShift resource name that the SubjectAccessReview will be performed for"
-                            },
-                            "namespace": {
-                                "type": "string",
-                                "description": "The OpenShift Namespace that the SubjectAccessReview will be performed for."
-                            },
-                            "verb": {
-                                "type": "string",
-                                "description": "The OpenShift resource verb that the SubjectAccessReview will be performed for"
-                            },
-                            "version": {
-                                "type": "string",
-                                "description": "The OpenShift resource version that the SubjectAccessReview will be performed for"
-                            }
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the OpenShift OAuth Proxy container image",
+                            "default": "quay.io/openshift/origin-oauth-proxy"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the OpenShift OAuth Proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the OpenShift OAuth Proxy container image",
+                            "default": "latest"
                         }
                     }
                 },
-                "tokenAccessReview": {
+                "accessReview": {
                     "type": "object",
                     "properties": {
                         "group": {
                             "type": "string",
-                            "description": "The OpenShift resource group that the TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
+                            "description": "The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": ""
                         },
                         "resource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": "pods"
                         },
                         "subresource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": "exec"
                         },
                         "name": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": ""
                         },
                         "namespace": {
                             "type": "string",
-                            "description": "The OpenShift namespace that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": "{{ .Release.Namespace }}"
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": "create"
                         },
                         "version": {
                             "type": "string",
-                            "description": "The OpenShift resource version that the TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": ""
                         }
                     }
