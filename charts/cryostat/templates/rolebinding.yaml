@@ -11,8 +11,8 @@ metadata:
     {{- include "cryostat.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ include "cryostat.fullname" . }}-namespaced
+  kind: Role
+  name: {{ include "cryostat.fullname" . }}
 subjects:
 - kind: ServiceAccount
   name: {{ include "cryostat.serviceAccountName" . }}
@@ -21,16 +21,7 @@ subjects:
 {{- end -}}
 
 {{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
-{{- $watchNs := list -}}
-{{- range .Values.core.discovery.kubernetes.namespaces -}}
-{{- if eq . "." -}}
-{{- $watchNs = append $watchNs $.Release.Namespace -}}
-{{- else -}}
-{{- $watchNs = append $watchNs . -}}
-{{- end -}}
-{{- end -}}
-{{- $watchNs = compact $watchNs | uniq -}}
-{{- range $ns := $watchNs }}
+{{- range $ns := (compact .Values.core.discovery.kubernetes.namespaces | uniq) }}
 {{ include "createRolebinding" (list $ns $) }}
 {{- end -}}
 {{- end -}}

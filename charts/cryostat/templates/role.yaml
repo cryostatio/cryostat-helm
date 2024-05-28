@@ -1,8 +1,12 @@
-{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
+{{- define "createRole" -}}
+{{- $ns := index .  0 -}}
+{{- with index . 1 -}}
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
-  name: {{ include "cryostat.fullname" . }}-namespaced
+  name: {{ include "cryostat.fullname" . }}
+  namespace: {{ $ns }}
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
 rules:
@@ -43,4 +47,11 @@ rules:
   verbs:
   - get
   - list
-{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
+{{- range $ns := (compact .Values.core.discovery.kubernetes.namespaces | uniq) }}
+{{ include "createRole" (list $ns $) }}
+{{- end -}}
+{{- end -}}
