@@ -22,6 +22,9 @@
     {{- if not .Values.authentication.basicAuth.enabled }}
     - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
       value: ".*"
+    {{- else }}
+    - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+      value: "^/health(/liveness)?$"
     {{- end }}
   ports:
     - containerPort: 4180

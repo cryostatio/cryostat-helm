@@ -173,6 +173,9 @@ authentication:
   openshift:
     ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.
     enabled: false
+    clusterRole:
+      ## @param authentication.openshift.clusterRole.name The name of the ClusterRole to bind for the OpenShift OAuth Proxy
+      name: system:auth-delegator
   basicAuth:
     ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
     enabled: false
@@ -210,6 +213,23 @@ openshiftOauthProxy:
     pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
     tag: "latest"
+  accessReview:
+    ## @param openshiftOauthProxy.accessReview.enabled Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.
+    enabled: true
+    ## @param openshiftOauthProxy.accessReview.group The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
+    group: ""
+    ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
+    resource: "pods"
+    ## @param openshiftOauthProxy.accessReview.subresource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
+    subresource: "exec"
+    ## @param openshiftOauthProxy.accessReview.name The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
+    name: ""
+    ## @param openshiftOauthProxy.accessReview.namespace The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.
+    namespace: "{{ .Release.Namespace }}"
+    ## @param openshiftOauthProxy.accessReview.verb The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
+    verb: "create"
+    ## @param openshiftOauthProxy.accessReview.version The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.
+    version: ""
   ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip openshiftOauthProxy.securityContext.allowPrivilegeEscalation

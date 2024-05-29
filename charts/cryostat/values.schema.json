@@ -516,6 +516,51 @@
                 }
             }
         },
+        "authentication": {
+            "type": "object",
+            "properties": {
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "default": false
+                        },
+                        "clusterRole": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the ClusterRole to bind for the OpenShift OAuth Proxy",
+                                    "default": "system:auth-delegator"
+                                }
+                            }
+                        }
+                    }
+                },
+                "basicAuth": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
+                            "default": false
+                        },
+                        "secretName": {
+                            "type": "string",
+                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        },
+                        "filename": {
+                            "type": "string",
+                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
         "openshiftOauthProxy": {
             "type": "object",
             "properties": {
@@ -563,38 +608,48 @@
                             "default": "latest"
                         }
                     }
-                }
-            }
-        },
-        "authentication": {
-            "type": "object",
-            "properties": {
-                "openshift": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
-                            "default": false
-                        }
-                    }
                 },
-                "basicAuth": {
+                "accessReview": {
                     "type": "object",
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
-                            "default": false
+                            "description": "Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.",
+                            "default": true
                         },
-                        "secretName": {
+                        "group": {
                             "type": "string",
-                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "description": "The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
                             "default": ""
                         },
-                        "filename": {
+                        "resource": {
                             "type": "string",
-                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "pods"
+                        },
+                        "subresource": {
+                            "type": "string",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "exec"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": ""
+                        },
+                        "namespace": {
+                            "type": "string",
+                            "description": "The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "{{ .Release.Namespace }}"
+                        },
+                        "verb": {
+                            "type": "string",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "create"
+                        },
+                        "version": {
+                            "type": "string",
+                            "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": ""
                         }
                     }
