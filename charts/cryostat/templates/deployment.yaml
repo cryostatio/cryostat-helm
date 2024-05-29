@@ -91,6 +91,18 @@ spec:
             value: http://localhost:8800
           - name: GRAFANA_DASHBOARD_URL
             value: http://localhost:3000
+          {{- if .Values.core.discovery.kubernetes.enabled }}
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED
+            value: "true"
+          {{- with .Values.core.discovery.kubernetes }}
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
+            value: {{ include "cryostat.commaSepList" (list .namespaces $.Release.Namespace .installNamespaceDisabled) }}
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES
+            value: {{ include "cryostat.commaSepList" (list .portNames "jfr-jmx" .builtInPortNamesDisabled) }}
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS
+            value: {{ include "cryostat.commaSepList" (list .portNumbers 9091 .builtInPortNumbersDisabled) }}
+          {{- end }}
+          {{- end }}
           ports:
             - containerPort: 8181
               protocol: TCP
