@@ -51,7 +51,7 @@ rules:
 {{- end -}}
 
 {{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
-{{- $watchNs := compact .Values.core.discovery.kubernetes.namespaces | uniq -}}
+{{- $watchNs := compact (default list .Values.core.discovery.kubernetes.namespaces) | uniq -}}
 {{- if and (not $watchNs) (not .Values.core.discovery.kubernetes.installNamespaceDisabled) -}}
 {{- $watchNs = list .Release.Namespace -}}
 {{- end -}}
