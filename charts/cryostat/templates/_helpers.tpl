@@ -135,7 +135,7 @@ Generate or retrieve a default value for cookieSecret.
 {{- end }}
 
 {{/*
-    Get sanitinized list or defaults (if not disabled) as comma-separated list
+    Get sanitized list or defaults (if not disabled) as comma-separated list
 */}}
 {{- define "cryostat.commaSepList" -}}
 {{- $l := index . 0 -}}
