@@ -564,6 +564,11 @@
                 "accessReview": {
                     "type": "object",
                     "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.",
+                            "default": true
+                        },
                         "group": {
                             "type": "string",
                             "description": "The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",

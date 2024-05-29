@@ -197,6 +197,8 @@ openshiftOauthProxy:
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
     tag: "latest"
   accessReview:
+    ## @param openshiftOauthProxy.accessReview.enabled Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.
+    enabled: true
     ## @param openshiftOauthProxy.accessReview.group The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
     group: ""
     ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
