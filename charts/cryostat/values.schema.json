@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "latest"
+                            "default": "4.0.0-snapshot"
                         }
                     }
                 },
