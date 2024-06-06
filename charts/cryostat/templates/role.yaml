@@ -1,8 +1,12 @@
-{{- if .Values.rbac.create -}}
+{{- define "createRole" -}}
+{{- $ns := index .  0 -}}
+{{- with index . 1 -}}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "cryostat.fullname" . }}
+  namespace: {{ $ns }}
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
 rules:
@@ -36,4 +40,22 @@ rules:
   - deploymentconfigs
   verbs:
   - get
-{{- end }}
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  verbs:
+  - get
+  - list
+{{- end -}}
+{{- end -}}
+
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
+{{- $watchNs := compact (default list .Values.core.discovery.kubernetes.namespaces) | uniq -}}
+{{- if and (not $watchNs) (not .Values.core.discovery.kubernetes.installNamespaceDisabled) -}}
+{{- $watchNs = list .Release.Namespace -}}
+{{- end -}}
+{{- range $ns := $watchNs }}
+{{ include "createRole" (list $ns $) }}
+{{- end -}}
+{{- end -}}

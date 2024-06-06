@@ -6,34 +6,20 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
+  {{- if (.Values.authentication.openshift).enabled }}
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: {{ .Release.Name }}-proxy-tls
+  {{- end }}
 spec:
   type: {{ .Values.core.service.type }}
   ports:
     - port: {{ .Values.core.service.httpPort }}
-      targetPort: 8181
+      targetPort: 4180
       protocol: TCP
       name: cryostat-http
-    - port: {{ .Values.core.service.jmxPort }}
-      targetPort: 9091
+    - port: 443
+      targetPort: 8443
       protocol: TCP
-      name: jfr-jmx
+      name: cryostat-https
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
----
-{{- if not .Values.minimal }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ printf "%s-%s" $fullName "grafana" }}
-  labels:
-    {{- include "cryostat.labels" $ | nindent 4 }}
-spec:
-  type: {{ .Values.grafana.service.type }}
-  ports:
-    - port: {{ .Values.grafana.service.port }}
-      targetPort: 3000
-      protocol: TCP
-      name: grafana-http
-  selector:
-    {{- include "cryostat.selectorLabels" $ | nindent 4 }}
-{{- end -}}

@@ -27,21 +27,22 @@ on:
 
 env:
   TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
+  TEST_NAMESPACE: helm-test
 
 jobs:
   lint-chart:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
         with:
-          version: v3.11.2
-      - uses: actions/setup-python@v4
+          version: v3.14.4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.x'
           check-latest: true
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
@@ -53,23 +54,30 @@ jobs:
     - name: Fail if safe-to-test label NOT applied
       if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
       run: exit 1
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Set up Helm
-      uses: azure/setup-helm@v3
+      uses: azure/setup-helm@v4
       with:
-        version: v3.11.2
-    - uses: actions/setup-python@v4
+        version: v3.14.4
+    - uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: '3.x'
         check-latest: true
     - uses: helm/chart-testing-action@v2.6.1
     - name: Set up Kind cluster
-      run: kind create cluster -n ci-${{ github.run_id }}
+      uses: helm/kind-action@v1
+      with:
+        cluster_name: ci-${{ github.run_id }}
     - name: Install and test chart
       run: |
-        kubectl create ns helm-test
-        ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=helm-test --config ct.yaml
-    - name: Clean up Kind cluster
-      run: kind delete cluster -n ci-${{ github.run_id }}
+        # FIXME: Remove when chart-testing fixes the issue https://github.com/helm/chart-testing/issues/525
+        
+        HELM_LOCATION="$(which helm)"
+        sudo mv $HELM_LOCATION "$(dirname $HELM_LOCATION)/.helm"
+        cat <(echo '#!/usr/bin/env bash') <(echo 'exec .helm "${@//--reuse-values/--reset-then-reuse-values}"') | sudo tee $HELM_LOCATION
+        sudo chmod +x $HELM_LOCATION
+
+        kubectl create ns $TEST_NAMESPACE
+        ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug

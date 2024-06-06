@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "latest"
+                            "default": "3.0.0-snapshot"
                         }
                     }
                 },
@@ -37,11 +37,6 @@
                             "type": "number",
                             "description": "Port number to expose on the Service for Cryostat's HTTP server",
                             "default": 8181
-                        },
-                        "jmxPort": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service for remote JMX connections to Cryostat",
-                            "default": 9091
                         }
                     }
                 },
@@ -185,12 +180,195 @@
                     "type": "string",
                     "description": "Name of the secret to extract password for credentials database.",
                     "default": ""
+                },
+                "discovery": {
+                    "type": "object",
+                    "properties": {
+                        "kubernetes": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enables Kubernetes API discovery mechanism",
+                                    "default": true
+                                },
+                                "installNamespaceDisabled": {
+                                    "type": "boolean",
+                                    "description": "When false and `namespaces` is empty, the Cryostat application will default to discovery targets in the install namespace (i.e. `{{ .Release.Namespace }}`)",
+                                    "default": false
+                                },
+                                "namespaces": {
+                                    "type": "array",
+                                    "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "builtInPortNamesDisabled": {
+                                    "type": "boolean",
+                                    "description": "When false and `portNames` is empty, the Cryostat application will use the default port name `jfr-jmx` to look for JMX connectable targets.",
+                                    "default": false
+                                },
+                                "portNames": {
+                                    "type": "array",
+                                    "description": "List of port names that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "builtInPortNumbersDisabled": {
+                                    "type": "boolean",
+                                    "description": "When false and `portNumbers` is empty, the Cryostat application will use the default port number `9091` to look for JMX connectable targets.",
+                                    "default": false
+                                },
+                                "portNumbers": {
+                                    "type": "array",
+                                    "description": "List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "db": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the database container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the database container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "default": {}
+                }
+            }
+        },
+        "storage": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the storage container image",
+                            "default": "quay.io/cryostat/cryostat-storage"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the storage container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the storage container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                    "default": {}
                 }
             }
         },
         "grafana": {
             "type": "object",
             "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
                 "image": {
                     "type": "object",
                     "properties": {
@@ -223,137 +401,6 @@
                             "type": "number",
                             "description": "Port number to expose on the Service for Grafana's HTTP server",
                             "default": 3000
-                        }
-                    }
-                },
-                "ingress": {
-                    "type": "object",
-                    "properties": {
-                        "hosts": {
-                            "type": "array",
-                            "description": "",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "host": {
-                                        "type": "string",
-                                        "description": ""
-                                    },
-                                    "paths": {
-                                        "type": "array",
-                                        "description": "",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "path": {
-                                                    "type": "string",
-                                                    "description": ""
-                                                },
-                                                "pathType": {
-                                                    "type": "string",
-                                                    "description": ""
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether to create an Ingress object for the Grafana service",
-                            "default": false
-                        },
-                        "className": {
-                            "type": "string",
-                            "description": "Ingress class name for the Grafana Ingress",
-                            "default": ""
-                        },
-                        "tls": {
-                            "type": "array",
-                            "description": "TLS configuration for the Grafana Ingress. See: [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec)",
-                            "default": [],
-                            "items": {}
-                        }
-                    }
-                },
-                "sslProxied": {
-                    "type": "boolean",
-                    "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
-                    "default": false
-                },
-                "route": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether to create a Route object for the Grafana service. Available only on OpenShift",
-                            "default": false
-                        },
-                        "tls": {
-                            "type": "object",
-                            "properties": {
-                                "enabled": {
-                                    "type": "boolean",
-                                    "description": "Whether to secure the Grafana Route with TLS. See: [TLSConfig](https://docs.openshift.com/container-platform/4.10/rest_api/network_apis/route-route-openshift-io-v1.html#spec-tls)",
-                                    "default": true
-                                },
-                                "termination": {
-                                    "type": "string",
-                                    "description": "Type of TLS termination to use for the Grafana Route. One of: `edge`, `passthrough`, `reencrypt`",
-                                    "default": "edge"
-                                },
-                                "insecureEdgeTerminationPolicy": {
-                                    "type": "string",
-                                    "description": "Specify how to handle insecure traffic for the Grafana Route. One of: `Allow`, `Disable`, `Redirect`",
-                                    "default": "Redirect"
-                                },
-                                "key": {
-                                    "type": "string",
-                                    "description": "Custom private key to use when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "certificate": {
-                                    "type": "string",
-                                    "description": "Custom certificate to use when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "caCertificate": {
-                                    "type": "string",
-                                    "description": "Custom CA certificate to use, if needed to complete the certificate chain, when securing the Grafana Route",
-                                    "default": ""
-                                },
-                                "destinationCACertificate": {
-                                    "type": "string",
-                                    "description": "Provides the contents of the CA certificate of the final destination when using reencrypt termination for the Grafana Route",
-                                    "default": ""
-                                }
-                            }
-                        }
-                    }
-                },
-                "securityContext": {
-                    "type": "object",
-                    "properties": {
-                        "capabilities": {
-                            "type": "object",
-                            "properties": {
-                                "drop": {
-                                    "type": "array",
-                                    "description": "",
-                                    "default": [
-                                        "ALL"
-                                    ],
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
                         }
                     }
                 },
@@ -419,9 +466,79 @@
                 }
             }
         },
+        "oauth2Proxy": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the OAuth2 Proxy container image",
+                            "default": "quay.io/oauth2-proxy/oauth2-proxy"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the OAuth2 Proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the OAuth2 Proxy container image",
+                            "default": "latest"
+                        }
+                    }
+                }
+            }
+        },
         "authentication": {
             "type": "object",
             "properties": {
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "default": false
+                        },
+                        "clusterRole": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the ClusterRole to bind for the OpenShift OAuth Proxy",
+                                    "default": "system:auth-delegator"
+                                }
+                            }
+                        }
+                    }
+                },
                 "basicAuth": {
                     "type": "object",
                     "properties": {
@@ -437,7 +554,102 @@
                         },
                         "filename": {
                             "type": "string",
-                            "description": "Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax \"user=passHex\", where \"user\" is the username and \"passHex\" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**",
+                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
+        "openshiftOauthProxy": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the OpenShift OAuth Proxy container image",
+                            "default": "quay.io/openshift/origin-oauth-proxy"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the OpenShift OAuth Proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the OpenShift OAuth Proxy container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "accessReview": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.",
+                            "default": true
+                        },
+                        "group": {
+                            "type": "string",
+                            "description": "The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure",
+                            "default": ""
+                        },
+                        "resource": {
+                            "type": "string",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "pods"
+                        },
+                        "subresource": {
+                            "type": "string",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "exec"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": ""
+                        },
+                        "namespace": {
+                            "type": "string",
+                            "description": "The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "{{ .Release.Namespace }}"
+                        },
+                        "verb": {
+                            "type": "string",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "default": "create"
+                        },
+                        "version": {
+                            "type": "string",
+                            "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": ""
                         }
                     }
@@ -463,11 +675,6 @@
                     "default": true
                 }
             }
-        },
-        "minimal": {
-            "type": "boolean",
-            "description": "Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source",
-            "default": false
         },
         "imagePullSecrets": {
             "type": "array",
