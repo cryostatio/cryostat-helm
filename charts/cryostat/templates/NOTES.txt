@@ -46,7 +46,7 @@
 {{ $listNum }}. {{ "Visit the " }}{{ .Chart.Name | camelcase }}{{ " application at: " }}
   ```
 {{- if .Values.core.route.enabled }}
-  echo {{ ternary "https" "http" .Values.core.route.tls.enabled }}://$ROUTE_HOST
+  echo {{ ternary "https" "http" .Values.core.route.tls.enabled }}://$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} -o jsonpath="{.status.ingress[0].host}")
 {{- else if .Values.core.ingress.enabled -}}
 {{- range $host := .Values.core.ingress.hosts -}}
   {{- range .paths -}}
