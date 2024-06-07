@@ -156,6 +156,64 @@ authentication:
     ## @param authentication.basicAuth.filename Key within Secret containing the properties file. The properties file should contain one user per line, with the syntax "user=passHex", where "user" is the username and "passHex" is the SHA-256 hash of the desired password **(Required if basicAuth is enabled)**
     filename: ""
 
+<<<<<<< HEAD
+=======
+## @section OAuth2 Proxy
+
+oauth2Proxy:
+  image:
+    ## @param oauth2Proxy.image.repository Repository for the OAuth2 Proxy container image
+    repository: "quay.io/oauth2-proxy/oauth2-proxy"
+    ## @param oauth2Proxy.image.pullPolicy Image pull policy for the OAuth2 Proxy container image
+    pullPolicy: Always
+    ## @param oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
+    tag: "latest"
+  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1). If the chart is installed in default namespaces (e.g. default), `securityContext.runAsUser` must be set if the proxy image does not specify a numeric non-root user. This is due to OpenShift Security Context Constraints are not applied in default namespaces. See [Understanding and Managing Pod Security Admission](https://docs.openshift.com/container-platform/4.15/authentication/understanding-and-managing-pod-security-admission.html#psa-privileged-namespaces_understanding-and-managing-pod-security-admission).
+  securityContext:
+    ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip oauth2Proxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
+
+## @section OpenShift OAuth Proxy
+
+openshiftOauthProxy:
+  image:
+    ## @param openshiftOauthProxy.image.repository Repository for the OpenShift OAuth Proxy container image
+    repository: "quay.io/cryostat/openshift-oauth-proxy"
+    ## @param openshiftOauthProxy.image.pullPolicy Image pull policy for the OpenShift OAuth Proxy container image
+    pullPolicy: Always
+    ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
+    tag: "cryostat-v3.0"
+  accessReview:
+    ## @param openshiftOauthProxy.accessReview.enabled Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.
+    enabled: true
+    ## @param openshiftOauthProxy.accessReview.group The OpenShift resource group that the SubjectAccessReview/TokenAccessReview will be performed for. See https://github.com/openshift/oauth-proxy/?tab=readme-ov-file#delegate-authentication-and-authorization-to-openshift-for-infrastructure
+    group: ""
+    ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
+    resource: "pods"
+    ## @param openshiftOauthProxy.accessReview.subresource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.
+    subresource: "exec"
+    ## @param openshiftOauthProxy.accessReview.name The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
+    name: ""
+    ## @param openshiftOauthProxy.accessReview.namespace The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.
+    namespace: "{{ .Release.Namespace }}"
+    ## @param openshiftOauthProxy.accessReview.verb The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.
+    verb: "create"
+    ## @param openshiftOauthProxy.accessReview.version The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.
+    version: ""
+  ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip openshiftOauthProxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip openshiftOauthProxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
+
+>>>>>>> 28b8673 (fix(authproxy): deploy openshift-oauth-proxy fork (#146))
 ## @section Other Parameters
 
 ## @param minimal Specify whether to deploy a Cryostat instance with no Grafana Dashboard or JFR Data Source
