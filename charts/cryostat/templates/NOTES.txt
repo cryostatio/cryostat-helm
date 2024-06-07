@@ -6,31 +6,23 @@
 {{- $listNum = add1 $listNum }}
   ```
 {{- if .Values.core.route.enabled }}
-  export ROUTE_HOST=$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} -o jsonpath="{.status.ingress[0].host}")
-{{- $envVars = list ( tpl "STORAGE_EXT_URL={{ ternary \"https\" \"http\" .Values.core.route.tls.enabled }}://$ROUTE_HOST/storage/" . ) }}
-{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL={{ ternary \"https\" \"http\" .Values.core.route.tls.enabled}}://$ROUTE_HOST/grafana/" . ) }}
+{{- /* Do nothing */}}
+  No actions required with this configuration.
 {{- else if .Values.core.ingress.enabled }}
 {{- /* Do nothing */}}
+  No actions required with this configuration.
 {{- else if contains "NodePort" .Values.core.service.type }}
   export NODE_IP=$(kubectl get nodes -n {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   export NODE_PORT=$(kubectl get -n {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "cryostat.fullname" . }})
 {{- $envVars = list "QUARKUS_HTTP_HOST=$NODE_IP" }}
-{{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$NODE_IP:$NODE_PORT/storage/" . ) }}
-{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$NODE_IP:$NODE_PORT/grafana/" . ) }}
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
            You can watch the status by running 'kubectl get -n {{ .Release.Namespace }} -w svc/{{ include "cryostat.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
 {{- $envVars = list "QUARKUS_HTTP_HOST=$SERVICE_IP" }}
-{{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$SERVICE_IP:{{ .Values.core.service.httpPort }}/storage/" . ) }}
-{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$SERVICE_IP:{{ .Values.core.service.httpPort }}/grafana/" . ) }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
   export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  export CRYOSTAT_WEB_HOST=localhost
-{{- $envVars = list "QUARKUS_HTTP_HOST=$CRYOSTAT_WEB_HOST" }}
-{{- $envVars = append $envVars ( tpl "STORAGE_EXT_URL=http://$CRYOSTAT_WEB_HOST:8080/storage/" . ) }}
-{{- $envVars = append $envVars ( tpl "GRAFANA_DASHBOARD_EXT_URL=http://$CRYOSTAT_WEB_HOST:8080/grafana/" . ) }}
 {{- $portForwards = prepend $portForwards "8080:$CONTAINER_PORT" }}
 {{- end }}
 
@@ -54,7 +46,7 @@
 {{ $listNum }}. {{ "Visit the " }}{{ .Chart.Name | camelcase }}{{ " application at: " }}
   ```
 {{- if .Values.core.route.enabled }}
-  echo {{ ternary "https" "http" .Values.core.route.tls.enabled }}://$ROUTE_HOST
+  echo {{ ternary "https" "http" .Values.core.route.tls.enabled }}://$(oc get route -n {{ .Release.Namespace }} {{ include "cryostat.fullname" . }} -o jsonpath="{.status.ingress[0].host}")
 {{- else if .Values.core.ingress.enabled -}}
 {{- range $host := .Values.core.ingress.hosts -}}
   {{- range .paths -}}
