@@ -5,7 +5,13 @@
 {{ $listNum }}. Tell Cryostat how to serve external traffic:
 {{- $listNum = add1 $listNum }}
   ```
-{{- if contains "NodePort" .Values.core.service.type }}
+{{- if .Values.core.route.enabled }}
+{{- /* Do nothing */}}
+  No actions required with this configuration.
+{{- else if .Values.core.ingress.enabled }}
+{{- /* Do nothing */}}
+  No actions required with this configuration.
+{{- else if contains "NodePort" .Values.core.service.type }}
   export NODE_IP=$(kubectl get nodes -n {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   export NODE_PORT=$(kubectl get -n {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "cryostat.fullname" . }})
 {{- $envVars = list "QUARKUS_HTTP_HOST=$NODE_IP" }}
@@ -17,8 +23,6 @@
 {{- else if contains "ClusterIP" .Values.core.service.type }}
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"  --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
   export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  export CRYOSTAT_WEB_HOST=localhost
-{{- $envVars = list "QUARKUS_HTTP_HOST=$CRYOSTAT_WEB_HOST" }}
 {{- $portForwards = prepend $portForwards "8080:$CONTAINER_PORT" }}
 {{- end }}
 
