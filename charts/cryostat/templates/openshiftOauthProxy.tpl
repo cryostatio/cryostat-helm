@@ -5,6 +5,9 @@
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
   args:
     - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
+    - --pass-access-token=false
+    - --pass-user-bearer-token=false
+    - --pass-basic-auth=false
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
     - --upstream=http://localhost:8333/storage/
