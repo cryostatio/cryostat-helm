@@ -91,6 +91,8 @@ spec:
             value: http://localhost:8800
           - name: GRAFANA_DASHBOARD_URL
             value: http://localhost:3000
+          - name: GRAFANA_DASHBOARD_EXT_URL
+            value: /grafana/
           {{- if .Values.core.discovery.kubernetes.enabled }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED
             value: "true"
