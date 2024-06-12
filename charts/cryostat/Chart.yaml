@@ -33,6 +33,8 @@ sources:
 - https://github.com/cryostatio/cryostat-grafana-dashboard
 - https://github.com/cryostatio/cryostat-db
 - https://github.com/cryostatio/cryostat-storage
+- https://github.com/cryostatio/openshift-oauth-proxy/
+- https://github.com/oauth2-proxy/oauth2-proxy
 
 maintainers:
 - name: The Cryostat Community
