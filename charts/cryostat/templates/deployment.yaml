@@ -82,7 +82,7 @@ spec:
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                name: {{ printf "%s-storage" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
           - name: AWS_SECRET_ACCESS_KEY
@@ -169,7 +169,7 @@ spec:
           - name: CRYOSTAT_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                name: {{ printf "%s-storage" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
           - name: DATA_DIR
