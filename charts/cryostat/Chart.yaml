@@ -26,11 +26,13 @@ keywords:
 - diagnostic
 
 sources:
-- https://github.com/cryostatio/cryostat
+- https://github.com/cryostatio/cryostat3
 - https://github.com/cryostatio/cryostat-core
 - https://github.com/cryostatio/cryostat-web
 - https://github.com/cryostatio/jfr-datasource
 - https://github.com/cryostatio/cryostat-grafana-dashboard
+- https://github.com/cryostatio/cryostat-db
+- https://github.com/cryostatio/cryostat-storage
 
 maintainers:
 - name: The Cryostat Community
