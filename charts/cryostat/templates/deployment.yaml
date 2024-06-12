@@ -60,7 +60,7 @@ spec:
           - name: QUARKUS_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
@@ -130,7 +130,7 @@ spec:
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
           - name: POSTGRESQL_DATABASE
@@ -138,7 +138,7 @@ spec:
           - name: PG_ENCRYPT_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ default (printf "%s-db-encryption-key" .Release.Name) .Values.core.databaseSecretName }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: ENCRYPTION_KEY
                 optional: false
           ports:
