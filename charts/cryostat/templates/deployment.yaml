@@ -60,7 +60,7 @@ spec:
           - name: QUARKUS_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
@@ -82,7 +82,7 @@ spec:
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                name: {{ printf "%s-storage" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
           - name: AWS_SECRET_ACCESS_KEY
@@ -130,7 +130,7 @@ spec:
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-db-connection-key" .Release.Name }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
           - name: POSTGRESQL_DATABASE
@@ -138,7 +138,7 @@ spec:
           - name: PG_ENCRYPT_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ default (printf "%s-db-encryption-key" .Release.Name) .Values.core.databaseSecretName }}
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: ENCRYPTION_KEY
                 optional: false
           ports:
@@ -169,7 +169,7 @@ spec:
           - name: CRYOSTAT_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ printf "%s-storage-secret-key" .Release.Name }}
+                name: {{ printf "%s-storage" .Release.Name }}
                 key: SECRET_KEY
                 optional: false
           - name: DATA_DIR
