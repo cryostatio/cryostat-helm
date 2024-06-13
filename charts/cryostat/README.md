@@ -1,5 +1,5 @@
 # Cryostat Helm Chart
-A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and OpenShift
+A Helm chart for deploying [Cryostat](https://github.com/cryostatio/cryostat) on Kubernetes and OpenShift
 
 ## Parameters
 
