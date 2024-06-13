@@ -58,7 +58,7 @@ core:
     capabilities:
       drop:
         - ALL
-  ## @param core.databaseSecretName Name of the secret to extract password for credentials database.
+  ## @param core.databaseSecretName Name of the secret containing database keys. This secret must contain a CONNECTION_KEY secret which is the database connection password, and an ENCRYPTION_KEY secret which is the key used to encrypt sensitive data stored within the database, such as the target credentials keyring. It must not be updated across chart upgrades. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
   databaseSecretName: ""
   ## @extra core.discovery Configuration options to the Cryostat application's target discovery mechanisms
   discovery:
