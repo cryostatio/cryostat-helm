@@ -197,8 +197,6 @@ spec:
             failureThreshold: 9
           resources:
             {{- toYaml (.Values.storage).resources | nindent 12 }}
-          securityContext:
-            {{- toYaml (.Values.storage).securityContext | nindent 12 }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
