@@ -1,0 +1,186 @@
+suite: test helpers
+templates:
+  - test_helpers.yaml
+
+tests:
+  - it: should expand the chart name correctly
+    set:
+      Chart:
+        Name: cryostat
+    asserts:
+      - equal:
+          path: data.chartName
+          value: cryostat
+
+  - it: should create a default fully qualified app name when no override is provided
+    set:
+      Chart:
+        Name: cryostat
+      Release:
+        Name: release-name
+    asserts:
+      - equal:
+          path: data.fullname
+          value: release-name-cryostat
+
+  - it: should create a default fully qualified app name when override is provided
+    set:
+      Values:
+        fullnameOverride: custom-fullname
+    asserts:
+      - equal:
+          path: data.fullname
+          value: custom-fullname
+
+  - it: should create chart name and version label correctly
+    set:
+      Chart:
+        Name: cryostat
+        Version: "0.5.0+dev"
+    asserts:
+      - equal:
+          path: data.chartLabel
+          value: cryostat-0.5.0_dev
+
+  - it: should create common labels correctly
+    set:
+      Chart:
+        Name: cryostat
+        Version: "0.5.0+dev"
+        AppVersion: "4.0.0-dev"
+      Release:
+        Service: Helm
+    asserts:
+      - contains:
+          path: data.commonLabels
+          content: |
+            helm.sh/chart: cryostat-0.5.0_dev
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/instance: release-name
+            app.kubernetes.io/version: "4.0.0-dev"
+            app.kubernetes.io/managed-by: Helm
+
+  - it: should create selector labels correctly
+    set:
+      Chart:
+        Name: cryostat
+      Release:
+        Name: release-name
+    asserts:
+      - contains:
+          path: data.selectorLabels
+          content: |
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/instance: release-name
+
+  - it: should create service account name correctly when creation is enabled
+    set:
+      Values:
+        serviceAccount:
+          create: true
+      Release:
+        Name: release-name
+    asserts:
+      - equal:
+          path: data.serviceAccountName
+          value: release-name-cryostat
+
+  - it: should create service account name correctly when creation is disabled
+    set:
+      Values:
+        serviceAccount:
+          create: false
+    asserts:
+      - equal:
+          path: data.serviceAccountName
+          value: default
+
+  - it: should generate a new database connection key if not present
+    asserts:
+      - exists:
+          path: data.databaseConnectionKey
+
+  - it: should use existing database connection key if present
+    set:
+      Release:
+        Namespace: default
+      Secret:
+        release-name-db:
+          data:
+            CONNECTION_KEY: existing-connection-key
+    asserts:
+      - equal:
+          path: data.databaseConnectionKey
+          value: existing-connection-key
+
+  - it: should generate a new database encryption key if not present
+    asserts:
+      - exists:
+          path: data.databaseEncryptionKey
+
+  - it: should use existing database encryption key if present
+    set:
+      Release:
+        Namespace: default
+      Secret:
+        release-name-db:
+          data:
+            ENCRYPTION_KEY: existing-encryption-key
+    asserts:
+      - equal:
+          path: data.databaseEncryptionKey
+          value: existing-encryption-key
+
+  - it: should generate a new object storage secret key if not present
+    asserts:
+      - exists:
+          path: data.objectStorageSecretKey
+
+  - it: should use existing object storage secret key if present
+    set:
+      Release:
+        Namespace: default
+      Secret:
+        release-name-storage:
+          data:
+            SECRET_KEY: existing-secret-key
+    asserts:
+      - equal:
+          path: data.objectStorageSecretKey
+          value: existing-secret-key
+
+  - it: should generate a new cookie secret if not present
+    asserts:
+      - exists:
+          path: data.cookieSecret
+
+  - it: should use existing cookie secret if present
+    set:
+      Release:
+        Namespace: default
+      Secret:
+        release-name-cookie-secret:
+          data:
+            COOKIE_SECRET: existing-cookie-secret
+    asserts:
+      - equal:
+          path: data.cookieSecret
+          value: existing-cookie-secret
+
+  - it: should get comma separated list with defaults if not disabled
+    asserts:
+      - equal:
+          path: data.commaSepListWithDefaults
+          value: "default"
+
+  - it: should get comma separated list without defaults if disabled
+    asserts:
+      - equal:
+          path: data.commaSepListWithoutDefaults
+          value: ""
+
+  - it: should get comma separated list with provided values
+    asserts:
+      - equal:
+          path: data.commaSepListWithValues
+          value: "value1,value2"

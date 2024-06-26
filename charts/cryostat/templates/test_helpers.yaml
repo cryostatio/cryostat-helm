@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-helpers
+data:
+  chartName: |-
+    {{ include "cryostat.name" . }}
+  fullname: |-
+    {{ include "cryostat.fullname" . }}
+  chartLabel: |-
+    {{ include "cryostat.chart" . }}
+  commonLabels: |-
+    {{ include "cryostat.labels" . | indent 4 }}
+  selectorLabels: |-
+    {{ include "cryostat.selectorLabels" . | indent 4 }}
+  serviceAccountName: |-
+    {{ include "cryostat.serviceAccountName" . }}
+  databaseConnectionKey: |-
+    {{ include "cryostat.databaseConnectionKey" . }}
+  databaseEncryptionKey: |-
+    {{ include "cryostat.databaseEncryptionKey" . }}
+  objectStorageSecretKey: |-
+    {{ include "cryostat.objectStorageSecretKey" . }}
+  cookieSecret: |-
+    {{ include "cryostat.cookieSecret" . }}
+  commaSepListWithDefaults: |-
+    {{ include "cryostat.commaSepList" (list (list "") "default" false) }}
+  commaSepListWithoutDefaults: |-
+    {{ include "cryostat.commaSepList" (list (list "") "default" true) }}
+  commaSepListWithValues: |-
+    {{ include "cryostat.commaSepList" (list (list "value1" "value2") "default" true) }}

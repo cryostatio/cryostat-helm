@@ -1,0 +1,23 @@
+suite: Test Cryostat Deployment
+templates:
+  - templates/deployment.yaml
+
+tests:
+  - it: should use correct image for the authproxy container
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: quay.io/oauth2-proxy/oauth2-proxy:latest
+
+  - it: should use correct image for the core container
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: quay.io/cryostat/cryostat:4.0.0-snapshot
+
+  - it: should create single replica by default
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
