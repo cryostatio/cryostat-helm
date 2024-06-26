@@ -1,4 +1,4 @@
-{{- define "oauth2Proxy" }}
+{{- define "cryostat.oauth2Proxy" }}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 12 }}

@@ -1,4 +1,4 @@
-{{- define "openshiftOauthProxy" }}
+{{- define "cryostat.openshiftOauthProxy" }}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 12 }}
