@@ -1,3 +1,6 @@
+{{/*
+Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
+*/}}
 {{- define "cryostat.oauth2Proxy" -}}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:

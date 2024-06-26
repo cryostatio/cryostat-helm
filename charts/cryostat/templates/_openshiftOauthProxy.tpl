@@ -1,3 +1,6 @@
+{{/*
+Create OpenShift OAuth Proxy container.
+*/}}
 {{- define "cryostat.openshiftOauthProxy" -}}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
