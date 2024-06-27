@@ -1,23 +1,85 @@
-suite: Test Cryostat Deployment
+suite: Complete Deployment Validation
 templates:
-  - templates/deployment.yaml
+  - deployment.yaml
 
 tests:
-  - it: should use correct image for the authproxy container
+  - it: should verify general deployment settings
     asserts:
       - equal:
-          path: spec.template.spec.containers[0].image
-          value: quay.io/oauth2-proxy/oauth2-proxy:latest
-
-  - it: should use correct image for the core container
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[1].image
-          value: quay.io/cryostat/cryostat:4.0.0-snapshot
-
-  - it: should create single replica by default
-    asserts:
+          path: metadata.name
+          value: RELEASE-NAME-cryostat
       - equal:
           path: spec.replicas
           value: 1
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+
+  - it: should validate main application container settings
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].image
+          value: "quay.io/cryostat/cryostat:4.0.0-snapshot"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].containerPort
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.path
+          value: "/health/liveness"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.path
+          value: "/health/liveness"
+
+  - it: should configure the OpenShift OAuth Proxy when authentication.openshift is enabled
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
+          pattern: "quay.io/cryostat/openshift-oauth-proxy:.*"
+
+  - it: should configure the OAuth2 Proxy when OpenShift OAuth is disabled and OAuth2 is enabled
+    set:
+      authentication.openshift.enabled: false
+      authentication.oauth2.enabled: true
+    asserts:
+    - exists:
+        path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')]
+    - matchRegex:
+        path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
+        pattern: "quay.io/oauth2-proxy/oauth2-proxy:.*"
+
+  - it: should apply Kubernetes specific settings when configured
+    set:
+      nodeSelector:
+        disktype: ssd
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
+      tolerations:
+      - key: "key"
+        operator: "Equal"
+        value: "value"
+        effect: "NoSchedule"
+    asserts:
+      - exists:
+          path: spec.template.spec.nodeSelector
+      - exists:
+          path: spec.template.spec.affinity
+      - exists:
+          path: spec.template.spec.tolerations
+
+  - it: should ensure the datasource container has correct environment variables and resources
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
+          value: "8800"
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].resources
 
