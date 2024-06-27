@@ -1,0 +1,75 @@
+suite: Role Configuration
+templates:
+  - role.yaml
+
+tests:
+  - it: should create a Role for the default namespace
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.namespaces:
+        - "default"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: kind
+          value: Role
+      - equal:
+          path: metadata.namespace
+          value: "default"
+      - matchRegex:
+          path: metadata.name
+          pattern: "RELEASE-NAME-cryostat"
+
+  - it: should create a Role for the test namespace
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.namespaces:
+        - "test-ns"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: kind
+          value: Role
+      - equal:
+          path: metadata.namespace
+          value: "test-ns"
+      - matchRegex:
+          path: metadata.name
+          pattern: "RELEASE-NAME-cryostat"
+
+  - it: should have correct permissions for endpoints, pods, and other resources
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.namespaces:
+        - "default"
+    asserts:
+      - equal:
+          path: rules[0].apiGroups[0]
+          value: ""
+      - equal:
+          path: rules[0].resources
+          value: ["endpoints"]
+      - equal:
+          path: rules[0].verbs
+          value: ["get", "list", "watch"]
+      - equal:
+          path: rules[1].apiGroups[0]
+          value: ""
+      - equal:
+          path: rules[1].resources
+          value: ["pods", "replicationcontrollers"]
+      - equal:
+          path: rules[1].verbs
+          value: ["get"]
+
+  - it: should not create any Role if RBAC is disabled
+    set:
+      rbac.create: false
+    asserts:
+      - hasDocuments:
+          count: 0

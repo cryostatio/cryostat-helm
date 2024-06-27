@@ -1,0 +1,56 @@
+suite: test ClusterRoleBinding
+release:
+  name: release-name
+  namespace: default
+
+templates:
+  - clusterrolebinding.yaml
+
+tests:
+  - it: should create a ClusterRoleBinding when RBAC and OpenShift authentication are enabled
+    set:
+      rbac.create: true
+      authentication.openshift.enabled: true
+      authentication.openshift.clusterRole.name: system:auth-delegator
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: release-name-cryostat
+      - equal:
+          path: roleRef.apiGroup
+          value: rbac.authorization.k8s.io
+      - equal:
+          path: roleRef.kind
+          value: ClusterRole
+      - equal:
+          path: roleRef.name
+          value: system:auth-delegator
+      - equal:
+          path: subjects[0].kind
+          value: ServiceAccount
+      - equal:
+          path: subjects[0].name
+          value: release-name-cryostat
+      - equal:
+          path: subjects[0].namespace
+          value: default
+
+  - it: should not create a ClusterRoleBinding when RBAC is disabled
+    set:
+      rbac.create: false
+      authentication.openshift.enabled: true
+      authentication.openshift.clusterRole.name: system:auth-delegator
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create a ClusterRoleBinding when OpenShift authentication is disabled
+    set:
+      rbac.create: true
+      authentication.openshift.enabled: false
+      authentication.openshift.clusterRole.name: system:auth-delegator
+    asserts:
+      - hasDocuments:
+          count: 0

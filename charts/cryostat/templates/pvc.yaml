@@ -11,7 +11,7 @@ metadata:
   {{- end }}
 spec:
   {{- with .Values.pvc.accessModes }}
-  accessModes: 
+  accessModes:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   resources:
