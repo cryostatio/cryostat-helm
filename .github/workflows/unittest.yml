@@ -34,7 +34,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
-          version: v3.15.2
+          version: v3.14.4
       - name: Install unit test plugin
         run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
       - name: Run Helm unit tests
