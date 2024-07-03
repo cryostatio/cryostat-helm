@@ -275,7 +275,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "3.0"
+                            "default": "cryostat-v3.0"
                         }
                     }
                 },
@@ -330,7 +330,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "3.0"
+                            "default": "cryostat-v3.0"
                         }
                     }
                 },
@@ -605,7 +605,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "3.0"
+                            "default": "cryostat-v3.0"
                         }
                     }
                 },
