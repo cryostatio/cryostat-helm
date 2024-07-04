@@ -3,43 +3,53 @@ templates:
   - role.yaml
 
 tests:
-  - it: should create a Role for the default namespace
+  - it: should create a Roles in target namespace
     set:
       rbac.create: true
       core.discovery.kubernetes.enabled: true
       core.discovery.kubernetes.namespaces:
         - "default"
+        - "test-ns"
     asserts:
       - hasDocuments:
-          count: 1
+          count: 2
       - equal:
           path: kind
           value: Role
       - equal:
           path: metadata.namespace
           value: "default"
-      - matchRegex:
-          path: metadata.name
-          pattern: "RELEASE-NAME-cryostat"
-
-  - it: should create a Role for the test namespace
-    set:
-      rbac.create: true
-      core.discovery.kubernetes.enabled: true
-      core.discovery.kubernetes.namespaces:
-        - "test-ns"
-    asserts:
-      - hasDocuments:
-          count: 1
-      - equal:
-          path: kind
-          value: Role
+        documentIndex: 0
       - equal:
           path: metadata.namespace
           value: "test-ns"
+        documentIndex: 1
       - matchRegex:
           path: metadata.name
           pattern: "RELEASE-NAME-cryostat"
+        documentIndex: 0
+      - matchRegex:
+          path: metadata.name
+          pattern: "RELEASE-NAME-cryostat"
+        documentIndex: 1
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/version: "4.0.0-dev"
+            helm.sh/chart: cryostat-0.5.0-dev
+        documentIndex: 0
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/version: "4.0.0-dev"
+            helm.sh/chart: cryostat-0.5.0-dev
+        documentIndex: 1
 
   - it: should have correct permissions for endpoints, pods, and other resources
     set:
@@ -73,3 +83,32 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+
+  - it: should not create any Roles when Kubernetes discovery is disabled
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not specify a namespace if installNamespaceDisabled is true
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.installNamespaceDisabled: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should specify the default namespace if installNamespaceDisabled is false
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.installNamespaceDisabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.namespace
+          value: "NAMESPACE"

@@ -29,7 +29,10 @@ tests:
           value: Ingress
       - matchRegex:
           path: metadata.name
-          pattern: "^.+-cryostat$"
+          pattern: "RELEASE-NAME-cryostat"
+      - equal:
+          path: metadata.annotations['nginx.ingress.kubernetes.io/rewrite-target']
+          value:  "/"
       - equal:
           path: spec.rules[0].host
           value: "example.com"

@@ -47,7 +47,6 @@ tests:
           path: spec.selector.matchLabels.app
           value: "cryostat"
 
-  # Test to ensure no PVC is created when it is disabled
   - it: should not create a PersistentVolumeClaim when PVC is disabled
     set:
       pvc:

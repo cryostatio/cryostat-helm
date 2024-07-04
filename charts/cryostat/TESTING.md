@@ -8,12 +8,14 @@ Helm Unittest is a Helm plugin that allows to write declarative tests for Helm c
 
 # Testing Guide for Cryostat Helm Chart
 
-## Dependencies
+## Requirements
 
 Before running tests, you need to have the following tools installed:
 
-- **Helm 3:** Helm is a package manager for Kubernetes needed to manage the charts.
+- **Helm:** Helm is a package manager for Kubernetes needed to manage the charts.
+  `Required version: >= v3.14.4`
 - **Helm Unittest Plugin:** This plugin enables unit testing for Helm charts.
+  `Required version: >= v0.5.1`
 
 ## Installation
 
@@ -62,14 +64,20 @@ Tests are organized under the `tests/` directory, with each test file correspond
 
 ```plaintext
 cryostat-helm/
-├── templates/
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   └── ...
-└── tests/
-    ├── deployment_test.yaml
-    ├── service_test.yaml
-    └── ...
+├── charts
+│   └── cryostat
+│       ├── Chart.yaml
+│       ├── templates
+│       │   ├── alpha_config.yaml
+│       │   ├── ...
+│       ├── TESTING.md
+│       ├── tests
+│       │   ├── alpha_config_test.yaml
+│       │   ├── ...
+│       │   ├── __snapshot__
+│       │   └── storage_access_secret_test.yaml
+│       ├── values.schema.json
+│       └── values.yaml
 ```
 
 ## Test File Structure

@@ -1,0 +1,90 @@
+suite: Test NOTES.txt
+templates:
+  - NOTES.txt
+
+tests:
+  - it: should be render correct notes for enabled ingress
+    set:
+      core.ingress.enabled: true
+      core:
+        ingress:
+          className: nginx
+          hosts:
+            - host: example.com
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - example.com
+              secretName: example-tls
+    asserts:
+      - equalRaw:
+          value: |
+
+
+            1. Visit the Cryostat application at:
+              ```
+              https://example.com/
+              ```
+
+  - it: should render notes for enabled route without TLS
+    set:
+      core.route.enabled: true
+      core.route.tls.enabled: false
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Tell Cryostat how to serve external traffic:
+              ```
+              No actions required with this configuration.
+              ```
+
+            2. Visit the Cryostat application at:
+              ```
+              echo http://$(oc get route -n NAMESPACE RELEASE-NAME-cryostat -o jsonpath="{.status.ingress[0].host}")
+              ```
+  
+  - it: should render notes for NodePort service without ingress or route
+    set:
+      core.service.type: "NodePort"
+      core.ingress.enabled: false
+      core.route.enabled: false
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Tell Cryostat how to serve external traffic:
+              ```
+              export NODE_IP=$(kubectl get nodes -n NAMESPACE -o jsonpath="{.items[0].status.addresses[0].address}")
+              export NODE_PORT=$(kubectl get -n NAMESPACE -o jsonpath="{.spec.ports[0].nodePort}" services RELEASE-NAME-cryostat)
+              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat QUARKUS_HTTP_HOST=$NODE_IP
+              ```
+
+            2. Visit the Cryostat application at:
+              ```
+              echo http://$NODE_IP:$NODE_PORT
+              ```
+
+  - it: should render notes for LoadBalancer service without ingress or route
+    set:
+      core.service.type: "LoadBalancer"
+      core.ingress.enabled: false
+      core.route.enabled: false
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Tell Cryostat how to serve external traffic:
+              ```
+                 NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+                       You can watch the status by running 'kubectl get -n NAMESPACE -w svc/RELEASE-NAME-cryostat'
+              export SERVICE_IP=$(kubectl get svc -n NAMESPACE RELEASE-NAME-cryostat --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
+              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat QUARKUS_HTTP_HOST=$SERVICE_IP
+              ```
+
+            2. Visit the Cryostat application at:
+              ```
+              echo http://$SERVICE_IP:8181
+              ```
