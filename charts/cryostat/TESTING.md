@@ -70,6 +70,9 @@ cryostat-helm/
 │       ├── templates
 │       │   ├── alpha_config.yaml
 │       │   ├── ...
+│       │   └── tests
+│       │       ├── test-core-connection.yaml
+│       │       └── ...
 │       ├── TESTING.md
 │       ├── tests
 │       │   ├── alpha_config_test.yaml
@@ -78,7 +81,9 @@ cryostat-helm/
 │       │   └── storage_access_secret_test.yaml
 │       ├── values.schema.json
 │       └── values.yaml
+
 ```
+In addition, Cryostat Helm chart includes integration tests located in the `templates/tests` directory and are executed using `helm test`. These tests are different from unit tests in that they involve actual deployment of resources to a Kubernetes cluster to validate the integrated operation of those resources.
 
 ## Test File Structure
 

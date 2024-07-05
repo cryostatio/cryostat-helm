@@ -59,8 +59,8 @@ tests:
         - "default"
     asserts:
       - equal:
-          path: rules[0].apiGroups[0]
-          value: ""
+          path: rules[0].apiGroups
+          value: [""]
       - equal:
           path: rules[0].resources
           value: ["endpoints"]
@@ -68,14 +68,41 @@ tests:
           path: rules[0].verbs
           value: ["get", "list", "watch"]
       - equal:
-          path: rules[1].apiGroups[0]
-          value: ""
+          path: rules[1].apiGroups
+          value: [""]
       - equal:
           path: rules[1].resources
           value: ["pods", "replicationcontrollers"]
       - equal:
           path: rules[1].verbs
           value: ["get"]
+      - equal:
+          path: rules[2].apiGroups
+          value: ["apps"]
+      - equal:
+          path: rules[2].resources
+          value: ["replicasets", "deployments", "daemonsets", "statefulsets"]
+      - equal:
+          path: rules[2].verbs
+          value: ["get"]
+      - equal:
+          path: rules[3].apiGroups
+          value: ["apps.openshift.io"]
+      - equal:
+          path: rules[3].resources
+          value: ["deploymentconfigs"]
+      - equal:
+          path: rules[3].verbs
+          value: ["get"]
+      - equal:
+          path: rules[4].apiGroups
+          value: ["route.openshift.io"]
+      - equal:
+          path: rules[4].verbs
+          value: ["get", "list"]
+      - equal:
+          path: rules[4].resources
+          value: ["routes"]
 
   - it: should not create any Role if RBAC is disabled
     set:
