@@ -1,4 +1,4 @@
-suite: PVC Configuration
+suite: test pvc.yaml
 templates:
   - pvc.yaml
 

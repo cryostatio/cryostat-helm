@@ -1,9 +1,9 @@
-suite: Role Configuration
+suite: test role.yaml
 templates:
   - role.yaml
 
 tests:
-  - it: should create a Roles in target namespace
+  - it: should create Roles in target namespace
     set:
       rbac.create: true
       core.discovery.kubernetes.enabled: true

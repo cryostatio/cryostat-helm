@@ -1,9 +1,9 @@
-suite: Test NOTES.txt
+suite: test NOTES.txt
 templates:
   - NOTES.txt
 
 tests:
-  - it: should be render correct notes for enabled ingress
+  - it: should render correct notes for enabled ingress
     set:
       core.ingress.enabled: true
       core:

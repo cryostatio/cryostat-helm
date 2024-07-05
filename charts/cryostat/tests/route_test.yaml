@@ -1,4 +1,4 @@
-suite: Route Configuration
+suite: test route.yaml
 templates:
   - route.yaml
 

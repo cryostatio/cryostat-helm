@@ -1,4 +1,4 @@
-suite: test alpha_config
+suite: test alpha_config.yaml
 templates:
   - templates/alpha_config.yaml
 
