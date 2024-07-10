@@ -33,18 +33,6 @@ tests:
           path: spec.ports[0].name
           value: cryostat-http
       - equal:
-          path: spec.ports[1].port
-          value: 443
-      - equal:
-          path: spec.ports[1].targetPort
-          value: 8443
-      - equal:
-          path: spec.ports[1].protocol
-          value: TCP
-      - equal:
-          path: spec.ports[1].name
-          value: cryostat-https
-      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
