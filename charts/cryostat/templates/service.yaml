@@ -17,9 +17,11 @@ spec:
       targetPort: 4180
       protocol: TCP
       name: cryostat-http
+    {{- if (.Values.authentication.openshift).enabled }}
     - port: 443
       targetPort: 8443
       protocol: TCP
       name: cryostat-https
+    {{- end }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
