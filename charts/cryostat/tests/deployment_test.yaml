@@ -40,14 +40,123 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8181"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_HOST')].value
+          value: "localhost"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ALLOW_X_FORWARDED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_HOST')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION')].value
+          value: "drop-and-create"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
+          value: "cryostat3"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_PASSWORD')].valueFrom.secretKeyRef
+          value:
+            key: "CONNECTION_KEY"
+            name: "RELEASE-NAME-db"
+            optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
+          value: "jdbc:postgresql://localhost:5432/cryostat3"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "archivedrecordings"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
+          value: "http://localhost:8333"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
+          value: "us-east-1"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_TYPE')].value
+          value: "static"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].value
+          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
+          value:
+              key: "SECRET_KEY"
+              name: "RELEASE-NAME-storage"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
+          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DATASOURCE_URL')].value
+          value: "http://localhost:8800"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DASHBOARD_URL')].value
+          value: "http://localhost:3000"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DASHBOARD_EXT_URL')].value
+          value: "/grafana/"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "NAMESPACE"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].containerPort
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].protocol
+          value: "TCP"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.path
           value: "/health/liveness"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.port
+          value: 8181
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.path
           value: "/health/liveness"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.port
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.failureThreshold
+          value: 18
+
+  - it: should validate cryostat-db settings
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.capabilities.drop
+          value:
+            - ALL
+
+  - it: should validate cryostat-storage settings
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].containerPort
+          value: 8333
 
   - it: should validate volumes and volume mounts
     asserts:
@@ -55,15 +164,6 @@ tests:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/oauth2_proxy/alpha_config')]
-
-  - it: should validate container ports and network settings
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].containerPort
-          value: 8181
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].containerPort
-          value: 8333
 
   - it: should set image pull secrets if specified
     set:
