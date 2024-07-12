@@ -92,3 +92,33 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+
+  - it: should not create any RoleBinding when Kubernetes discovery is disabled
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: false
+    asserts:
+    - hasDocuments:
+        count: 0
+
+  - it: should not create any RoleBinding if installNamespaceDisabled is true
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.installNamespaceDisabled: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create a RoleBinding in the default namespace if installNamespaceDisabled is false
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.namespaces: []
+      core.discovery.kubernetes.installNamespaceDisabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.namespace
+          value: "NAMESPACE"

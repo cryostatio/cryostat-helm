@@ -45,6 +45,24 @@ tests:
               ```
               echo http://$(oc get route -n NAMESPACE RELEASE-NAME-cryostat -o jsonpath="{.status.ingress[0].host}")
               ```
+
+  - it: should render notes for enabled route with TLS
+    set:
+      core.route.enabled: true
+      core.route.tls.enabled: true
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Tell Cryostat how to serve external traffic:
+              ```
+              No actions required with this configuration.
+              ```
+
+            2. Visit the Cryostat application at:
+              ```
+              echo https://$(oc get route -n NAMESPACE RELEASE-NAME-cryostat -o jsonpath="{.status.ingress[0].host}")
+              ```
   
   - it: should render notes for NodePort service without ingress or route
     set:
