@@ -78,7 +78,7 @@ tests:
           value: "drop-and-create"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
-          value: "cryostat3"
+          value: "cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_PASSWORD')].valueFrom.secretKeyRef
           value:
@@ -87,7 +87,7 @@ tests:
             optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
-          value: "jdbc:postgresql://localhost:5432/cryostat3"
+          value: "jdbc:postgresql://localhost:5432/cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "archivedrecordings"
@@ -182,7 +182,7 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_USER')].value
-          value: "cryostat3"
+          value: "cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_PASSWORD')].valueFrom.secretKeyRef
           value:
@@ -191,7 +191,7 @@ tests:
               optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_DATABASE')].value
-          value: "cryostat3"
+          value: "cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='PG_ENCRYPT_KEY')].valueFrom.secretKeyRef
           value:
@@ -218,9 +218,9 @@ tests:
           value:
               - pg_isready
               - -U
-              - cryostat3
+              - cryostat
               - -d
-              - cryostat3
+              - cryostat
 
   - it: should validate cryostat-storage settings
     asserts:
