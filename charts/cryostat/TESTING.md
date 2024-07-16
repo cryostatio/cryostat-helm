@@ -108,7 +108,7 @@ tests:
 - `exists`: Checks if the specified path exists in the document.
 - `notExists`: Ensures the specified path does not exist in the document.
 
-Visit [ for more Assertion Types](https://github.com/helm-unittest/helm-unittest/blob/main/DOCUMENT.md#assertion-types).
+Visit [this document](https://github.com/helm-unittest/helm-unittest/blob/main/DOCUMENT.md#assertion-types) for more assertion types.
 ## Running Tests
 
 Once Unittest plugin has been installed, tests can be executed by running the following command:
