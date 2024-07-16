@@ -48,5 +48,5 @@ jobs:
             if [ -z "${pkg:-}" ]; then
               break
             fi
-            helm push "${pkg}" oci://ghcr.io/${{ github.repository_owner }}
+            helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
           done
