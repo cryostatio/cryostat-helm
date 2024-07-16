@@ -39,7 +39,7 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
-            helm.sh/chart: cryostat-0.5.0-dev
+            helm.sh/chart: cryostat-2.0.0-dev
         documentIndex: 0
       - equal:
           path: metadata.labels
@@ -48,7 +48,7 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
-            helm.sh/chart: cryostat-0.5.0-dev
+            helm.sh/chart: cryostat-2.0.0-dev
         documentIndex: 1
 
   - it: should have correct permissions for endpoints, pods, and other resources

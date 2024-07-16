@@ -41,6 +41,64 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
 
+  - it: should create a Service with the correct settings when OpenShift authentication is enabled
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: kind
+          value: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-cryostat
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 8181
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 4180
+      - equal:
+          path: spec.ports[0].protocol
+          value: TCP
+      - equal:
+          path: spec.ports[0].name
+          value: cryostat-http
+      - equal:
+          path: spec.ports[1].port
+          value: 443
+      - equal:
+          path: spec.ports[1].targetPort
+          value: 8443
+      - equal:
+          path: spec.ports[1].protocol
+          value: TCP
+      - equal:
+          path: spec.ports[1].name
+          value: cryostat-https
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/instance: RELEASE-NAME
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/version: "4.0.0-dev"
+            helm.sh/chart: cryostat-2.0.0-dev
+      - equal:
+          path: metadata.annotations
+          value:
+            service.alpha.openshift.io/serving-cert-secret-name: RELEASE-NAME-proxy-tls
+      
+
   - it: should include OpenShift specific annotations when OpenShift auth is enabled
     set:
       authentication.openshift.enabled: true
