@@ -26,7 +26,7 @@ keywords:
 - diagnostic
 
 sources:
-- https://github.com/cryostatio/cryostat3
+- https://github.com/cryostatio/cryostat
 - https://github.com/cryostatio/cryostat-core
 - https://github.com/cryostatio/cryostat-web
 - https://github.com/cryostatio/jfr-datasource

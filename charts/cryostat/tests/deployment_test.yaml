@@ -1,0 +1,499 @@
+suite: test deployment.yaml
+templates:
+  - deployment.yaml
+
+tests:
+  - it: should verify general deployment settings
+    asserts:
+      - equal:
+          path: kind
+          value: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-cryostat
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: cryostat
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: cryostat
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: RELEASE-NAME-cryostat
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
+      - equal:
+          path: metadata.labels
+          value:
+            helm.sh/chart: cryostat-2.0.0-dev
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/version: "4.0.0-dev"
+            app.kubernetes.io/managed-by: Helm
+
+  - it: should validate all container settings including environment variables and security contexts
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].image
+          value: "quay.io/cryostat/cryostat:4.0.0-snapshot"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
+          value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
+          value: "8181"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_HOST')].value
+          value: "localhost"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ALLOW_X_FORWARDED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_HOST')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION')].value
+          value: "drop-and-create"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_PASSWORD')].valueFrom.secretKeyRef
+          value:
+            key: "CONNECTION_KEY"
+            name: "RELEASE-NAME-db"
+            optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
+          value: "jdbc:postgresql://localhost:5432/cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
+          value: "archivedrecordings"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
+          value: "http://localhost:8333"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
+          value: "us-east-1"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_TYPE')].value
+          value: "static"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].value
+          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
+          value:
+              key: "SECRET_KEY"
+              name: "RELEASE-NAME-storage"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
+          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DATASOURCE_URL')].value
+          value: "http://localhost:8800"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DASHBOARD_URL')].value
+          value: "http://localhost:3000"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DASHBOARD_EXT_URL')].value
+          value: "/grafana/"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "NAMESPACE"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].containerPort
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].protocol
+          value: "TCP"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.path
+          value: "/health/liveness"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.port
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.path
+          value: "/health/liveness"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.port
+          value: 8181
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.failureThreshold
+          value: 18
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].resources
+
+  - it: should validate cryostat-db settings
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.capabilities.drop
+          value:
+            - ALL
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].image
+          value: "quay.io/cryostat/cryostat-db:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_USER')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_PASSWORD')].valueFrom.secretKeyRef
+          value:
+              name: "RELEASE-NAME-db"
+              key: "CONNECTION_KEY"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_DATABASE')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='PG_ENCRYPT_KEY')].valueFrom.secretKeyRef
+          value:
+              name: "RELEASE-NAME-db"
+              key: "ENCRYPTION_KEY"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].ports[0].containerPort
+          value: 5432
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].ports[0].protocol
+          value: "TCP"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].mountPath
+          value: "/var/lib/pgsql/data"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].name
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].subPath
+          value: "postgres"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].readinessProbe.exec.command
+          value:
+              - pg_isready
+              - -U
+              - cryostat
+              - -d
+              - cryostat
+
+  - it: should validate cryostat-storage settings
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].securityContext.capabilities.drop
+          value:
+            - ALL
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].image
+          value: "quay.io/cryostat/cryostat-storage:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
+          value: "archivedrecordings,archivedreports,eventtemplates,probes"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].value
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_SECRET_KEY')].valueFrom.secretKeyRef
+          value:
+              name: "RELEASE-NAME-storage"
+              key: "SECRET_KEY"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='DATA_DIR')].value
+          value: "/data"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='IP_BIND')].value
+          value: 0.0.0.0
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].containerPort
+          value: 8333
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].protocol
+          value: "TCP"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].mountPath
+          value: "/data"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].name
+          value: "cryostat"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].subPath
+          value: "seaweed"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.path
+          value: "/status"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.port
+          value: 8333
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.periodSeconds
+          value: 10
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.failureThreshold
+          value: 2
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.path
+          value: "/status"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.port
+          value: 8333
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.periodSeconds
+          value: 10
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.failureThreshold
+          value: 9
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
+
+  - it: should validate cryostat-grafana settings
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].securityContext.capabilities.drop
+          value:
+            - ALL
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].image
+          value: "quay.io/cryostat/cryostat-grafana-dashboard:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_AUTH_ANONYMOUS_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_SERVER_DOMAIN')].value
+          value: "localhost"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_SERVER_ROOT_URL')].value
+          value: "http://localhost:4180/grafana/"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_SERVER_SERVE_FROM_SUB_PATH')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='JFR_DATASOURCE_URL')].value
+          value: "http://localhost:8800"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].ports[0].containerPort
+          value: 3000
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].ports[0].protocol
+          value: "TCP"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].livenessProbe.httpGet.path
+          value: "/api/health"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].livenessProbe.httpGet.port
+          value: 3000
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].resources
+
+  - it: should validate cryostat-jfr-datasource settings
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].securityContext.capabilities.drop
+          value:
+            - ALL
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].image
+          value: "quay.io/cryostat/jfr-datasource:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='LISTEN_HOST')].value
+          value: "localhost"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
+          value: "8800"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].ports[0].containerPort
+          value: 8800
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].ports[0].protocol
+          value: "TCP"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].livenessProbe.exec.command
+          value:
+              - curl
+              - --fail
+              - http://localhost:8800
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].resources
+
+  - it: should validate volumes and volume mounts
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='alpha-config')]
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/oauth2_proxy/alpha_config')]
+
+  - it: should set image pull secrets if specified
+    set:
+      imagePullSecrets:
+        - name: myregistrykey
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: "myregistrykey"
+
+  - it: should configure the OpenShift OAuth Proxy when authentication.openshift is enabled
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
+          pattern: "quay.io/cryostat/openshift-oauth-proxy:.*"
+
+  - it: should configure the OAuth2 Proxy when OpenShift OAuth is disabled and OAuth2 is enabled
+    set:
+      authentication.openshift.enabled: false
+      authentication.oauth2.enabled: true
+    asserts:
+    - exists:
+        path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')]
+    - matchRegex:
+        path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
+        pattern: "quay.io/oauth2-proxy/oauth2-proxy:.*"
+
+  - it: should apply Kubernetes specific settings when configured
+    set:
+      nodeSelector:
+        disktype: ssd
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
+      tolerations:
+      - key: "key"
+        operator: "Equal"
+        value: "value"
+        effect: "NoSchedule"
+    asserts:
+      - exists:
+          path: spec.template.spec.nodeSelector
+      - exists:
+          path: spec.template.spec.affinity
+      - exists:
+          path: spec.template.spec.tolerations
+  
+  - it: should verify image pull policies for development snapshots
+    set:
+      core.image.tag: "4.0.0-snapshot"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].imagePullPolicy
+          value: Always
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
+          value: Always
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
+          value: Always
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
+          value: "Always"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
+          value: "Always"
+
+  - it: should verify image pull policies for release versions
+    set:
+      core.image.tag: "4.1.0"
+      core.image.pullPolicy: "IfNotPresent"
+      oauth2Proxy.image.pullPolicy: "IfNotPresent"
+      storage.image.pullPolicy: "IfNotPresent"
+      grafana.image.pullPolicy: "IfNotPresent"
+      db.image.pullPolicy: "IfNotPresent"
+      datasource.image.pullPolicy: "IfNotPresent"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].imagePullPolicy
+          value: "IfNotPresent"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
+          value: "IfNotPresent"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
+          value: "IfNotPresent"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
+          value: "IfNotPresent"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
+          value: "IfNotPresent"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
+          value: "IfNotPresent"
+
