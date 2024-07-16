@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  helm-push:
+  helm-push-to-OCI:
     if: github.repository_owner == 'cryostatio'
     permissions:
       packages: write
@@ -47,7 +47,7 @@ jobs:
           echo "tag=v$(yq .version charts/cryostat/Chart.yaml)" >> $GITHUB_OUTPUT
       - name: Push Charts to GHCR
         run: |
-          for pkg in .cr-release-packages/*; do
+          for pkg in .cr-release-packages/*.tgz; do
             if [ -z "${pkg:-}" ]; then
               break
             fi
