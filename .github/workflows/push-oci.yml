@@ -11,6 +11,7 @@ on:
 
 jobs:
   helm-push:
+    if: github.repository_owner == 'cryostatio'
     permissions:
       packages: write
       contents: write
