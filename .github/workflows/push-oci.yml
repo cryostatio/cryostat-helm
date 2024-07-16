@@ -11,15 +11,15 @@ on:
 
 jobs:
   helm-push-to-OCI:
-    if: github.repository_owner == 'cryostatio'
     permissions:
       packages: write
       contents: write
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'cryostatio'
     steps:
       - uses: actions/checkout@v4
         with:
-          feth-depth: 0
+          fetch-depth: 0
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
@@ -32,6 +32,7 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: "true"
         with:
           charts_dir: charts
           config: .github/helm-release-config.yml
@@ -41,11 +42,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get release version
-        id: release-version
-        run: |
-          echo "tag=v$(yq .version charts/cryostat/Chart.yaml)" >> $GITHUB_OUTPUT
-      - name: Push Charts to GHCR
+      - name: Push charts to GHCR
         run: |
           for pkg in .cr-release-packages/*.tgz; do
             if [ -z "${pkg:-}" ]; then
