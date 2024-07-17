@@ -41,7 +41,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_PKGS_WRITE }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push charts to GHCR
         run: |
           for pkg in .cr-release-packages/*.tgz; do
