@@ -37,8 +37,7 @@ jobs:
       - name: Patch chart name
         run: yq -i ".name = \"${{ github.event.repository.name }}\"" ./charts/*/Chart.yaml
       - name: Package charts
-        run: |
-          helm package ./charts/*
+        run: helm package ./charts/*
       - name: Push charts to GHCR
         run: |
           for pkg in ./*.tgz; do
