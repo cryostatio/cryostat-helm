@@ -33,6 +33,7 @@
 {{- end }}
 
 {{- if $portForwards }}
+
 {{ $listNum }}. Forward local port to the application's pod:
   ```
   kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.fullname" . }}

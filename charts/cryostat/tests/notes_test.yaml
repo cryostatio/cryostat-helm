@@ -28,7 +28,7 @@ tests:
               https://example.com/
               ```
 
-  - it: should render notes for enabled route without TLS
+  - it: should render correct notes for enabled route without TLS
     set:
       core.route.enabled: true
       core.route.tls.enabled: false
@@ -46,7 +46,7 @@ tests:
               echo http://$(oc get route -n NAMESPACE RELEASE-NAME-cryostat -o jsonpath="{.status.ingress[0].host}")
               ```
 
-  - it: should render notes for enabled route with TLS
+  - it: should render correct notes for enabled route with TLS
     set:
       core.route.enabled: true
       core.route.tls.enabled: true
@@ -64,7 +64,7 @@ tests:
               echo https://$(oc get route -n NAMESPACE RELEASE-NAME-cryostat -o jsonpath="{.status.ingress[0].host}")
               ```
   
-  - it: should render notes for NodePort service without ingress or route
+  - it: should render correct notes for NodePort service without ingress or route
     set:
       core.service.type: "NodePort"
       core.ingress.enabled: false
@@ -85,7 +85,7 @@ tests:
               echo http://$NODE_IP:$NODE_PORT
               ```
 
-  - it: should render notes for LoadBalancer service without ingress or route
+  - it: should render correct notes for LoadBalancer service without ingress or route
     set:
       core.service.type: "LoadBalancer"
       core.ingress.enabled: false
@@ -105,4 +105,28 @@ tests:
             2. Visit the application at:
               ```
               echo http://$SERVICE_IP:8181
+              ```
+
+  - it: should render correct notes for ClusterIP service without ingress or route
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Configure the application to serve external traffic:
+              ```
+              No actions required with this configuration.
+              ```
+
+            2. Forward local port to the application's pod:
+              ```
+              kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat
+          
+              export POD_NAME=$(kubectl get pods -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
+              export CONTAINER_PORT=$(kubectl get pod -n NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+              kubectl -n NAMESPACE port-forward $POD_NAME "8080:$CONTAINER_PORT"
+              ```
+          
+            3. Visit the application at:
+              ```
+              http://localhost:8080
               ```
