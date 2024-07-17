@@ -35,9 +35,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GH_PKGS_WRITE }}
       - name: Patch chart name
-        uses: mikefarah/yq@v4.44.2
-        with:
-          cmd: yq -i ".name = \"${{ github.event.repository.name }}\"" ./charts/*/Chart.yaml
+        run: yq -i ".name = \"${{ github.event.repository.name }}\"" ./charts/*/Chart.yaml
       - name: Package charts
         run: |
           helm package ./charts/*
