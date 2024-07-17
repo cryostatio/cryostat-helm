@@ -43,7 +43,7 @@ jobs:
           helm package ./charts/*
       - name: Push charts to GHCR
         run: |
-          for pkg in .cr-release-packages/*.tgz; do
+          for pkg in ./*.tgz; do
             if [ -z "${pkg:-}" ]; then
               break
             fi
