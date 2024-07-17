@@ -28,7 +28,8 @@ jobs:
         uses: azure/setup-helm@v4
         with:
           version: v3.14.4
-      - name: Run chart-releaser
+      - id: releaser
+        name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -36,6 +37,7 @@ jobs:
         with:
           charts_dir: charts
           config: .github/helm-release-config.yml
+          skip_upload: true
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -48,5 +50,5 @@ jobs:
             if [ -z "${pkg:-}" ]; then
               break
             fi
-            helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
+            helm push "${pkg}" oci://ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.releaser.outputs.chart_version }}
           done
