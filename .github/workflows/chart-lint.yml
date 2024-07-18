@@ -30,7 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
-      TEST_NAMESPACE: helm-test
     steps:
       - uses: actions/checkout@v4
         with:
