@@ -59,7 +59,7 @@ jobs:
           fetch-depth: 0
       - name: Check README diff
         run: |
-          npx @bitnami/readme-generator-for-helm@{{ env.README_GENERATOR_VERSION }} \
+          npx @bitnami/readme-generator-for-helm@$README_GENERATOR_VERSION \
             --values charts/cryostat/values.yaml \
             --readme charts/cryostat/README.md \
             --schema charts/cryostat/values.schema.json
