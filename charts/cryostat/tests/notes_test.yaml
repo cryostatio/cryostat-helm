@@ -25,7 +25,7 @@ tests:
 
             1. Visit the application at:
               ```
-              https://example.com/
+              echo https://example.com/
               ```
 
   - it: should render correct notes for enabled route without TLS

@@ -52,7 +52,7 @@
 {{- else if .Values.core.ingress.enabled }}
 {{- range $host := .Values.core.ingress.hosts -}}
   {{- range .paths }}
-  {{ ternary "http" "https" (empty $.Values.core.ingress.tls) }}://{{ $host.host }}{{ .path }}
+  echo {{ ternary "http" "https" (empty $.Values.core.ingress.tls) }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
 {{- else if contains "NodePort" .Values.core.service.type }}
