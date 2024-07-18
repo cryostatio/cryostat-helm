@@ -26,7 +26,7 @@ on:
       - cryostat-v[0-9]+.[0-9]+
 
 jobs:
-  test-chart:
+  helm-test:
     runs-on: ubuntu-latest
     env:
       TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
@@ -62,3 +62,21 @@ jobs:
 
         kubectl create ns $TEST_NAMESPACE
         ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug
+
+  helm-unittests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail if safe-to-test label NOT applied
+        if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+      - name: Install unit test plugin
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v0.5.1
+      - name: Run Helm unit tests
+        run: helm unittest --debug ./charts/cryostat
