@@ -120,12 +120,12 @@ tests:
             2. Forward local port to the application's pod:
               ```
               kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat
-          
+
               export POD_NAME=$(kubectl get pods -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
               export CONTAINER_PORT=$(kubectl get pod -n NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
               kubectl -n NAMESPACE port-forward $POD_NAME "8080:$CONTAINER_PORT"
               ```
-          
+
             3. Visit the application at:
               ```
               echo http://localhost:8080
