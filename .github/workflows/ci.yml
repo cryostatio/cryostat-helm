@@ -66,5 +66,5 @@ jobs:
           
           if ! git diff --exit-code; then
             echo "README requires updating. To update, run:"
-            echo "npx @bitnami/readme-generator-for-helm@{{ env.README_GENERATOR_VERSION }} --values charts/cryostat/values.yaml --readme charts/cryostat/README.md --schema charts/cryostat/values.schema.json"
+            echo "npx @bitnami/readme-generator-for-helm@$README_GENERATOR_VERSION --values charts/cryostat/values.yaml --readme charts/cryostat/README.md --schema charts/cryostat/values.schema.json"
           fi
