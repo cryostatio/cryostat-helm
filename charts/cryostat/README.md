@@ -1,13 +1,49 @@
 # Cryostat Helm Chart
-A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and OpenShift
 
-## Installing
+![Version: 2.0.0-dev](https://img.shields.io/badge/Version-2.0.0--dev-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.0.0-dev](https://img.shields.io/badge/AppVersion-4.0.0--dev-informational?style=flat-square)
 
-The Cryostat Helm Chart is available to install from various locations:
-- `helm repo add cryostat https://cryostat.io/helm-charts ; helm search repo cryostat ; helm install cryostat cryostat/cryostat`
-- `helm install cryostat oci://ghcr.io/cryostatio/cryostat-helm --version $VERSION`
-- `git clone https://github.com/cryostatio/cryostat-helm ; cd cryostat-helm ; helm install cryostat ./charts/cryostat`
-- `helm repo add openshift-helm-charts https://charts.openshift.io ; helm search repo cryostat ; helm install cryostat openshift-helm-charts/redhat-cryostat`
+A Helm chart for deploying [Cryostat](https://cryostat.io/) on Kubernetes and OpenShift.
+
+## Requirements
+
+Kubernetes: `>= 1.25.0-0`
+
+## Installation
+
+### From Helm repository
+
+The chart is available at the following repositories:
+
+- https://cryostat.io/helm-charts
+- https://charts.openshift.io
+
+To install the chart, add the repository and install, for example:
+
+```bash
+helm repo add cryostat-charts https://cryostat.io/helm-charts
+helm repo update
+helm install cryostat cryostat-charts/cryostat
+```
+
+### From OCI container registry
+
+The chart is also available as an OCI image on GitHub Container Registry (`ghcr.io`).
+
+To install the chart, run:
+
+```bash
+helm install cryostat oci://ghcr.io/cryostatio/cryostat-helm --version $VERSION
+```
+
+### From source code
+
+To install the chart from source code, run:
+
+```bash
+git clone https://github.com/cryostatio/cryostat-helm
+cd cryostat-helm
+helm install cryostat ./charts/cryostat
+```
 
 ## Parameters
 
