@@ -63,7 +63,7 @@ jobs:
         kubectl create ns $TEST_NAMESPACE
         ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug
 
-  helm-unittests:
+  helm-unittest:
     runs-on: ubuntu-latest
     steps:
       - name: fail if safe-to-test label NOT applied
