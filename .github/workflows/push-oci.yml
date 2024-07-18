@@ -1,5 +1,9 @@
 name: Push Helm Chart to OCI Registry
 
+concurrency:
+  group: ci-${{ github.run_id }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:

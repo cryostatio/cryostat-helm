@@ -1,0 +1,69 @@
+name: Lint Helm Chart
+
+concurrency:
+  group: ci-${{ github.run_id }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+    branches:
+      - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
+
+jobs:
+  lint-chart:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          check-latest: true
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+      - name: Lint chart
+        run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
+
+  check-readme-diff:
+    runs-on: ubuntu-latest
+    env:
+      README_GENERATOR_VERSION: 2.5.2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check README diff
+        run: |
+          npx @bitnami/readme-generator-for-helm@$README_GENERATOR_VERSION \
+            --values charts/cryostat/values.yaml \
+            --readme charts/cryostat/README.md \
+            --schema charts/cryostat/values.schema.json
+
+          if ! git diff --exit-code; then
+            echo "README requires updating. To update, run:"
+            echo "npx @bitnami/readme-generator-for-helm@$README_GENERATOR_VERSION --values charts/cryostat/values.yaml --readme charts/cryostat/README.md --schema charts/cryostat/values.schema.json"
+            exit 1
+          fi
