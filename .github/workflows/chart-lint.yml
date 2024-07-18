@@ -25,8 +25,6 @@ on:
       - v[0-9]+.[0-9]+
       - cryostat-v[0-9]+.[0-9]+
 
-
-
 jobs:
   lint-chart:
     runs-on: ubuntu-latest
@@ -43,12 +41,13 @@ jobs:
           version: v3.14.4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
           check-latest: true
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
       - name: Lint chart
         run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
+
   check-readme-diff:
     runs-on: ubuntu-latest
     env:
@@ -63,7 +62,7 @@ jobs:
             --values charts/cryostat/values.yaml \
             --readme charts/cryostat/README.md \
             --schema charts/cryostat/values.schema.json
-          
+
           if ! git diff --exit-code; then
             echo "README requires updating. To update, run:"
             echo "npx @bitnami/readme-generator-for-helm@$README_GENERATOR_VERSION --values charts/cryostat/values.yaml --readme charts/cryostat/README.md --schema charts/cryostat/values.schema.json"

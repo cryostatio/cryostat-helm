@@ -32,36 +32,36 @@ jobs:
       TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
       TEST_NAMESPACE: helm-test
     steps:
-    - name: Fail if safe-to-test label NOT applied
-      if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
-      run: exit 1
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Set up Helm
-      uses: azure/setup-helm@v4
-      with:
-        version: v3.14.4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-        check-latest: true
-    - uses: helm/chart-testing-action@v2.6.1
-    - name: Set up Kind cluster
-      uses: helm/kind-action@v1
-      with:
-        cluster_name: ci-${{ github.run_id }}
-    - name: Install and test chart
-      run: |
-        # FIXME: Remove when chart-testing fixes the issue https://github.com/helm/chart-testing/issues/525
-        
-        HELM_LOCATION="$(which helm)"
-        sudo mv $HELM_LOCATION "$(dirname $HELM_LOCATION)/.helm"
-        cat <(echo '#!/usr/bin/env bash') <(echo 'exec .helm "${@//--reuse-values/--reset-then-reuse-values}"') | sudo tee $HELM_LOCATION
-        sudo chmod +x $HELM_LOCATION
+      - name: Fail if safe-to-test label NOT applied
+        if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          check-latest: true
+      - uses: helm/chart-testing-action@v2.6.1
+      - name: Set up Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ci-${{ github.run_id }}
+      - name: Install and test chart
+        run: |
+          # FIXME: Remove when chart-testing fixes the issue https://github.com/helm/chart-testing/issues/525
 
-        kubectl create ns $TEST_NAMESPACE
-        ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug
+          HELM_LOCATION="$(which helm)"
+          sudo mv $HELM_LOCATION "$(dirname $HELM_LOCATION)/.helm"
+          cat <(echo '#!/usr/bin/env bash') <(echo 'exec .helm "${@//--reuse-values/--reset-then-reuse-values}"') | sudo tee $HELM_LOCATION
+          sudo chmod +x $HELM_LOCATION
+
+          kubectl create ns $TEST_NAMESPACE
+          ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug
 
   helm-unittest:
     runs-on: ubuntu-latest
