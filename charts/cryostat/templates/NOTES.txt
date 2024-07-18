@@ -60,6 +60,6 @@
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
   echo http://$SERVICE_IP:{{ .Values.core.service.httpPort }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
-  http://localhost:8080
+  echo http://localhost:8080
 {{- end }}
   ```
