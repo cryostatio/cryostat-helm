@@ -1,4 +1,4 @@
-name: submodule
+name: Update Submodule
 
 on:
   workflow_call:

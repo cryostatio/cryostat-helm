@@ -1,4 +1,4 @@
-name: Helm unit tests
+name: Helm Unit Tests
 
 on:
   push:
