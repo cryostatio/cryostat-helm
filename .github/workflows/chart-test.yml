@@ -25,13 +25,12 @@ on:
       - v[0-9]+.[0-9]+
       - cryostat-v[0-9]+.[0-9]+
 
-env:
-  TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
-  TEST_NAMESPACE: helm-test
-
 jobs:
   test-chart:
     runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
+      TEST_NAMESPACE: helm-test
     steps:
     - name: Fail if safe-to-test label NOT applied
       if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}

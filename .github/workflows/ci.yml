@@ -25,13 +25,14 @@ on:
       - v[0-9]+.[0-9]+
       - cryostat-v[0-9]+.[0-9]+
 
-env:
-  TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
-  TEST_NAMESPACE: helm-test
+
 
 jobs:
   lint-chart:
     runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event.pull_request.base.ref || github.ref_name }}
+      TEST_NAMESPACE: helm-test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,3 +49,22 @@ jobs:
         uses: helm/chart-testing-action@v2.6.1
       - name: Lint chart
         run: ct lint --target-branch ${TARGET_BRANCH} --lint-conf lintconf.yaml --config ct.yaml --chart-yaml-schema chart_schema.yaml
+  check-readme-diff:
+    runs-on: ubuntu-latest
+    env:
+      README_GENERATOR_VERSION: 2.5.2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check README diff
+        run: |
+          npx @bitnami/readme-generator-for-helm@{{ env.README_GENERATOR_VERSION }} \
+            --values charts/cryostat/values.yaml \
+            --readme charts/cryostat/README.md \
+            --schema charts/cryostat/values.schema.json
+          
+          if ! git diff --exit-code; then
+            echo "README requires updating. To update, run:"
+            echo "npx @bitnami/readme-generator-for-helm@{{ env.README_GENERATOR_VERSION }} --values charts/cryostat/values.yaml --readme charts/cryostat/README.md --schema charts/cryostat/values.schema.json"
+          fi
