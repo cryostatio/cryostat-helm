@@ -116,6 +116,24 @@ Get or generate a default secret key for object storage.
 {{- end -}}
 
 {{/*
+Get or generate a default secret key for auth proxy cookies.
+*/}}
+{{- define "cryostat.cookieSecret" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-cookie-secret" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current secret. Do not regenerate.
+*/}}
+{{- $secret.data.COOKIE_SECRET -}}
+{{- else -}}
+{{/*
+    Generate new secret
+*/}}
+{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
     Get sanitized list or defaults (if not disabled) as comma-separated list.
 */}}
 {{- define "cryostat.commaSepList" -}}
