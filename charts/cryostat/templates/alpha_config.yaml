@@ -21,6 +21,12 @@ data:
         - id: grafana
           path: /grafana/
           uri: http://localhost:3000
+        - id: storage
+          path: ^/storage/(.*)$
+          rewriteTarget: /$1
+          uri: http://localhost:8333
+          passHostHeader: false
+          proxyWebSockets: false
     providers:
       - id: dummy
         name: Unused - Sign In Below
