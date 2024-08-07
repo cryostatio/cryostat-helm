@@ -13,7 +13,11 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     - name: OAUTH2_PROXY_REDIRECT_URL
       value: "http://localhost:4180/oauth2/callback"
     - name: OAUTH2_PROXY_COOKIE_SECRET
-      value: {{ include "cryostat.cookieSecret" . | b64dec | quote }}
+      valueFrom:
+        secretKeyRef:
+          name: {{ .Release.Name }}-cookie-secret
+          key: COOKIE_SECRET
+          optional: false
     - name: OAUTH2_PROXY_EMAIL_DOMAINS
       value: "*"
     {{- if .Values.authentication.basicAuth.enabled }}
