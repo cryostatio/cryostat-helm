@@ -124,13 +124,12 @@ Generate or retrieve a default value for cookieSecret.
 {{/*
    Use the current secret. Do not regenerate.
 */}}
-{{- $secret.data.COOKIE_SECRET | b64dec | quote -}}
+{{- $secret.data.COOKIE_SECRET -}}
 {{- else -}}
 {{/*
     Generate a new secret.
 */}}
-{{- $newSecret := randAlphaNum 24 | b64enc -}}
-{{- $newSecret | quote -}}
+{{- (randAlphaNum 24) | b64enc | quote -}}
 {{- end }}
 {{- end }}
 
