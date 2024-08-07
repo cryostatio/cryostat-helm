@@ -265,9 +265,11 @@ spec:
       - name: {{ .Chart.Name }}
         emptyDir: {}
       {{- end }}
+      {{- if not (.Values.authentication.openshift).enabled }}
       - name: alpha-config
         configMap:
           name: {{ .Release.Name }}-alpha-config
+      {{- end }}
       {{- if .Values.authentication.basicAuth.enabled }}
       - name: {{ .Release.Name }}-htpasswd
         secret:
