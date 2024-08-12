@@ -6,6 +6,13 @@ Create OpenShift OAuth Proxy container.
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
+  env:
+    - name: COOKIE_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: {{ .Release.Name }}-cookie-secret
+          key: COOKIE_SECRET
+          optional: false
   args:
     - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
     - --pass-access-token=false
@@ -14,7 +21,7 @@ Create OpenShift OAuth Proxy container.
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
     - --upstream=http://localhost:8333/storage/
-    - --cookie-secret={{ include "cryostat.cookieSecret" . }}
+    - --cookie-secret="$(COOKIE_SECRET)"
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
     - --proxy-websockets=true
     - --http-address=0.0.0.0:4180
