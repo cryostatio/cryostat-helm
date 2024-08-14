@@ -16,9 +16,6 @@ tests:
           pattern: "- id: grafana\\s*path: /grafana/\\s*uri: http://localhost:3000"
       - matchRegex:
           path: data['alpha_config.yaml']
-          pattern: "- id: storage\\s*path: \\^/storage/\\(\\.\\*\\)\\$\\s*rewriteTarget: /\\$1\\s*uri: http://localhost:8333\\s*passHostHeader: false\\s*proxyWebSockets: false"
-      - matchRegex:
-          path: data['alpha_config.yaml']
           pattern: "providers:\\s*- id: dummy\\s*name: Unused - Sign In Below\\s*clientId: CLIENT_ID\\s*clientSecret: CLIENT_SECRET\\s*provider: google"
 
   - it: should not create alpha_config when openshift authentication is enabled
