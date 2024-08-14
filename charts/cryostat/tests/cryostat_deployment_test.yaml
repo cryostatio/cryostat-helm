@@ -1,6 +1,6 @@
-suite: test deployment.yaml
+suite: test cryostat_deployment.yaml
 templates:
-  - deployment.yaml
+  - cryostat_deployment.yaml
 
 tests:
   - it: should verify general deployment settings
