@@ -36,6 +36,8 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
   ports:
     - containerPort: 4180
       protocol: TCP
+  resources:
+    {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
   volumeMounts:
     - name: alpha-config
       mountPath: /etc/oauth2_proxy/alpha_config

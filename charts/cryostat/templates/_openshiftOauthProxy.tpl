@@ -40,6 +40,8 @@ Create OpenShift OAuth Proxy container.
   ports:
     - containerPort: 4180
       protocol: TCP
+  resources:
+    {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}
   volumeMounts:
     {{- if .Values.authentication.basicAuth.enabled }}
     - name: {{ .Release.Name }}-htpasswd
@@ -48,7 +50,6 @@ Create OpenShift OAuth Proxy container.
     {{- end }}
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
-  resources: {}
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- end}}

@@ -167,7 +167,52 @@ tests:
               cpu: 500m
               memory: 384Mi
 
-  - it: should set resource overrides
+  - it: should set oauth2proxy resource overrides
+    set:
+      oauth2Proxy:
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].resources
+          value:
+            limits:
+              cpu: 4000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
+
+  - it: should set openshiftOauthProxy resource overrides
+    set:
+      authentication:
+        openshift:
+          enabled: true
+      openshiftOauthProxy:
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].resources
+          value:
+            limits:
+              cpu: 4000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
+
+  - it: should set cryostat resource overrides
     set:
       core:
         resources:
@@ -180,6 +225,48 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
+          value:
+            limits:
+              cpu: 4000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
+
+  - it: should set grafana resource overrides
+    set:
+      grafana:
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].resources
+          value:
+            limits:
+              cpu: 4000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
+
+  - it: should set jfr-datasource resource overrides
+    set:
+      datasource:
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].resources
           value:
             limits:
               cpu: 4000m
@@ -232,8 +319,12 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].livenessProbe.httpGet.port
           value: 3000
-      - exists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].resources
+          value:
+            requests:
+              cpu: 25m
+              memory: 80Mi
 
   - it: should validate cryostat-jfr-datasource settings
     asserts:
@@ -270,8 +361,12 @@ tests:
               - curl
               - --fail
               - http://localhost:8800
-      - exists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].resources
+          value:
+            requests:
+              cpu: 200m
+              memory: 200Mi
 
   - it: should validate volumes and volume mounts
     asserts:
