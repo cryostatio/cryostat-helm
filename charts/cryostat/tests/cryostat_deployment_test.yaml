@@ -93,7 +93,7 @@ tests:
           value: "archivedrecordings"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
-          value: "http://localhost:8333"
+          value: "http://cryostat-storage:8333"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
           value: "true"
@@ -162,83 +162,6 @@ tests:
           value: 18
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
-
-  - it: should validate cryostat-storage settings
-    asserts:
-      - exists:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')]
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].securityContext.allowPrivilegeEscalation
-          value: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].securityContext.capabilities.drop
-          value:
-            - ALL
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].image
-          value: "quay.io/cryostat/cryostat-storage:latest"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
-          value: "Always"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedrecordings,archivedreports,eventtemplates,probes"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].value
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_SECRET_KEY')].valueFrom.secretKeyRef
-          value:
-              name: "RELEASE-NAME-storage"
-              key: "SECRET_KEY"
-              optional: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='DATA_DIR')].value
-          value: "/data"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='IP_BIND')].value
-          value: 0.0.0.0
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].containerPort
-          value: 8333
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].protocol
-          value: "TCP"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].mountPath
-          value: "/data"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].name
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].subPath
-          value: "seaweed"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.path
-          value: "/status"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.port
-          value: 8333
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.periodSeconds
-          value: 10
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.failureThreshold
-          value: 2
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.path
-          value: "/status"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.port
-          value: 8333
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.periodSeconds
-          value: 10
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.failureThreshold
-          value: 9
-      - exists:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
 
   - it: should validate cryostat-grafana settings
     asserts:
@@ -397,9 +320,6 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
           value: Always
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
-          value: Always
-      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
           value: "Always"
       - equal:
@@ -411,7 +331,6 @@ tests:
       core.image.tag: "4.1.0"
       core.image.pullPolicy: "IfNotPresent"
       oauth2Proxy.image.pullPolicy: "IfNotPresent"
-      storage.image.pullPolicy: "IfNotPresent"
       grafana.image.pullPolicy: "IfNotPresent"
       db.image.pullPolicy: "IfNotPresent"
       datasource.image.pullPolicy: "IfNotPresent"
@@ -421,9 +340,6 @@ tests:
           value: "IfNotPresent"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
-          value: "IfNotPresent"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
           value: "IfNotPresent"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy

@@ -114,6 +114,11 @@ storage:
     pullPolicy: Always
     ## @param storage.image.tag Tag for the storage container image
     tag: "latest"
+  service:
+    ## @param storage.service.type Type of Service to create for the object storage
+    type: ClusterIP
+    ## @param storage.service.port Port number to expose on the Service
+    port: 8333
   ## @param storage.resources Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
