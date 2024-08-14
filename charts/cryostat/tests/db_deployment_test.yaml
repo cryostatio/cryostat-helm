@@ -103,6 +103,8 @@ tests:
               - cryostat
               - -d
               - cryostat
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].resources
 
   - it: should validate volumes and volume mounts
     asserts:
