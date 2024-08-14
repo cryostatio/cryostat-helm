@@ -49,7 +49,10 @@ core:
       ## @param core.route.tls.destinationCACertificate Provides the contents of the CA certificate of the final destination when using reencrypt termination for the Cryostat application Route
       destinationCACertificate: ""
   ## @param core.resources Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
-  resources: {}
+  resources:
+    requests:
+      cpu: 500m
+      memory: 384Mi
   ## @param core.securityContext [object] Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip core.securityContext.allowPrivilegeEscalation
@@ -94,7 +97,10 @@ db:
     ## @param db.service.port Port number to expose on the Service
     port: 5432
   ## @param db.resources Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
-  resources: {}
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip db.securityContext.allowPrivilegeEscalation
@@ -120,7 +126,10 @@ storage:
     ## @param storage.service.port Port number to expose on the Service
     port: 8333
   ## @param storage.resources Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip storage.securityContext.allowPrivilegeEscalation
@@ -146,7 +155,10 @@ grafana:
     ## @param grafana.service.port Port number to expose on the Service for Grafana's HTTP server
     port: 3000
   ## @param grafana.resources Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
-  resources: {}
+  resources:
+    requests:
+      cpu: 25m
+      memory: 80Mi
   ## @param grafana.securityContext [object] Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip grafana.securityContext.allowPrivilegeEscalation
@@ -167,7 +179,10 @@ datasource:
     ## @param datasource.image.tag Tag for the JFR Data Source container image
     tag: "latest"
   ## @param datasource.resources Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
-  resources: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 200Mi
   ## @param datasource.securityContext [object] Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip datasource.securityContext.allowPrivilegeEscalation

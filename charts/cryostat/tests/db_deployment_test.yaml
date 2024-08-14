@@ -105,9 +105,12 @@ tests:
               - cryostat
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].resources
-          value: {}
+          value:
+            requests:
+              cpu: 25m
+              memory: 64Mi
 
-  - it: should set resources
+  - it: should set resource overrides
     set:
       db:
         resources:

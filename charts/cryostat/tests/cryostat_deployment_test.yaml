@@ -162,14 +162,17 @@ tests:
           value: 18
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
-          value: {}
+          value:
+            requests:
+              cpu: 500m
+              memory: 384Mi
 
-  - it: should set resources
+  - it: should set resource overrides
     set:
       core:
         resources:
           limits:
-            cpu: 2000m
+            cpu: 4000m
             memory: 1Gi
           requests:
             cpu: 4000m
@@ -179,7 +182,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
           value:
             limits:
-              cpu: 2000m
+              cpu: 4000m
               memory: 1Gi
             requests:
               cpu: 4000m

@@ -121,9 +121,12 @@ tests:
           value: 9
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
-          value: {}
+          value:
+            requests:
+              cpu: 50m
+              memory: 256Mi
 
-  - it: should set resources
+  - it: should set resource overrides
     set:
       storage:
         resources:
