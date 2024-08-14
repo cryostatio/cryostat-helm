@@ -87,7 +87,7 @@ tests:
             optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
-          value: "jdbc:postgresql://localhost:5432/cryostat"
+          value: "jdbc:postgresql://cryostat-db:5432/cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "archivedrecordings"
@@ -162,65 +162,6 @@ tests:
           value: 18
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
-
-  - it: should validate cryostat-db settings
-    asserts:
-      - exists:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')]
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.allowPrivilegeEscalation
-          value: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.capabilities.drop
-          value:
-            - ALL
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].image
-          value: "quay.io/cryostat/cryostat-db:latest"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
-          value: "Always"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_USER')].value
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_PASSWORD')].valueFrom.secretKeyRef
-          value:
-              name: "RELEASE-NAME-db"
-              key: "CONNECTION_KEY"
-              optional: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_DATABASE')].value
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='PG_ENCRYPT_KEY')].valueFrom.secretKeyRef
-          value:
-              name: "RELEASE-NAME-db"
-              key: "ENCRYPTION_KEY"
-              optional: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].ports[0].containerPort
-          value: 5432
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].ports[0].protocol
-          value: "TCP"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].mountPath
-          value: "/var/lib/pgsql/data"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].name
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].subPath
-          value: "postgres"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].readinessProbe.exec.command
-          value:
-              - pg_isready
-              - -U
-              - cryostat
-              - -d
-              - cryostat
 
   - it: should validate cryostat-storage settings
     asserts:
@@ -462,9 +403,6 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
           value: "Always"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
-          value: "Always"
-      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
           value: "Always"
 
@@ -489,9 +427,6 @@ tests:
           value: "IfNotPresent"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
-          value: "IfNotPresent"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
           value: "IfNotPresent"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy

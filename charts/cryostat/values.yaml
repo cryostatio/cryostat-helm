@@ -88,6 +88,11 @@ db:
     pullPolicy: Always
     ## @param db.image.tag Tag for the database container image
     tag: "latest"
+  service:
+    ## @param db.service.type Type of Service to create for the database
+    type: ClusterIP
+    ## @param db.service.port Port number to expose on the Service
+    port: 5432
   ## @param db.resources Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources: {}
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
