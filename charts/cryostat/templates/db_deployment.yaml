@@ -67,6 +67,8 @@ spec:
               - cryostat
               - -d
               - cryostat
+          resources:
+            {{- toYaml (.Values.db).resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
