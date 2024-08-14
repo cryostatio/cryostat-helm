@@ -160,8 +160,30 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.failureThreshold
           value: 18
-      - exists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].resources
+          value: {}
+
+  - it: should set resources
+    set:
+      core:
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].resources
+          value:
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
 
   - it: should validate cryostat-grafana settings
     asserts:

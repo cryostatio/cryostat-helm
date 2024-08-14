@@ -103,8 +103,30 @@ tests:
               - cryostat
               - -d
               - cryostat
-      - exists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].resources
+          value: {}
+
+  - it: should set resources
+    set:
+      db:
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].resources
+          value:
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
 
   - it: should validate volumes and volume mounts
     asserts:

@@ -119,8 +119,30 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.failureThreshold
           value: 9
-      - exists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
+          value: {}
+
+  - it: should set resources
+    set:
+      storage:
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+          requests:
+            cpu: 4000m
+            memory: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
+          value:
+            limits:
+              cpu: 2000m
+              memory: 1Gi
+            requests:
+              cpu: 4000m
+              memory: 2Gi
 
   - it: should validate volumes and volume mounts
     asserts:
