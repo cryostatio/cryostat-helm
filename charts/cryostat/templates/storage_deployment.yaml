@@ -57,18 +57,28 @@ spec:
           - mountPath: /data
             name: {{ .Chart.Name }}-storage
             subPath: seaweed
-          livenessProbe:
-            httpGet:
-              path: "/status"
-              port: 8333
-            periodSeconds: 10
-            failureThreshold: 2
           startupProbe:
             httpGet:
               path: "/status"
               port: 8333
             periodSeconds: 10
             failureThreshold: 9
+          livenessProbe:
+            httpGet:
+              path: "/status"
+              port: 8333
+            periodSeconds: 10
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - echo s3.bucket.list | weed shell | [[ "$(</dev/stdin)" == *"archivedrecordings"* ]]
+            failureThreshold: 2
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
           resources:
             {{- toYaml (.Values.storage).resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
