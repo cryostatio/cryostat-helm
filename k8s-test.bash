@@ -18,6 +18,6 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-helm install "${RELEASE_NAME}" ./charts/cryostat
+helm install --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}" ./charts/cryostat
 sleep "${SLEEP_DELAY:-60}"
-helm test "${RELEASE_NAME}"
+helm test --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}"
