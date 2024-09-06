@@ -1,6 +1,6 @@
-suite: test service.yaml
+suite: test cryostat_service.yaml
 templates:
-  - service.yaml
+  - cryostat_service.yaml
 
 tests:
   - it: should create a Service with the correct settings
@@ -116,5 +116,3 @@ tests:
     asserts:
       - notExists:
           path: metadata.annotations.`service.alpha.openshift.io/serving-cert-secret-name`
-
-

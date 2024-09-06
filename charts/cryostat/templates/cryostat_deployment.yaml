@@ -66,11 +66,11 @@ spec:
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: jdbc:postgresql://localhost:5432/cryostat
+            value: jdbc:postgresql://cryostat-db:5432/cryostat
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: http://localhost:8333
+            value: http://cryostat-storage:8333
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION
@@ -121,84 +121,6 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
-        - name: {{ printf "%s-%s" .Chart.Name "db" }}
-          securityContext:
-            {{- toYaml (.Values.db).securityContext | nindent 12 }}
-          image: "{{ (.Values.db).image.repository }}:{{ (.Values.db).image.tag }}"
-          imagePullPolicy: {{ (.Values.db).image.pullPolicy }}
-          env:
-          - name: POSTGRESQL_USER
-            value: cryostat
-          - name: POSTGRESQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
-                key: CONNECTION_KEY
-                optional: false
-          - name: POSTGRESQL_DATABASE
-            value: cryostat
-          - name: PG_ENCRYPT_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
-                key: ENCRYPTION_KEY
-                optional: false
-          ports:
-            - containerPort: 5432
-              protocol: TCP
-          volumeMounts:
-          - mountPath: /var/lib/pgsql/data
-            name: {{ .Chart.Name }}
-            subPath: postgres
-          readinessProbe:
-            exec:
-              command:
-              - pg_isready
-              - -U
-              - cryostat
-              - -d
-              - cryostat
-        - name: {{ printf "%s-%s" .Chart.Name "storage" }}
-          securityContext:
-            {{- toYaml (.Values.storage).securityContext | nindent 12 }}
-          image: "{{ (.Values.storage).image.repository }}:{{ (.Values.storage).image.tag }}"
-          imagePullPolicy: {{ (.Values.storage).image.pullPolicy }}
-          env:
-          - name: CRYOSTAT_BUCKETS
-            value: archivedrecordings,archivedreports,eventtemplates,probes
-          - name: CRYOSTAT_ACCESS_KEY
-            value: cryostat
-          - name: CRYOSTAT_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ printf "%s-storage" .Release.Name }}
-                key: SECRET_KEY
-                optional: false
-          - name: DATA_DIR
-            value: /data
-          - name: IP_BIND
-            value: 0.0.0.0
-          ports:
-            - containerPort: 8333
-              protocol: TCP
-          volumeMounts:
-          - mountPath: /data
-            name: {{ .Chart.Name }}
-            subPath: seaweed
-          livenessProbe:
-            httpGet:
-              path: "/status"
-              port: 8333
-            periodSeconds: 10
-            failureThreshold: 2
-          startupProbe:
-            httpGet:
-              path: "/status"
-              port: 8333
-            periodSeconds: 10
-            failureThreshold: 9
-          resources:
-            {{- toYaml (.Values.storage).resources | nindent 12 }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -258,15 +180,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.pvc).enabled) }}
-      - name: {{ .Chart.Name }}
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}
-      {{- end }}
-      {{- if not ((.Values.pvc).enabled) }}
-      - name: {{ .Chart.Name }}
-        emptyDir: {}
-      {{- end }}
       {{- if not (.Values.authentication.openshift).enabled }}
       - name: alpha-config
         configMap:
