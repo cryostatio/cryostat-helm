@@ -71,8 +71,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_SECRET_KEY')].valueFrom.secretKeyRef
           value:
-              name: "RELEASE-NAME-storage"
-              key: "SECRET_KEY"
+              name: "RELEASE-NAME-storage-secret"
+              key: "STORAGE_ACCESS_KEY"
               optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='DATA_DIR')].value

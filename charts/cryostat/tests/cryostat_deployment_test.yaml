@@ -115,8 +115,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
-              key: "SECRET_KEY"
-              name: "RELEASE-NAME-storage"
+              key: "STORAGE_ACCESS_KEY"
+              name: "RELEASE-NAME-storage-secret"
               optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
