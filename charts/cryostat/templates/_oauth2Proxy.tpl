@@ -15,7 +15,7 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     - name: OAUTH2_PROXY_COOKIE_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ .Release.Name }}-cookie-secret
+          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
           key: COOKIE_SECRET
           optional: false
     - name: OAUTH2_PROXY_EMAIL_DOMAINS

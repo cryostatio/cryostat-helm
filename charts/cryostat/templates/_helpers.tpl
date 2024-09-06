@@ -119,7 +119,7 @@ Get or generate a default secret key for object storage.
 Get or generate a default secret key for auth proxy cookies.
 */}}
 {{- define "cryostat.cookieSecret" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-cookie-secret" .Release.Name)) -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace ( default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName )) -}}
 {{- if $secret -}}
 {{/*
    Use current secret. Do not regenerate.

@@ -200,6 +200,8 @@ datasource:
 ## @section Authentication
 
 authentication:
+  ## @param authentication.cookieSecretName Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
+  cookieSecretName: ""
   openshift:
     ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.
     enabled: false
