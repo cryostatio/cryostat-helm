@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -xe
+
+TEST_NAMESPACE="${TEST_NAMESPACE:-kind-test}"
+RELEASE_NAME="${RELEASE_NAME:-cryostat-kind-test}"
+
+if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
+    kind create cluster
+fi
+
+kubectl create ns "${TEST_NAMESPACE}"
+function cleanup() {
+    kubectl delete ns "${TEST_NAMESPACE}"
+    if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
+        kind delete cluster
+    fi
+}
+trap cleanup EXIT
+
+helm install "${RELEASE_NAME}" ./charts/cryostat
+sleep "${SLEEP_DELAY:-60}"
+helm test "${RELEASE_NAME}"
