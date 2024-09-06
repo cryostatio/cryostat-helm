@@ -2,8 +2,8 @@
 
 set -xe
 
-TEST_NAMESPACE="${TEST_NAMESPACE:-kind-test}"
-RELEASE_NAME="${RELEASE_NAME:-cryostat-kind-test}"
+TEST_NAMESPACE="${TEST_NAMESPACE:-k8s-test}"
+RELEASE_NAME="${RELEASE_NAME:-cryostat-k8s-test}"
 
 if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
     kind create cluster
