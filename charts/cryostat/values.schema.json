@@ -148,8 +148,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the Cryostat container.",
+                                    "default": "500m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the Cryostat container.",
+                                    "default": "384Mi"
+                                }
+                            }
+                        }
+                    }
                 },
                 "securityContext": {
                     "type": "object",
@@ -234,6 +249,26 @@
         "db": {
             "type": "object",
             "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the database container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the database container image",
+                            "default": "latest"
+                        }
+                    }
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -259,30 +294,40 @@
                         }
                     }
                 },
-                "image": {
+                "service": {
                     "type": "object",
                     "properties": {
-                        "repository": {
+                        "type": {
                             "type": "string",
-                            "description": "Repository for the database container image",
-                            "default": "quay.io/cryostat/cryostat-db"
+                            "description": "Type of Service to create for the database",
+                            "default": "ClusterIP"
                         },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the database container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the database container image",
-                            "default": "latest"
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 5432
                         }
                     }
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the database container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the database container.",
+                                    "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -334,10 +379,40 @@
                         }
                     }
                 },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the object storage",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 8333
+                        }
+                    }
+                },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the object storage container.",
+                                    "default": "50m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the object storage container.",
+                                    "default": "256Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -406,8 +481,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the Grafana container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the Grafana container.",
+                                    "default": "80Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -461,8 +551,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the JFR Data Source container.",
+                                    "default": "200m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the JFR Data Source container.",
+                                    "default": "200Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -511,6 +616,26 @@
                             "type": "string",
                             "description": "Tag for the OAuth2 Proxy container image",
                             "default": "latest"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the OAuth2 Proxy container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the OAuth2 Proxy container.",
+                                    "default": "64Mi"
+                                }
+                            }
                         }
                     }
                 }
@@ -606,6 +731,26 @@
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
                             "default": "cryostat-v3.0"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the OpenShift OAuth Proxy container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the OpenShift OAuth Proxy container.",
+                                    "default": "64Mi"
+                                }
+                            }
                         }
                     }
                 },

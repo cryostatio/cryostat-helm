@@ -48,10 +48,11 @@ core:
       caCertificate: ""
       ## @param core.route.tls.destinationCACertificate Provides the contents of the CA certificate of the final destination when using reencrypt termination for the Cryostat application Route
       destinationCACertificate: ""
-  ## @param core.resources Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources:
     requests:
+      ## @param core.resources.requests.cpu CPU resource request for the Cryostat container.
       cpu: 500m
+      ## @param core.resources.requests.memory Memory resource request for the Cryostat container.
       memory: 384Mi
   ## @param core.securityContext [object] Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
@@ -96,10 +97,11 @@ db:
     type: ClusterIP
     ## @param db.service.port Port number to expose on the Service
     port: 5432
-  ## @param db.resources Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources:
     requests:
+      ## @param db.resources.requests.cpu CPU resource request for the database container.
       cpu: 25m
+      ## @param db.resources.requests.memory Memory resource request for the database container.
       memory: 64Mi
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
@@ -125,10 +127,11 @@ storage:
     type: ClusterIP
     ## @param storage.service.port Port number to expose on the Service
     port: 8333
-  ## @param storage.resources Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources:
     requests:
+      ## @param storage.resources.requests.cpu CPU resource request for the object storage container.
       cpu: 50m
+      ## @param storage.resources.requests.memory Memory resource request for the object storage container.
       memory: 256Mi
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
@@ -154,10 +157,11 @@ grafana:
     type: ClusterIP
     ## @param grafana.service.port Port number to expose on the Service for Grafana's HTTP server
     port: 3000
-  ## @param grafana.resources Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources:
     requests:
+      ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container.
       cpu: 25m
+      ## @param grafana.resources.requests.memory Memory resource request for the Grafana container.
       memory: 80Mi
   ## @param grafana.securityContext [object] Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
@@ -178,10 +182,11 @@ datasource:
     pullPolicy: Always
     ## @param datasource.image.tag Tag for the JFR Data Source container image
     tag: "latest"
-  ## @param datasource.resources Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
   resources:
     requests:
+      ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container.
       cpu: 200m
+      ## @param datasource.resources.requests.memory Memory resource request for the JFR Data Source container.
       memory: 200Mi
   ## @param datasource.securityContext [object] Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
@@ -221,7 +226,9 @@ oauth2Proxy:
     tag: "latest"
   resources:
     requests:
+      ## @param oauth2Proxy.resources.requests.cpu CPU resource request for the OAuth2 Proxy container.
       cpu: 25m
+      ## @param oauth2Proxy.resources.requests.memory Memory resource request for the OAuth2 Proxy container.
       memory: 64Mi
   ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1). If the chart is installed in default namespaces (e.g. default), `securityContext.runAsUser` must be set if the proxy image does not specify a numeric non-root user. This is due to OpenShift Security Context Constraints are not applied in default namespaces. See [Understanding and Managing Pod Security Admission](https://docs.openshift.com/container-platform/4.15/authentication/understanding-and-managing-pod-security-admission.html#psa-privileged-namespaces_understanding-and-managing-pod-security-admission).
   securityContext:
@@ -244,7 +251,9 @@ openshiftOauthProxy:
     tag: "cryostat-v3.0"
   resources:
     requests:
+      ## @param openshiftOauthProxy.resources.requests.cpu CPU resource request for the OpenShift OAuth Proxy container.
       cpu: 25m
+      ## @param openshiftOauthProxy.resources.requests.memory Memory resource request for the OpenShift OAuth Proxy container.
       memory: 64Mi
   accessReview:
     ## @param openshiftOauthProxy.accessReview.enabled Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.
