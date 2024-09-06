@@ -50,7 +50,7 @@ core:
       destinationCACertificate: ""
   resources:
     requests:
-      ## @param core.resources.requests.cpu CPU resource request for the Cryostat container.
+      ## @param core.resources.requests.cpu CPU resource request for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 500m
       ## @param core.resources.requests.memory Memory resource request for the Cryostat container.
       memory: 384Mi
@@ -99,7 +99,7 @@ db:
     port: 5432
   resources:
     requests:
-      ## @param db.resources.requests.cpu CPU resource request for the database container.
+      ## @param db.resources.requests.cpu CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 25m
       ## @param db.resources.requests.memory Memory resource request for the database container.
       memory: 64Mi
@@ -129,7 +129,7 @@ storage:
     port: 8333
   resources:
     requests:
-      ## @param storage.resources.requests.cpu CPU resource request for the object storage container.
+      ## @param storage.resources.requests.cpu CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 50m
       ## @param storage.resources.requests.memory Memory resource request for the object storage container.
       memory: 256Mi
@@ -159,7 +159,7 @@ grafana:
     port: 3000
   resources:
     requests:
-      ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container.
+      ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 25m
       ## @param grafana.resources.requests.memory Memory resource request for the Grafana container.
       memory: 80Mi
@@ -184,7 +184,7 @@ datasource:
     tag: "latest"
   resources:
     requests:
-      ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container.
+      ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 200m
       ## @param datasource.resources.requests.memory Memory resource request for the JFR Data Source container.
       memory: 200Mi
