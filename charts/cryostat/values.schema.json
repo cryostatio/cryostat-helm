@@ -644,6 +644,11 @@
         "authentication": {
             "type": "object",
             "properties": {
+                "cookieSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "openshift": {
                     "type": "object",
                     "properties": {
