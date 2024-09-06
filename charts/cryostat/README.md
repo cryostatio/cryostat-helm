@@ -84,7 +84,6 @@ helm install cryostat ./charts/cryostat
 | `core.discovery.kubernetes.builtInPortNumbersDisabled` | When false and `portNumbers` is empty, the Cryostat application will use the default port number `9091` to look for JMX connectable targets.                                                                                                                                                                                                                                                                                                                                                                                                   | `false`                     |
 | `core.discovery.kubernetes.portNumbers`                | List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable                                                                                                                                                                                                                                                                                                                                                                                                                            | `[]`                        |
 
-
 ### Database Container
 
 | Name                           | Description                                                                                                                                                                                                                                                                                                    | Value                          |
@@ -98,7 +97,6 @@ helm install cryostat ./charts/cryostat
 | `db.resources.requests.cpu`    | CPU resource request for the database container.                                                                                                                                                                                                                                                               | `25m`                          |
 | `db.resources.requests.memory` | Memory resource request for the database container.                                                                                                                                                                                                                                                            | `64Mi`                         |
 | `db.securityContext`           | Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                           |
-
 
 ### Storage Container
 
@@ -114,7 +112,6 @@ helm install cryostat ./charts/cryostat
 | `storage.resources.requests.memory` | Memory resource request for the object storage container.                                                                                                                                                                                                                                                     | `256Mi`                             |
 | `storage.securityContext`           | Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                |
 
-
 ### Grafana Container
 
 | Name                                | Description                                                                                                                                                                                                                                                                                                   | Value                                         |
@@ -129,7 +126,6 @@ helm install cryostat ./charts/cryostat
 | `grafana.resources.requests.memory` | Memory resource request for the Grafana container.                                                                                                                                                                                                                                                            | `80Mi`                                        |
 | `grafana.securityContext`           | Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                          |
 
-
 ### JFR Data Source Container
 
 | Name                                   | Description                                                                                                                                                                                                                                                                                                           | Value                             |
@@ -142,7 +138,6 @@ helm install cryostat ./charts/cryostat
 | `datasource.resources.requests.memory` | Memory resource request for the JFR Data Source container.                                                                                                                                                                                                                                                            | `200Mi`                           |
 | `datasource.securityContext`           | Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                              |
 
-
 ### Authentication
 
 | Name                                        | Description                                                                                                                                                                                                                                                                                                                                               | Value                   |
@@ -152,7 +147,6 @@ helm install cryostat ./charts/cryostat
 | `authentication.basicAuth.enabled`          | Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication                                                                                                                                                                                                                              | `false`                 |
 | `authentication.basicAuth.secretName`       | Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**                                                                                                                                                                                                                                       | `""`                    |
 | `authentication.basicAuth.filename`         | Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax "user:passHash", where "user" is the username and "passHash" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)** | `""`                    |
-
 
 ### OAuth2 Proxy
 
@@ -164,7 +158,6 @@ helm install cryostat ./charts/cryostat
 | `oauth2Proxy.resources.requests.cpu`    | CPU resource request for the OAuth2 Proxy container.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `25m`                               |
 | `oauth2Proxy.resources.requests.memory` | Memory resource request for the OAuth2 Proxy container.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `64Mi`                              |
 | `oauth2Proxy.securityContext`           | Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1). If the chart is installed in default namespaces (e.g. default), `securityContext.runAsUser` must be set if the proxy image does not specify a numeric non-root user. This is due to OpenShift Security Context Constraints are not applied in default namespaces. See [Understanding and Managing Pod Security Admission](https://docs.openshift.com/container-platform/4.15/authentication/understanding-and-managing-pod-security-admission.html#psa-privileged-namespaces_understanding-and-managing-pod-security-admission). | `{}`                                |
-
 
 ### OpenShift OAuth Proxy
 
@@ -184,7 +177,6 @@ helm install cryostat ./charts/cryostat
 | `openshiftOauthProxy.accessReview.verb`         | The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.                                                                                                                                                                                                                           | `create`                                 |
 | `openshiftOauthProxy.accessReview.version`      | The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.                                                                                                                                                                                                                        | `""`                                     |
 | `openshiftOauthProxy.securityContext`           | Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1) | `{}`                                     |
-
 
 ### Other Parameters
 
