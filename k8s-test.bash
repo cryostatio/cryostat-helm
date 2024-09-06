@@ -19,5 +19,5 @@ function cleanup() {
 trap cleanup EXIT
 
 helm install --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}" ./charts/cryostat
-sleep "${SLEEP_DELAY:-60}"
+kubectl wait --timeout=2m --for=condition=Ready=true --namespace "${TEST_NAMESPACE}" pod -l app.kubernetes.io/name=cryostat
 helm test --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}"
