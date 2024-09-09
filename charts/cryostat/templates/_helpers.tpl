@@ -101,7 +101,7 @@ Get or generate a default encryption key for database.
 Get or generate a default secret key for object storage.
 */}}
 {{- define "cryostat.objectStorageSecretKey" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace ( default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName )) -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage-secret" .Release.Name) ) -}}
 {{- if $secret -}}
 {{/*
    Use current secret. Do not regenerate.
@@ -119,7 +119,7 @@ Get or generate a default secret key for object storage.
 Get or generate a default secret key for auth proxy cookies.
 */}}
 {{- define "cryostat.cookieSecret" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace ( default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName )) -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-cookie-secret" .Release.Name) ) -}}
 {{- if $secret -}}
 {{/*
    Use current secret. Do not regenerate.
