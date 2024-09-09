@@ -16,12 +16,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the main Cryostat container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "3.0.1-snapshot"
+                            "default": "3.0.1"
                         }
                     }
                 },
@@ -270,12 +270,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the database container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "cryostat-v3.0"
+                            "default": "3.0.1"
                         }
                     }
                 },
@@ -325,12 +325,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the storage container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "cryostat-v3.0"
+                            "default": "3.0.1"
                         }
                     }
                 },
@@ -380,12 +380,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the Grafana container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "3.0-dev"
+                            "default": "3.0.1"
                         }
                     }
                 },
@@ -450,12 +450,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the JFR Data Source container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "3.0.1-snapshot"
+                            "default": "3.0.1"
                         }
                     }
                 },
@@ -600,12 +600,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the OpenShift OAuth Proxy container image",
-                            "default": "Always"
+                            "default": "IfNotPresent"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "cryostat-v3.0"
+                            "default": "3.0.1"
                         }
                     }
                 },
