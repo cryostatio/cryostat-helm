@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+set -xe
 
 CLUSTER_CLIENT="${CLUSTER_CLIENT:-$(which kubectl)}"
 
@@ -17,17 +17,6 @@ fi
 TEST_NAMESPACE="${TEST_NAMESPACE:-k8s-test}"
 RELEASE_NAME="${RELEASE_NAME:-cryostat-k8s-test}"
 
-function cleanup() {
-    "${CLUSTER_CLIENT}" delete ns "${TEST_NAMESPACE}"
-    if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
-        kind delete cluster
-    fi
-}
-trap cleanup EXIT
-cleanup
-
-set -e
-
 if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
     if ! command -v kind; then
         echo "No 'kind' found in \$PATH"
@@ -37,6 +26,13 @@ if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
 fi
 
 "${CLUSTER_CLIENT}" create ns "${TEST_NAMESPACE}"
+function cleanup() {
+    "${CLUSTER_CLIENT}" delete ns "${TEST_NAMESPACE}"
+    if [ "${CREATE_CLUSTER:-true}" = "true" ]; then
+        kind delete cluster
+    fi
+}
+trap cleanup EXIT
 
 helm install --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}" ./charts/cryostat
 "${CLUSTER_CLIENT}" wait --timeout=2m --for=condition=Available=true --namespace "${TEST_NAMESPACE}" deployment -l app.kubernetes.io/name=cryostat
