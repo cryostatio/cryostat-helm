@@ -60,8 +60,7 @@ jobs:
           cat <(echo '#!/usr/bin/env bash') <(echo 'exec .helm "${@//--reuse-values/--reset-then-reuse-values}"') | sudo tee $HELM_LOCATION
           sudo chmod +x $HELM_LOCATION
 
-          kubectl create ns $TEST_NAMESPACE
-          ct install --target-branch ${TARGET_BRANCH} --upgrade --namespace=$TEST_NAMESPACE --config ct.yaml --debug
+          bash ct.bash --upgrade
 
   helm-unittest:
     runs-on: ubuntu-latest
