@@ -75,7 +75,10 @@ tests:
           value: "true"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION')].value
-          value: "drop-and-create"
+          value: "none"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_SQL_LOAD_SCRIPT')].value
+          value: "no-file"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
           value: "cryostat"

@@ -54,7 +54,9 @@ spec:
           - name: QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_PREFIX
             value: 'true'
           - name: QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION
-            value: drop-and-create
+            value: none
+          - name: QUARKUS_HIBERNATE_ORM_SQL_LOAD_SCRIPT
+            value: no-file
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat
           - name: QUARKUS_DATASOURCE_PASSWORD
