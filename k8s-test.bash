@@ -39,5 +39,6 @@ fi
 "${CLUSTER_CLIENT}" create ns "${TEST_NAMESPACE}"
 
 helm install --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}" ./charts/cryostat
+"${CLUSTER_CLIENT}" wait --timeout=2m --for=condition=Available=true --namespace "${TEST_NAMESPACE}" deployment -l app.kubernetes.io/name=cryostat
 "${CLUSTER_CLIENT}" wait --timeout=2m --for=condition=Ready=true --namespace "${TEST_NAMESPACE}" pod -l app.kubernetes.io/name=cryostat
 helm test --namespace "${TEST_NAMESPACE}" "${RELEASE_NAME}"
