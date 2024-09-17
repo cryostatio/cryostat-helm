@@ -22,13 +22,13 @@ tests:
           value:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/name: cryostat
-            component: db
+            app.kubernetes.io/component: db
       - equal:
           path: spec.template.metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/name: cryostat
-            component: db
+            app.kubernetes.io/component: db
       - equal:
           path: spec.template.spec.serviceAccountName
           value: RELEASE-NAME-cryostat
@@ -46,7 +46,7 @@ tests:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/version: "4.0.0-dev"
             app.kubernetes.io/managed-by: Helm
-            component: db
+            app.kubernetes.io/component: db
 
   - it: should validate cryostat-db settings
     asserts:
