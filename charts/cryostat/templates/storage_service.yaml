@@ -6,9 +6,11 @@ metadata:
   name: {{ $fullName }}-storage
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
+    component: storage
 spec:
   type: {{ .Values.storage.service.type }}
   ports:
     - port: {{ .Values.storage.service.port }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
+    component: storage

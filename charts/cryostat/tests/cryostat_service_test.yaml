@@ -40,6 +40,7 @@ tests:
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
+            component: cryostat
 
   - it: should create a Service with the correct settings when OpenShift authentication is enabled
     set:
@@ -85,6 +86,7 @@ tests:
           value:
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
+            component: cryostat
       - equal:
           path: metadata.labels
           value:
@@ -93,6 +95,7 @@ tests:
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
+            component: cryostat
       - equal:
           path: metadata.annotations
           value:
