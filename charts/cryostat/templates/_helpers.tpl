@@ -101,12 +101,12 @@ Get or generate a default encryption key for database.
 Get or generate a default secret key for object storage.
 */}}
 {{- define "cryostat.objectStorageSecretKey" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage" .Release.Name)) -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage-secret" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
    Use current secret. Do not regenerate.
 */}}
-{{- $secret.data.SECRET_KEY -}}
+{{- $secret.data.STORAGE_ACCESS_KEY -}}
 {{- else -}}
 {{/*
     Generate new secret

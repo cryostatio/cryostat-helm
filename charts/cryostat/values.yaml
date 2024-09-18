@@ -50,7 +50,7 @@ core:
       destinationCACertificate: ""
   resources:
     requests:
-      ## @param core.resources.requests.cpu CPU resource request for the Cryostat container.
+      ## @param core.resources.requests.cpu CPU resource request for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 500m
       ## @param core.resources.requests.memory Memory resource request for the Cryostat container.
       memory: 384Mi
@@ -99,7 +99,7 @@ db:
     port: 5432
   resources:
     requests:
-      ## @param db.resources.requests.cpu CPU resource request for the database container.
+      ## @param db.resources.requests.cpu CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 25m
       ## @param db.resources.requests.memory Memory resource request for the database container.
       memory: 64Mi
@@ -115,6 +115,8 @@ db:
 ## @section Storage Container
 ## @extra storage Configuration for Cryostat's object storage provider
 storage:
+  ## @param storage.storageSecretName Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
+  storageSecretName: ""
   image:
     ## @param storage.image.repository Repository for the storage container image
     repository: "quay.io/cryostat/cryostat-storage"
@@ -129,7 +131,7 @@ storage:
     port: 8333
   resources:
     requests:
-      ## @param storage.resources.requests.cpu CPU resource request for the object storage container.
+      ## @param storage.resources.requests.cpu CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 50m
       ## @param storage.resources.requests.memory Memory resource request for the object storage container.
       memory: 256Mi
@@ -159,7 +161,7 @@ grafana:
     port: 3000
   resources:
     requests:
-      ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container.
+      ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 25m
       ## @param grafana.resources.requests.memory Memory resource request for the Grafana container.
       memory: 80Mi
@@ -184,7 +186,7 @@ datasource:
     tag: "latest"
   resources:
     requests:
-      ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container.
+      ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 200m
       ## @param datasource.resources.requests.memory Memory resource request for the JFR Data Source container.
       memory: 200Mi
@@ -200,6 +202,8 @@ datasource:
 ## @section Authentication
 
 authentication:
+  ## @param authentication.cookieSecretName Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
+  cookieSecretName: ""
   openshift:
     ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.
     enabled: false

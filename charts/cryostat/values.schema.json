@@ -154,7 +154,7 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the Cryostat container.",
+                                    "description": "CPU resource request for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                                     "default": "500m"
                                 },
                                 "memory": {
@@ -317,7 +317,7 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the database container.",
+                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                                     "default": "25m"
                                 },
                                 "memory": {
@@ -334,6 +334,11 @@
         "storage": {
             "type": "object",
             "properties": {
+                "storageSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -402,7 +407,7 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the object storage container.",
+                                    "description": "CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                                     "default": "50m"
                                 },
                                 "memory": {
@@ -487,7 +492,7 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the Grafana container.",
+                                    "description": "CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                                     "default": "25m"
                                 },
                                 "memory": {
@@ -557,7 +562,7 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the JFR Data Source container.",
+                                    "description": "CPU resource request for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
                                     "default": "200m"
                                 },
                                 "memory": {
@@ -644,6 +649,11 @@
         "authentication": {
             "type": "object",
             "properties": {
+                "cookieSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "openshift": {
                     "type": "object",
                     "properties": {

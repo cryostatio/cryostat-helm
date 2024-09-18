@@ -10,7 +10,7 @@ Create OpenShift OAuth Proxy container.
     - name: COOKIE_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ .Release.Name }}-cookie-secret
+          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
           key: COOKIE_SECRET
           optional: false
   args:
