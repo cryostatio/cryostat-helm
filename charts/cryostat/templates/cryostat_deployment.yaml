@@ -66,11 +66,11 @@ spec:
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: jdbc:postgresql://cryostat-db:5432/cryostat
+            value: jdbc:postgresql://{{ $fullName }}-db:5432/cryostat
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: http://cryostat-storage:8333
+            value: http://{{ $fullName }}-storage:8333
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "true"
           - name: QUARKUS_S3_AWS_REGION

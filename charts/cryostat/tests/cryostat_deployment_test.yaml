@@ -90,13 +90,13 @@ tests:
             optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
-          value: "jdbc:postgresql://cryostat-db:5432/cryostat"
+          value: "jdbc:postgresql://RELEASE-NAME-cryostat-db:5432/cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "archivedrecordings"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
-          value: "http://cryostat-storage:8333"
+          value: "http://RELEASE-NAME-cryostat-storage:8333"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
           value: "true"
