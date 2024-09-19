@@ -1,6 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
-{{- if gt (int .Values.reports.replicas) 0 -}}
+{{- if gt (int (.Values.reports).replicas) 0 -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
