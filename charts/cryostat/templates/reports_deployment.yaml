@@ -8,7 +8,7 @@ metadata:
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.reports.replicas }}
+  replicas: {{ (.Values.reports).replicas }}
   strategy:
     type: Recreate
   selector:
