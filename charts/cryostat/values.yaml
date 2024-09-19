@@ -82,6 +82,38 @@ core:
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
 
+## @section Report Generator Deployment
+## @extra reports Configuration for the Reports Generator deployment
+reports:
+  image:
+    ## @param reports.image.repository Repository for the Report Generator container image
+    repository: "quay.io/cryostat/cryostat-reports"
+    ## @param reports.image.pullPolicy Image pull policy for the Report Generator container image
+    pullPolicy: Always
+    ## @param reports.image.tag Tag for the Report Generator image
+    tag: "4.0.0-snapshot"
+  service:
+    ## @param reports.service.type Type of Service to create for the Report Generator Deployment
+    type: ClusterIP
+    ## @param reports.service.httpPort Port number to expose on the Service for the Report Generator Deployment
+    httpPort: 10001
+  ## @param reports.replicas Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.
+  replicas: 0
+  resources:
+    requests:
+      ## @param reports.resources.requests.cpu CPU resource request for each Pod in the Report Generator Deployment.
+      cpu: 500m
+      ## @param reports.resources.requests.memory Memory resource request for each Pod in the Report Generator Deployment.
+      memory: 512Mi
+  ## @param reports.securityContext [object] Security Context for the Report Generator containers. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip reports.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip reports.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
+
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database
 db:

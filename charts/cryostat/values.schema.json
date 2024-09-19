@@ -246,7 +246,7 @@
                 }
             }
         },
-        "db": {
+        "reports": {
             "type": "object",
             "properties": {
                 "image": {
@@ -254,18 +254,33 @@
                     "properties": {
                         "repository": {
                             "type": "string",
-                            "description": "Repository for the database container image",
-                            "default": "quay.io/cryostat/cryostat-db"
+                            "description": "Repository for the Report Generator container image",
+                            "default": "quay.io/cryostat/cryostat-reports"
                         },
                         "pullPolicy": {
                             "type": "string",
-                            "description": "Image pull policy for the database container image",
+                            "description": "Image pull policy for the Report Generator container image",
                             "default": "Always"
                         },
                         "tag": {
                             "type": "string",
-                            "description": "Tag for the database container image",
-                            "default": "latest"
+                            "description": "Tag for the Report Generator image",
+                            "default": "4.0.0-snapshot"
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the Report Generator Deployment",
+                            "default": "ClusterIP"
+                        },
+                        "httpPort": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service for the Report Generator Deployment",
+                            "default": 10001
                         }
                     }
                 },
@@ -291,6 +306,81 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.",
+                    "default": 0
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for each Pod in the Report Generator Deployment.",
+                                    "default": "500m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for each Pod in the Report Generator Deployment.",
+                                    "default": "512Mi"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "db": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the database container image",
+                            "default": "quay.io/cryostat/cryostat-db"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the database container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the database container image",
+                            "default": "latest"
                         }
                     }
                 },
@@ -334,11 +424,6 @@
         "storage": {
             "type": "object",
             "properties": {
-                "storageSecretName": {
-                    "type": "string",
-                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
-                    "default": ""
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -363,6 +448,11 @@
                             "default": false
                         }
                     }
+                },
+                "storageSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
                 },
                 "image": {
                     "type": "object",

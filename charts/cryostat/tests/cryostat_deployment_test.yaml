@@ -121,6 +121,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
           value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='GRAFANA_DATASOURCE_URL')].value
           value: "http://localhost:8800"
@@ -169,6 +171,15 @@ tests:
             requests:
               cpu: 500m
               memory: 384Mi
+
+  - it: should set environment variable if sidecar report generator is enabled
+    set:
+      reports:
+        replicas: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
+          value: http://RELEASE-NAME-cryostat-reports:10001
 
   - it: should set oauth2proxy resource overrides
     set:
