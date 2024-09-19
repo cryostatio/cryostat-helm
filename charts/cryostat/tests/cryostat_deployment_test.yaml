@@ -179,7 +179,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
-          value: http://RELEASE-NAME-cryostat-reports.NAMESPACE.svc:10001
+          value: http://RELEASE-NAME-cryostat-reports:10001
 
   - it: should set oauth2proxy resource overrides
     set:
