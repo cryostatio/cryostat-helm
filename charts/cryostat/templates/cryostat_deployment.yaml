@@ -59,7 +59,7 @@ spec:
             value: no-file
           {{- if gt (int (.Values.reports).replicas) 0 }}
           - name: QUARKUS_REST_CLIENT_REPORTS_URL
-            value: {{ printf "http://%s-reports.%s.svc:%d" $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
+            value: {{ printf "http://%s-reports:%d" $fullName (int .Values.reports.service.httpPort) }}
           {{- end }}
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat
