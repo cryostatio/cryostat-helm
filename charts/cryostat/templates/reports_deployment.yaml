@@ -10,7 +10,7 @@ metadata:
 spec:
   replicas: {{ (.Values.reports).replicas }}
   strategy:
-    type: Recreate
+    type: RollingUpdate
   selector:
     matchLabels:
       {{- include "cryostat.selectorLabels" . | nindent 6 }}
