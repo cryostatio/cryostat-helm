@@ -323,7 +323,7 @@
                                 "cpu": {
                                     "type": "string",
                                     "description": "CPU resource request for each Pod in the Report Generator Deployment.",
-                                    "default": "2000m"
+                                    "default": "500m"
                                 },
                                 "memory": {
                                     "type": "string",

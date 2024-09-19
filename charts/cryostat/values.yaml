@@ -102,7 +102,7 @@ reports:
   resources:
     requests:
       ## @param reports.resources.requests.cpu CPU resource request for each Pod in the Report Generator Deployment.
-      cpu: 2000m
+      cpu: 500m
       ## @param reports.resources.requests.memory Memory resource request for each Pod in the Report Generator Deployment.
       memory: 512Mi
   ## @param reports.securityContext [object] Security Context for the Report Generator containers. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
