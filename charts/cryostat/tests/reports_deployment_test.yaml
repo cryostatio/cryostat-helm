@@ -24,7 +24,7 @@ tests:
           value: 2
       - equal:
           path: spec.strategy.type
-          value: Recreate
+          value: RollingUpdate
       - equal:
           path: spec.selector.matchLabels
           value:
