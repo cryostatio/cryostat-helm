@@ -6,9 +6,11 @@ metadata:
   name: {{ $fullName }}-db
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: db
 spec:
   type: {{ .Values.db.service.type }}
   ports:
     - port: {{ .Values.db.service.port }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: db
