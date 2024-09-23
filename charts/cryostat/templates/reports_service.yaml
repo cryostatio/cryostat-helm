@@ -7,6 +7,7 @@ metadata:
   name: {{ $fullName }}-reports
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: reports
 spec:
   type: {{ .Values.reports.service.type }}
   ports:
