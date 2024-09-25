@@ -145,3 +145,11 @@ Get or generate a default secret key for auth proxy cookies.
 {{- end -}}
 {{- join "," (default list $l | compact | uniq) | quote -}}
 {{- end -}}
+
+{{/*
+Get the name for managed deployments.
+*/}}
+{{- define "cryostat.deploymentName" -}}
+{{- $version := semver .Chart.AppVersion -}}
+{{- printf "%s-v%d" (include "cryostat.fullname" .) $version.Major -}}
+{{- end -}}

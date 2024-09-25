@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cryostat.fullname" . }}-reports
+  name: {{ include "cryostat.deploymentName" . }}-reports
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
     app.kubernetes.io/component: reports

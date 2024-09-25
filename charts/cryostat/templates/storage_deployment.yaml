@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cryostat.fullname" . }}-storage
+  name: {{ include "cryostat.deploymentName" . }}-storage
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
     app.kubernetes.io/component: storage

@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cryostat.fullname" . }}
+  name: {{ include "cryostat.deploymentName" . }}
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
     app.kubernetes.io/component: cryostat
