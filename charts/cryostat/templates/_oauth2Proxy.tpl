@@ -15,7 +15,7 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     - name: OAUTH2_PROXY_COOKIE_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ .Release.Name }}-cookie-secret
+          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
           key: COOKIE_SECRET
           optional: false
     - name: OAUTH2_PROXY_EMAIL_DOMAINS
@@ -36,6 +36,8 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
   ports:
     - containerPort: 4180
       protocol: TCP
+  resources:
+    {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
   volumeMounts:
     - name: alpha-config
       mountPath: /etc/oauth2_proxy/alpha_config

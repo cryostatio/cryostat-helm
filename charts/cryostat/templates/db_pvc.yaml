@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "cryostat.fullname" . }}
+  name: {{ include "cryostat.fullname" . }}-db
   {{- $labels := include "cryostat.labels" $ | nindent 4 }}
   labels: {{ $labels }}
   {{- with .Values.pvc.annotations }}
