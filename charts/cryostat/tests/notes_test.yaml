@@ -77,7 +77,7 @@ tests:
               ```
               export NODE_IP=$(kubectl get nodes -n NAMESPACE -o jsonpath="{.items[0].status.addresses[0].address}")
               export NODE_PORT=$(kubectl get -n NAMESPACE -o jsonpath="{.spec.ports[0].nodePort}" services RELEASE-NAME-cryostat)
-              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat QUARKUS_HTTP_HOST=$NODE_IP
+              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat-v4 QUARKUS_HTTP_HOST=$NODE_IP
               ```
 
             2. Visit the application at:
@@ -99,7 +99,7 @@ tests:
                  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
                        You can watch the status by running 'kubectl get -n NAMESPACE -w svc/RELEASE-NAME-cryostat'
               export SERVICE_IP=$(kubectl get svc -n NAMESPACE RELEASE-NAME-cryostat --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
-              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat QUARKUS_HTTP_HOST=$SERVICE_IP
+              kubectl -n NAMESPACE set env deploy --containers=cryostat RELEASE-NAME-cryostat-v4 QUARKUS_HTTP_HOST=$SERVICE_IP
               ```
 
             2. Visit the application at:
@@ -119,10 +119,10 @@ tests:
 
             2. Forward local port to the application's pod:
               ```
-              kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat
+              kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat-v4
 
               export POD_NAME=$(kubectl get pods -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME,app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
-              export CONTAINER_PORT=$(kubectl get pod -n NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+              export CONTAINER_PORT=$(kubectl get pod -n NAMESPACE $POD_NAME -o jsonpath='{.spec.containers[?(@.name=="RELEASE-NAME-cryostat-authproxy")].ports[0].containerPort}')
               kubectl -n NAMESPACE port-forward $POD_NAME "8080:$CONTAINER_PORT"
               ```
 
