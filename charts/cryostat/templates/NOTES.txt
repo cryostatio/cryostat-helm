@@ -27,7 +27,7 @@
 {{- end }}
 
 {{- if not (empty $envVars) }}
-  kubectl -n {{ .Release.Namespace }} set env deploy --containers={{ .Chart.Name }} {{ include "cryostat.fullname" . }} {{ join " " $envVars }}
+  kubectl -n {{ .Release.Namespace }} set env deploy --containers={{ .Chart.Name }} {{ include "cryostat.deploymentName" . }} {{ join " " $envVars }}
 {{- end }}
   ```
 {{- end }}
@@ -36,10 +36,10 @@
 
 {{ $listNum }}. Forward local port to the application's pod:
   ```
-  kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.fullname" . }}
+  kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.deploymentName" . }}
 
   export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  export CONTAINER_PORT=$(kubectl get pod -n {{ .Release.Namespace }} $POD_NAME -o jsonpath='{.spec.containers[?(@.name=="cryostat")].ports[0].containerPort}')
   kubectl -n {{ .Release.Namespace }} port-forward $POD_NAME "8080:$CONTAINER_PORT"
   ```
   {{- $listNum = add1 $listNum }}
