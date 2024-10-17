@@ -39,6 +39,7 @@ Create OpenShift OAuth Proxy container.
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
     - containerPort: 4180
+      name: http
       protocol: TCP
   resources:
     {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}

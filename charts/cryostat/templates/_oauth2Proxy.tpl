@@ -35,6 +35,7 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     {{- end }}
   ports:
     - containerPort: 4180
+      name: http
       protocol: TCP
   resources:
     {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
