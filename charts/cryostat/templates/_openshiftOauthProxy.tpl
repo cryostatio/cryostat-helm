@@ -41,6 +41,9 @@ Create OpenShift OAuth Proxy container.
     - containerPort: 4180
       name: http
       protocol: TCP
+    - containerPort: 8443
+      name: https
+      protocol: TCP
   resources:
     {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}
   volumeMounts:
