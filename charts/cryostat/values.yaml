@@ -156,6 +156,9 @@ storage:
     pullPolicy: Always
     ## @param storage.image.tag Tag for the storage container image
     tag: "latest"
+  encryption:
+    ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.
+    enabled: true
   service:
     ## @param storage.service.type Type of Service to create for the object storage
     type: ClusterIP

@@ -84,6 +84,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='IP_BIND')].value
           value: 0.0.0.0
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='REST_ENCRYPTION_ENABLE')].value
+          value: "1"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].ports[0].containerPort
           value: 8333
       - equal:
@@ -128,6 +131,16 @@ tests:
             requests:
               cpu: 50m
               memory: 256Mi
+
+  - it: should allow disabling at-rest encryption
+    set:
+      storage:
+        encryption:
+          enabled: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='REST_ENCRYPTION_ENABLE')].value
+          value: "0"
 
   - it: should set resource overrides
     set:

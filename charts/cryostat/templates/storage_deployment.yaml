@@ -53,6 +53,8 @@ spec:
             value: /data
           - name: IP_BIND
             value: 0.0.0.0
+          - name: REST_ENCRYPTION_ENABLE
+            value: "{{ .Values.storage.encryption.enabled | ternary 1 0 }}"
           ports:
             - containerPort: 8333
               protocol: TCP
