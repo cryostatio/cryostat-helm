@@ -40,6 +40,21 @@
                         }
                     }
                 },
+                "debug": {
+                    "type": "object",
+                    "properties": {
+                        "log": {
+                            "type": "object",
+                            "properties": {
+                                "level": {
+                                    "type": "string",
+                                    "description": "Log level for troubleshooting and debugging",
+                                    "default": "INFO"
+                                }
+                            }
+                        }
+                    }
+                },
                 "sslProxied": {
                     "type": "boolean",
                     "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",

@@ -13,6 +13,10 @@ core:
     type: ClusterIP
     ## @param core.service.httpPort Port number to expose on the Service for Cryostat's HTTP server
     httpPort: 8181
+  debug:
+    log:
+      ## @param core.debug.log.level Log level for troubleshooting and debugging
+      level: INFO
   ## @param core.sslProxied Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress
   sslProxied: false
   ingress:

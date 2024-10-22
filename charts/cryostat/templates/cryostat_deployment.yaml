@@ -46,6 +46,8 @@ spec:
           env:
           - name: QUARKUS_HTTP_HOST
             value: localhost
+          - name: QUARKUS_LOG_LEVEL
+            value: {{ .Values.core.debug.log.level }}
           - name: QUARKUS_HTTP_PORT
             value: "8181"
           - name: QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING

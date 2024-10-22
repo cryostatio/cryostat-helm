@@ -62,6 +62,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8181"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_LOG_LEVEL')].value
+          value: "INFO"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_HOST')].value
           value: "localhost"
       - equal:
@@ -174,6 +177,17 @@ tests:
             requests:
               cpu: 500m
               memory: 384Mi
+
+  - it: should set log level
+    set:
+      core:
+        debug:
+          log:
+            level: TRACE
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_LOG_LEVEL')].value
+          value: TRACE
 
   - it: should set environment variable if sidecar report generator is enabled
     set:
