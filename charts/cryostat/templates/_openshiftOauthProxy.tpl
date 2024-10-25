@@ -10,7 +10,7 @@ Create OpenShift OAuth Proxy container.
     - name: COOKIE_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ .Release.Name }}-cookie-secret
+          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
           key: COOKIE_SECRET
           optional: false
   args:
@@ -20,7 +20,6 @@ Create OpenShift OAuth Proxy container.
     - --pass-basic-auth=false
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
-    - --upstream=http://localhost:8333/storage/
     - --cookie-secret="$(COOKIE_SECRET)"
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
     - --proxy-websockets=true
@@ -40,7 +39,13 @@ Create OpenShift OAuth Proxy container.
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
     - containerPort: 4180
+      name: http
       protocol: TCP
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+  resources:
+    {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}
   volumeMounts:
     {{- if .Values.authentication.basicAuth.enabled }}
     - name: {{ .Release.Name }}-htpasswd
@@ -49,7 +54,6 @@ Create OpenShift OAuth Proxy container.
     {{- end }}
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
-  resources: {}
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- end}}

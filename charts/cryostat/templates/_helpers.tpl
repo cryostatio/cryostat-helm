@@ -101,12 +101,12 @@ Get or generate a default encryption key for database.
 Get or generate a default secret key for object storage.
 */}}
 {{- define "cryostat.objectStorageSecretKey" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage" .Release.Name)) -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-storage-secret" .Release.Name)) -}}
 {{- if $secret -}}
 {{/*
    Use current secret. Do not regenerate.
 */}}
-{{- $secret.data.SECRET_KEY -}}
+{{- $secret.data.STORAGE_ACCESS_KEY -}}
 {{- else -}}
 {{/*
     Generate new secret
@@ -144,4 +144,12 @@ Get or generate a default secret key for auth proxy cookies.
 {{- $l = list $default -}}
 {{- end -}}
 {{- join "," (default list $l | compact | uniq) | quote -}}
+{{- end -}}
+
+{{/*
+Get the name for managed deployments.
+*/}}
+{{- define "cryostat.deploymentName" -}}
+{{- $version := semver .Chart.AppVersion -}}
+{{- printf "%s-v%d" (include "cryostat.fullname" .) $version.Major -}}
 {{- end -}}

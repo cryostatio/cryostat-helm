@@ -40,6 +40,21 @@
                         }
                     }
                 },
+                "debug": {
+                    "type": "object",
+                    "properties": {
+                        "log": {
+                            "type": "object",
+                            "properties": {
+                                "level": {
+                                    "type": "string",
+                                    "description": "Log level for troubleshooting and debugging",
+                                    "default": "INFO"
+                                }
+                            }
+                        }
+                    }
+                },
                 "sslProxied": {
                     "type": "boolean",
                     "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
@@ -148,8 +163,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the Cryostat container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "500m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the Cryostat container.",
+                                    "default": "384Mi"
+                                }
+                            }
+                        }
+                    }
                 },
                 "securityContext": {
                     "type": "object",
@@ -231,6 +261,96 @@
                 }
             }
         },
+        "reports": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the Report Generator container image",
+                            "default": "quay.io/cryostat/cryostat-reports"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the Report Generator container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the Report Generator image",
+                            "default": "4.0.0-snapshot"
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the Report Generator Deployment",
+                            "default": "ClusterIP"
+                        },
+                        "httpPort": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service for the Report Generator Deployment",
+                            "default": 10001
+                        }
+                    }
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.",
+                    "default": 0
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for each Pod in the Report Generator Deployment.",
+                                    "default": "500m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for each Pod in the Report Generator Deployment.",
+                                    "default": "512Mi"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "db": {
             "type": "object",
             "properties": {
@@ -279,10 +399,40 @@
                         }
                     }
                 },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the database",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 5432
+                        }
+                    }
+                },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the database container.",
+                                    "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -314,6 +464,11 @@
                         }
                     }
                 },
+                "storageSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "image": {
                     "type": "object",
                     "properties": {
@@ -334,10 +489,50 @@
                         }
                     }
                 },
+                "encryption": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.",
+                            "default": true
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the object storage",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 8333
+                        }
+                    }
+                },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "50m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the object storage container.",
+                                    "default": "256Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -406,8 +601,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the Grafana container.",
+                                    "default": "80Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -461,8 +671,23 @@
                 },
                 "resources": {
                     "type": "object",
-                    "description": "Resource requests/limits for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                    "default": {}
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "200m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the JFR Data Source container.",
+                                    "default": "200Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -513,12 +738,37 @@
                             "default": "latest"
                         }
                     }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the OAuth2 Proxy container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the OAuth2 Proxy container.",
+                                    "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
         "authentication": {
             "type": "object",
             "properties": {
+                "cookieSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "openshift": {
                     "type": "object",
                     "properties": {
@@ -606,6 +856,26 @@
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
                             "default": "cryostat-v3.0"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the OpenShift OAuth Proxy container.",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the OpenShift OAuth Proxy container.",
+                                    "default": "64Mi"
+                                }
+                            }
                         }
                     }
                 },

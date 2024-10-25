@@ -4,6 +4,7 @@ metadata:
   name: "{{ include "cryostat.fullname" . }}-test-grafana-connection"
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test-grafana-connection
   annotations:
     "helm.sh/hook": test
 spec:
