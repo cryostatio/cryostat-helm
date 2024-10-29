@@ -42,6 +42,8 @@ spec:
           env:
             - name: QUARKUS_HTTP_PORT
               value: "{{ .Values.reports.service.httpPort }}"
+            - name: QUARKUS_LOG_LEVEL
+              value: {{ .Values.reports.debug.log.level }}
           ports:
             - containerPort: {{ .Values.reports.service.httpPort }}
               protocol: TCP

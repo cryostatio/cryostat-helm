@@ -101,6 +101,10 @@ reports:
     type: ClusterIP
     ## @param reports.service.httpPort Port number to expose on the Service for the Report Generator Deployment
     httpPort: 10001
+  debug:
+    log:
+      ## @param reports.debug.log.level Log level for troubleshooting and debugging
+      level: INFO
   ## @param reports.replicas Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.
   replicas: 0
   resources:
