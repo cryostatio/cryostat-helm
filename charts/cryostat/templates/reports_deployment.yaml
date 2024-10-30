@@ -94,4 +94,9 @@ spec:
         secret:
           defaultMode: 0440
           secretName: {{ .Release.Name }}-reports-secret
+      {{- if (.Values.authentication.openshift).enabled }}
+      - name: {{ .Release.Name }}-proxy-tls
+        secret:
+          secretName: {{ .Release.Name }}-proxy-tls
+      {{- end }}
 {{- end -}}

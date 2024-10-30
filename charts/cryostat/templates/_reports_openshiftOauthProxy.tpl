@@ -1,7 +1,7 @@
 {{/*
 Create OpenShift OAuth Proxy container.
 */}}
-{{- define "cryostat.openshiftOauthProxy" -}}
+{{- define "cryostat.reportsOpenshiftOauthProxy" -}}
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
@@ -14,13 +14,10 @@ Create OpenShift OAuth Proxy container.
           key: COOKIE_SECRET
           optional: false
   args:
-    - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
-    # FIXME the access token that gets passed through to Cryostat and down to the reports proxy is a user token that has insufficient permissions to pass the second proxy's RBAC check
-    - --pass-access-token=true
-    - --pass-user-bearer-token=true
+    - --pass-access-token=false
+    - --pass-user-bearer-token=false
     - --pass-basic-auth=false
-    - --upstream=http://localhost:8181/
-    - --upstream=http://localhost:3000/grafana/
+    - --upstream=http://localhost:10001/
     - --cookie-secret=$(COOKIE_SECRET)
     - --request-logging={{ .Values.openshiftOauthProxy.debug.log.enabled }}
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
@@ -31,13 +28,9 @@ Create OpenShift OAuth Proxy container.
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
     {{- if .Values.openshiftOauthProxy.accessReview.enabled }}
-    - --openshift-sar=[{{ tpl ( omit .Values.openshiftOauthProxy.accessReview "enabled" | toJson ) . }}]
     - --openshift-delegate-urls={"/":{{ tpl ( omit .Values.openshiftOauthProxy.accessReview "enabled" | toJson ) . }}}
     {{- end }}
     - --bypass-auth-for=^/health(/liveness)?$
-    {{- if .Values.authentication.basicAuth.enabled }}
-    - --htpasswd-file=/etc/openshift_oauth_proxy/basicauth/{{ .Values.authentication.basicAuth.filename }}
-    {{- end }}
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
     - containerPort: 4180
@@ -49,11 +42,6 @@ Create OpenShift OAuth Proxy container.
   resources:
     {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}
   volumeMounts:
-    {{- if .Values.authentication.basicAuth.enabled }}
-    - name: {{ .Release.Name }}-htpasswd
-      mountPath: /etc/openshift_oauth_proxy/basicauth
-      readOnly: true
-    {{- end }}
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
   terminationMessagePath: /dev/termination-log

@@ -298,6 +298,10 @@ openshiftOauthProxy:
     pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
     tag: "cryostat-v3.0"
+  debug:
+    log:
+      ## @param openshiftOauthProxy.debug.log.enabled Log requests to stdout
+      enabled: true
   resources:
     requests:
       ## @param openshiftOauthProxy.resources.requests.cpu CPU resource request for the OpenShift OAuth Proxy container.

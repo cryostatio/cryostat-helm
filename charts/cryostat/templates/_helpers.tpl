@@ -148,7 +148,7 @@ Get or generate a default secret key for auth proxy cookies.
 {{/*
     Generate new secret
 */}}
-{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- (randAlphaNum 32) | b64enc -}}
 {{- end -}}
 {{- end -}}
 

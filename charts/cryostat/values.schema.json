@@ -299,6 +299,11 @@
                         }
                     }
                 },
+                "reportsSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -321,6 +326,21 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "debug": {
+                    "type": "object",
+                    "properties": {
+                        "log": {
+                            "type": "object",
+                            "properties": {
+                                "level": {
+                                    "type": "string",
+                                    "description": "Log level for troubleshooting and debugging",
+                                    "default": "INFO"
+                                }
+                            }
                         }
                     }
                 },
@@ -856,6 +876,21 @@
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
                             "default": "cryostat-v3.0"
+                        }
+                    }
+                },
+                "debug": {
+                    "type": "object",
+                    "properties": {
+                        "log": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Log requests to stdout",
+                                    "default": true
+                                }
+                            }
                         }
                     }
                 },
