@@ -879,21 +879,6 @@
                         }
                     }
                 },
-                "debug": {
-                    "type": "object",
-                    "properties": {
-                        "log": {
-                            "type": "object",
-                            "properties": {
-                                "enabled": {
-                                    "type": "boolean",
-                                    "description": "Log requests to stdout",
-                                    "default": true
-                                }
-                            }
-                        }
-                    }
-                },
                 "resources": {
                     "type": "object",
                     "properties": {
