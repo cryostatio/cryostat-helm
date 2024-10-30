@@ -1,0 +1,27 @@
+{{/*
+   Alpha Configuration is not used with OpenShift OAuth Proxy
+*/}}
+{{- if not (.Values.authentication.openshift).enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-reports-alpha-config
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+data:
+  alpha_config.yaml: |-
+    server:
+      BindAddress: http://0.0.0.0:4180
+    upstreamConfig:
+      proxyRawPath: true
+      upstreams:
+        - id: reports
+          path: /
+          uri: http://localhost:10001
+    providers:
+      - id: dummy
+        name: Unused - Sign In Below
+        clientId: CLIENT_ID
+        clientSecret: CLIENT_SECRET
+        provider: google
+{{- end }}

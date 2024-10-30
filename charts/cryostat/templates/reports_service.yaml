@@ -12,6 +12,7 @@ spec:
   type: {{ .Values.reports.service.type }}
   ports:
     - port: {{ .Values.reports.service.httpPort }}
+      targetPort: 4180
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: reports

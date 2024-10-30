@@ -63,8 +63,14 @@ spec:
           - name: QUARKUS_HIBERNATE_ORM_SQL_LOAD_SCRIPT
             value: no-file
           {{- if gt (int (.Values.reports).replicas) 0 }}
+          - name: REPORTS_PASS_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-reports-secret" .Release.Name) .Values.reports.reportsSecretName }}
+                key: REPORTS_PASS
+                optional: false
           - name: QUARKUS_REST_CLIENT_REPORTS_URL
-            value: {{ printf "http://%s-reports:%d" $fullName (int .Values.reports.service.httpPort) }}
+            value: {{ printf "http://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports:%d" $fullName (int .Values.reports.service.httpPort) }}
           {{- end }}
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat
