@@ -12,8 +12,7 @@ spec:
   type: {{ .Values.reports.service.type }}
   ports:
     - port: {{ .Values.reports.service.httpPort }}
-      # TODO this should be https/8443
-      targetPort: 4180
+      targetPort: {{ ternary "https" "http" (.Values.authentication.openshift).enabled }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: reports

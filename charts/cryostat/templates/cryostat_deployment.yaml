@@ -69,8 +69,13 @@ spec:
                 name: {{ default (printf "%s-reports-secret" .Release.Name) .Values.reports.reportsSecretName }}
                 key: REPORTS_PASS
                 optional: false
+          # TODO TLS trust
+          - name: QUARKUS_TLS_TRUST_ALL
+            value: "true"
+          - name: QUARKUS_REST_CLIENT_EXTENSIONS_API_VERIFY_HOST
+            value: "false"
           - name: QUARKUS_REST_CLIENT_REPORTS_URL
-            value: {{ printf "http://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports:%d" $fullName (int .Values.reports.service.httpPort) }}
+            value: {{ printf "%s://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports.%s.svc:%d" (ternary "https" "http" (.Values.authentication.openshift).enabled) $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
           {{- end }}
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat
