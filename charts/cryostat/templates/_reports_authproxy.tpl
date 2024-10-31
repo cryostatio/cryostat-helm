@@ -1,6 +1,6 @@
 {{- define "cryostat.reportsAuthProxy" -}}
 {{- if (.Values.authentication.openshift).enabled }}
-- name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
+- name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
