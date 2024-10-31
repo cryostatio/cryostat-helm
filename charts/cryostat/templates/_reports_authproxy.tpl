@@ -50,10 +50,16 @@
   securityContext:
     {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 4 }}
   image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
-  args:
-    - "--alpha-config=/etc/oauth2_proxy/alpha_config/alpha_config.yaml"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
+    - name: OAUTH2_PROXY_CLIENT_ID
+      value: dummy
+    - name: OAUTH2_PROXY_CLIENT_SECRET
+      value: none
+    - name: OAUTH2_PROXY_HTTP_ADDRESS
+      value: 0.0.0.0:4180
+    - name: OAUTH2_PROXY_UPSTREAMS
+      value: http://localhost:10001/
     - name: OAUTH2_PROXY_REDIRECT_URL
       value: "http://localhost:4180/oauth2/callback"
     - name: OAUTH2_PROXY_COOKIE_SECRET
@@ -70,6 +76,8 @@
       value: /etc/oauth2_proxy/basicauth/htpasswd
     - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
       value: "^/health(/liveness)?$"
+    - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
+      value: "false"
   ports:
     - containerPort: 4180
       name: http
@@ -77,8 +85,6 @@
   resources:
     {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
   volumeMounts:
-    - name: reports-alpha-config
-      mountPath: /etc/oauth2_proxy/alpha_config
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true

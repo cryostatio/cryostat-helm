@@ -81,11 +81,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if not (.Values.authentication.openshift).enabled }}
-      - name: reports-alpha-config
-        configMap:
-          name: {{ .Release.Name }}-reports-alpha-config
-      {{- end }}
       - name: {{ .Release.Name }}-reports-secret
         secret:
           defaultMode: 0440
