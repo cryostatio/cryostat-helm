@@ -17,6 +17,7 @@ Create OpenShift OAuth Proxy container.
     - --pass-access-token=false
     - --pass-user-bearer-token=false
     - --pass-basic-auth=false
+    - --htpasswd-file=/etc/oauth2_proxy/basicauth/htpasswd
     - --upstream=http://localhost:10001/
     - --cookie-secret=$(COOKIE_SECRET)
     - --request-logging=true
@@ -27,9 +28,6 @@ Create OpenShift OAuth Proxy container.
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
-    {{- if .Values.openshiftOauthProxy.accessReview.enabled }}
-    - --openshift-delegate-urls={"/":{{ tpl ( omit .Values.openshiftOauthProxy.accessReview "enabled" | toJson ) . }}}
-    {{- end }}
     - --bypass-auth-for=^/health(/liveness)?$
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
@@ -44,6 +42,9 @@ Create OpenShift OAuth Proxy container.
   volumeMounts:
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
+    - name: {{ .Release.Name }}-reports-secret
+      mountPath: /etc/oauth2_proxy/basicauth
+      readOnly: true
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- end}}

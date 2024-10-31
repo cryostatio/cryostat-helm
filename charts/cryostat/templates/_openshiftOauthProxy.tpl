@@ -15,9 +15,8 @@ Create OpenShift OAuth Proxy container.
           optional: false
   args:
     - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
-    # FIXME the access token that gets passed through to Cryostat and down to the reports proxy is a user token that has insufficient permissions to pass the second proxy's RBAC check
-    - --pass-access-token=true
-    - --pass-user-bearer-token=true
+    - --pass-access-token=false
+    - --pass-user-bearer-token=false
     - --pass-basic-auth=false
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
