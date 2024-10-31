@@ -45,12 +45,6 @@ spec:
               value: "{{ .Values.reports.service.httpPort }}"
             - name: QUARKUS_LOG_LEVEL
               value: {{ .Values.reports.debug.log.level }}
-            - name: PASS_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (printf "%s-reports-secret" .Release.Name) .Values.reports.reportsSecretName }}
-                  key: REPORTS_PASS
-                  optional: false
           ports:
             - containerPort: {{ .Values.reports.service.httpPort }}
               protocol: TCP
