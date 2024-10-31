@@ -65,6 +65,17 @@ tests:
         replicas: 1
     asserts:
       - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].image
+          value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].ports
+          value:
+            - containerPort: 4180
+              name: http
+              protocol: TCP
+      - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].image
@@ -72,6 +83,29 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "10001"
+
+  - it: should validate authproxy settings when deployed in OpenShift
+    set:
+      reports:
+        replicas: 1
+      authentication:
+        openshift:
+          enabled: true
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].image
+          value: "quay.io/cryostat/openshift-oauth-proxy:cryostat-v3.0"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].ports
+          value:
+            - containerPort: 4180
+              name: http
+              protocol: TCP
+            - containerPort: 8443
+              name: https
+              protocol: TCP
 
   - it: should apply Kubernetes specific settings when configured
     set:
