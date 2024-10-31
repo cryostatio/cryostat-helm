@@ -1,6 +1,5 @@
-{{- $fullName := include "cryostat.fullname" . -}}
----
 {{- if gt (int (.Values.reports).replicas) 0 -}}
+{{- $fullName := include "cryostat.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
