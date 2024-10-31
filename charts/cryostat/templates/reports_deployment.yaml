@@ -34,11 +34,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        {{- if (.Values.authentication.openshift).enabled }}
-        {{- include "cryostat.reportsOpenshiftOauthProxy" . | nindent 8 }}
-        {{- else }}
-        {{- include "cryostat.reportsOauth2Proxy" . | nindent 8 }}
-        {{- end }}
+        {{- include "cryostat.reportsAuthProxy" . | nindent 8 }}
         - name: {{ printf "%s-%s" .Chart.Name "reports" }}
           securityContext:
             {{- toYaml (.Values.reports).securityContext | nindent 12 }}
