@@ -279,7 +279,7 @@ oauth2Proxy:
       cpu: 25m
       ## @param oauth2Proxy.resources.requests.memory Memory resource request for the OAuth2 Proxy container.
       memory: 64Mi
-  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1). If the chart is installed in default namespaces (e.g. default), `securityContext.runAsUser` must be set if the proxy image does not specify a numeric non-root user. This is due to OpenShift Security Context Constraints are not applied in default namespaces. See [Understanding and Managing Pod Security Admission](https://docs.openshift.com/container-platform/4.15/authentication/understanding-and-managing-pod-security-admission.html#psa-privileged-namespaces_understanding-and-managing-pod-security-admission).
+  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1).
   securityContext:
     ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
