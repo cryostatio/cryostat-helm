@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cryostat-internal
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cryostat
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: cryostat
+        namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: cryostat
