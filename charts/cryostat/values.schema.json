@@ -1007,6 +1007,16 @@
                 }
             }
         },
+        "networkPolicy": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "whether a NetworkPolicy for restricting Cryostat component Services' traffic is installed.",
+                    "default": true
+                }
+            }
+        },
         "tolerations": {
             "type": "array",
             "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
