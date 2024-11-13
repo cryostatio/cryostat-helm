@@ -1,4 +1,4 @@
-suite: test networkpolicy_ingres.yaml
+suite: test networkpolicy_ingress.yaml
 templates:
   - networkpolicy_ingress.yaml
 
