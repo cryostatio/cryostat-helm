@@ -1010,10 +1010,15 @@
         "networkPolicy": {
             "type": "object",
             "properties": {
-                "enabled": {
-                    "type": "boolean",
-                    "description": "whether a NetworkPolicy for restricting Cryostat component Services' traffic is installed.",
-                    "default": true
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "whether a NetworkPolicy for restricting Cryostat component Services' traffic is installed.",
+                            "default": true
+                        }
+                    }
                 }
             }
         },

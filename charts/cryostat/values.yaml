@@ -363,8 +363,9 @@ podSecurityContext:
     type: RuntimeDefault
 
 networkPolicy:
-  ## @param networkPolicy.enabled whether a NetworkPolicy for restricting Cryostat component Services' traffic is installed.
-  enabled: true
+  ingress:
+    ## @param networkPolicy.ingress.enabled whether a NetworkPolicy for restricting Cryostat component Services' traffic is installed.
+    enabled: true
 
 ## @param nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}

@@ -5,7 +5,7 @@ templates:
 tests:
   - it: should do nothing if disabled
     set:
-      networkPolicy.enabled: false
+      networkPolicy.ingress.enabled: false
     asserts:
       - hasDocuments:
           count: 0
