@@ -1,0 +1,74 @@
+suite: test networkpolicy_egress.yaml
+templates:
+  - networkpolicy_egress.yaml
+
+tests:
+  - it: should be disabled by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create an internal-access policy
+    set:
+      networkPolicy.egress.enabled: true
+    asserts:
+      - equal:
+          path: kind
+          value: NetworkPolicy
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-internal-egress
+      - equal:
+          path: metadata.namespace
+          value: NAMESPACE
+      - equal:
+          path: spec.podSelector
+          value:
+            matchLabels:
+              app.kubernetes.io/instance: RELEASE-NAME
+              app.kubernetes.io/name: cryostat
+              app.kubernetes.io/component: cryostat
+      - equal:
+          path: spec.egress
+          value:
+            - to:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: NAMESPACE
+            - to:
+              - namespaceSelector:
+                  matchExpressions:
+                    - key: kubernetes.io/metadata.name
+                      operator: In
+                      values:
+                        - default
+                        - kube-system
+                        - openshift
+                        - NAMESPACE
+
+  - it: should allow additional egress to target namespaces
+    set:
+      networkPolicy.egress.enabled: true
+      core.discovery.kubernetes.namespaces:
+        - apps1
+        - apps2
+    asserts:
+      - equal:
+          path: spec.egress
+          value:
+            - to:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: NAMESPACE
+            - to:
+              - namespaceSelector:
+                  matchExpressions:
+                    - key: kubernetes.io/metadata.name
+                      operator: In
+                      values:
+                        - default
+                        - kube-system
+                        - openshift
+                        - NAMESPACE
+                        - apps1
+                        - apps2

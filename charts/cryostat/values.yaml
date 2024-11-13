@@ -599,8 +599,11 @@ podSecurityContext:
 
 networkPolicy:
   ingress:
-    ## @param networkPolicy.ingress.enabled whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods
+    ## @param networkPolicy.ingress.enabled whether a NetworkPolicy for restricting Cryostat component Pods' inbound traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods.
     enabled: true
+  egress:
+    ## @param networkPolicy.egress.enabled whether a NetworkPolicy for restricting Cryostat component Pods' outbound traffic is installed. This prevents Cryostat's component Pods from opening connections to unexpected destinations. The policy will allow Cryostat's Pods to communicate with each other, to the cluster API server, and to any target namespaces (core.discovery.kubernetes.namespaces). This is off by default since some cluster network plugins cause JDBC connectivity issues between Cryostat and its database when this policy is activated. When enabled, Cryostat users will not be able to define Custom Targets that are located outside of the target namespaces defined at installation time.
+    enabled: false
 
 ## @param nodeSelector [object] default Node Selector for the various Pods. Any Pod which does not have an individual nodeSelector setting will default to this. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}
