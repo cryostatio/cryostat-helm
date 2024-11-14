@@ -17,9 +17,9 @@ data:
       {{- end}}
       TLS:
         Key:
-          fromFile: /etc/tls/private/KEY
+          fromFile: /etc/tls/private/key
         Cert:
-          fromFile: /etc/tls/private/CERT
+          fromFile: /etc/tls/private/cert
     upstreamConfig:
       proxyRawPath: true
       upstreams:
