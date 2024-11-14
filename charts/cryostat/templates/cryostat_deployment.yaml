@@ -216,3 +216,8 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
+      {{- if (and (not (.Values.authentication.openshift).enabled) (.Values.oauth2Proxy.service.tls.enableSelfSigned)) }}
+      - name: {{ .Release.Name }}-oauth2proxy-tls
+        secret:
+          secretName: {{ .Release.Name }}-oauth2proxy-tls
+      {{- end }}
