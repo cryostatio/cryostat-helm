@@ -39,7 +39,7 @@
   kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.deploymentName" . }}
 
   export SVC_NAME=$(kubectl get services -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
-{{- if .Values.oauth2Proxy.service.tls.enableSelfSigned }}
+{{- if or .Values.authentication.openshift.enabled .Values.oauth2Proxy.service.tls.enableSelfSigned }}
   kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8443:cryostat-https
 {{- else }}
   kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8080:cryostat-http
@@ -63,6 +63,6 @@
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
   echo http://$SERVICE_IP:{{ .Values.core.service.httpPort }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
-  {{ ternary "https" "http" .Values.oauth2Proxy.service.tls.enableSelfSigned }}://localhost:{{ ternary "8443" "8080" .Values.oauth2Proxy.service.tls.enableSelfSigned }}
+  {{ ternary "https" "http" (or .Values.authentication.openshift.enabled .Values.oauth2Proxy.service.tls.enableSelfSigned) }}://localhost:{{ ternary "8443" "8080" (or .Values.authentication.openshift.enabled .Values.oauth2Proxy.service.tls.enableSelfSigned) }}
 {{- end }}
   ```
