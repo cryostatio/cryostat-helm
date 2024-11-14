@@ -759,6 +759,21 @@
                         }
                     }
                 },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "enableSelfSigned": {
+                                    "type": "boolean",
+                                    "description": "Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.",
+                                    "default": true
+                                }
+                            }
+                        }
+                    }
+                },
                 "resources": {
                     "type": "object",
                     "properties": {

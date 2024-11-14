@@ -275,6 +275,7 @@ oauth2Proxy:
     tag: "latest"
   service:
     tls:
+      ## @param oauth2Proxy.service.tls.enableSelfSigned Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.
       enableSelfSigned: true
   resources:
     requests:
