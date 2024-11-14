@@ -107,7 +107,13 @@ tests:
               echo http://$SERVICE_IP:8181
               ```
 
-  - it: should render correct notes for ClusterIP service without ingress or route
+  - it: should render correct notes for ClusterIP service without ingress or route and TLS enabled
+    set:
+      oauth2Proxy:
+        service:
+          tls:
+            selfSigned:
+              enabled: true
     asserts:
       - equalRaw:
           value: |
@@ -135,7 +141,8 @@ tests:
       oauth2Proxy:
         service:
           tls:
-            enableSelfSigned: false
+            selfSigned:
+              enabled: false
     asserts:
       - equalRaw:
           value: |

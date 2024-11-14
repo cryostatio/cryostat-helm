@@ -215,7 +215,7 @@ spec:
       - name: {{ .Release.Name }}-proxy-tls
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
-      {{- else if .Values.oauth2Proxy.service.tls.enableSelfSigned }}
+      {{- else if .Values.oauth2Proxy.service.tls.selfSigned.enabled }}
       - name: {{ .Release.Name }}-oauth2proxy-tls
         secret:
           secretName: {{ .Release.Name }}-oauth2proxy-tls

@@ -47,7 +47,7 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
     {{- end }}
-    {{- if .Values.oauth2Proxy.service.tls.enableSelfSigned }}
+    {{- if .Values.oauth2Proxy.service.tls.selfSigned.enabled }}
     - name: {{ .Release.Name }}-oauth2proxy-tls
       mountPath: /etc/tls/private
     {{- end }}
