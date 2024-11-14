@@ -416,10 +416,29 @@ tests:
 
   - it: should validate volumes and volume mounts
     asserts:
+      - lengthEqual:
+          count: 1
+          path: spec.template.spec.volumes
       - exists:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/oauth2_proxy/alpha_config')]
+
+  - it: should validate volumes and volume mounts with oauth2-proxy self-signed TLS enabled
+    set:
+      oauth2Proxy.service.tls.selfSigned.enabled: true
+    asserts:
+      - lengthEqual:
+          count: 2
+          path: spec.template.spec.volumes
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='alpha-config')]
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/oauth2_proxy/alpha_config')]
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='RELEASE-NAME-oauth2proxy-tls')]
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/tls/private')]
 
   - it: should set image pull secrets if specified
     set:
