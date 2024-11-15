@@ -36,6 +36,7 @@ tests:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/part-of: cryostat
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
@@ -45,6 +46,7 @@ tests:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/part-of: cryostat
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.0.0-dev"
