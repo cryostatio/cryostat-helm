@@ -31,7 +31,7 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[0].name
-          value: cryostat-http
+          value: http
       - equal:
           path: metadata.labels
           value:
@@ -69,7 +69,7 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[0].name
-          value: cryostat-http
+          value: http
       - equal:
           path: spec.ports[1].port
           value: 443
@@ -81,7 +81,7 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[1].name
-          value: cryostat-https
+          value: https
       - equal:
           path: spec.selector
           value:
