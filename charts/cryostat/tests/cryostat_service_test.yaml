@@ -33,6 +33,9 @@ tests:
           path: spec.ports[0].name
           value: http
       - equal:
+          path: spec.ports[0].appProtocol
+          value: http
+      - equal:
           path: metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
@@ -81,6 +84,9 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[1].name
+          value: https
+      - equal:
+          path: spec.ports[1].appProtocol
           value: https
       - equal:
           path: spec.selector

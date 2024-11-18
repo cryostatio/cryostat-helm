@@ -18,11 +18,13 @@ spec:
       targetPort: 4180
       protocol: TCP
       name: http
+      appProtocol: http
     {{- if (.Values.authentication.openshift).enabled }}
     - port: 443
       targetPort: 8443
       protocol: TCP
       name: https
+      appProtocol: https
     {{- end }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
