@@ -40,9 +40,9 @@
 
   export SVC_NAME=$(kubectl get services -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
 {{- if or .Values.authentication.openshift.enabled .Values.oauth2Proxy.service.tls.selfSigned.enabled }}
-  kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8443:cryostat-https
+  kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8443:https
 {{- else }}
-  kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8080:cryostat-http
+  kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME 8080:http
 {{- end }}
   ```
   {{- $listNum = add1 $listNum }}
