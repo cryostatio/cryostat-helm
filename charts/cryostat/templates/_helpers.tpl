@@ -48,6 +48,7 @@ Selector labels.
 {{- define "cryostat.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "cryostat.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: cryostat
 {{- end }}
 
 {{/*

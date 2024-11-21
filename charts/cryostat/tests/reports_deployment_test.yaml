@@ -31,11 +31,13 @@ tests:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/component: reports
+            app.kubernetes.io/part-of: cryostat
       - equal:
           path: spec.template.metadata.labels
           value:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/name: cryostat
+            app.kubernetes.io/part-of: cryostat
             app.kubernetes.io/component: reports
       - equal:
           path: spec.template.spec.serviceAccountName
@@ -55,6 +57,7 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: reports
+            app.kubernetes.io/part-of: cryostat
 
   - it: should validate all container settings including environment variables and security contexts
     set:

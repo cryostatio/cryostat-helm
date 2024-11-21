@@ -31,7 +31,10 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[0].name
-          value: cryostat-http
+          value: http
+      - equal:
+          path: spec.ports[0].appProtocol
+          value: http
       - equal:
           path: metadata.labels
           value:
@@ -41,6 +44,7 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: cryostat
+            app.kubernetes.io/part-of: cryostat
 
   - it: should create a Service with the correct settings when OpenShift authentication is enabled
     set:
@@ -68,7 +72,7 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[0].name
-          value: cryostat-http
+          value: http
       - equal:
           path: spec.ports[1].port
           value: 443
@@ -80,13 +84,17 @@ tests:
           value: TCP
       - equal:
           path: spec.ports[1].name
-          value: cryostat-https
+          value: https
+      - equal:
+          path: spec.ports[1].appProtocol
+          value: https
       - equal:
           path: spec.selector
           value:
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/component: cryostat
+            app.kubernetes.io/part-of: cryostat
       - equal:
           path: metadata.labels
           value:
@@ -96,6 +104,7 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: cryostat
+            app.kubernetes.io/part-of: cryostat
       - equal:
           path: metadata.annotations
           value:

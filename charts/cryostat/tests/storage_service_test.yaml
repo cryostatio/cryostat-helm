@@ -28,6 +28,7 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: storage
+            app.kubernetes.io/part-of: cryostat
 
   - it: should create a Service with the correct settings overrides
     set:
@@ -58,3 +59,4 @@ tests:
             app.kubernetes.io/version: "4.0.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: storage
+            app.kubernetes.io/part-of: cryostat
