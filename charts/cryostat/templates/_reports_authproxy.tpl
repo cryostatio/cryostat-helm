@@ -26,7 +26,7 @@
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
     - --proxy-prefix=/oauth2
-    - --bypass-auth-for=^/health(/liveness)?$
+    - --bypass-auth-for=^/health?$
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
   ports:
     - containerPort: 4180
@@ -75,7 +75,7 @@
     - name: OAUTH2_PROXY_HTPASSWD_FILE
       value: /etc/oauth2_proxy/basicauth/htpasswd
     - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
-      value: "^/health(/liveness)?$"
+      value: "^/health?$"
     - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
       value: "false"
   ports:
