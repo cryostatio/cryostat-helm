@@ -40,3 +40,7 @@ tests:
                 namespaceSelector:
                   matchLabels:
                     kubernetes.io/metadata.name: NAMESPACE
+            - from:
+              - namespaceSelector:
+                  matchLabels:
+                    policy-group.network.openshift.io/ingress: ""
