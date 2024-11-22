@@ -110,10 +110,9 @@ tests:
   - it: should render correct notes for ClusterIP service without ingress or route and TLS enabled
     set:
       oauth2Proxy:
-        service:
-          tls:
-            selfSigned:
-              enabled: true
+        tls:
+          selfSigned:
+            enabled: true
     asserts:
       - equalRaw:
           value: |
@@ -139,10 +138,9 @@ tests:
   - it: should render correct notes for ClusterIP service without ingress or route and TLS disabled
     set:
       oauth2Proxy:
-        service:
-          tls:
-            selfSigned:
-              enabled: false
+        tls:
+          selfSigned:
+            enabled: false
     asserts:
       - equalRaw:
           value: |

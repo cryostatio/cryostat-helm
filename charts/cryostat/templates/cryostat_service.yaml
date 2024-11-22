@@ -19,7 +19,7 @@ spec:
       protocol: TCP
       name: http
       appProtocol: http
-    {{- if or (.Values.authentication.openshift).enabled .Values.oauth2Proxy.service.tls.selfSigned.enabled }}
+    {{- if or (.Values.authentication.openshift).enabled .Values.oauth2Proxy.tls.selfSigned.enabled }}
     - port: 443
       targetPort: 8443
       protocol: TCP

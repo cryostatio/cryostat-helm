@@ -426,7 +426,7 @@ tests:
 
   - it: should validate volumes and volume mounts with oauth2-proxy self-signed TLS enabled
     set:
-      oauth2Proxy.service.tls.selfSigned.enabled: true
+      oauth2Proxy.tls.selfSigned.enabled: true
     asserts:
       - lengthEqual:
           count: 2

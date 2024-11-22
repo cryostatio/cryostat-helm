@@ -20,7 +20,7 @@ tests:
 
   - it: should create configmap with correct alpha configurations when self-signed TLS is enabled
     set:
-      oauth2Proxy.service.tls.selfSigned.enabled: true
+      oauth2Proxy.tls.selfSigned.enabled: true
     asserts:
       - matchRegex:
           path: data['alpha_config.yaml']

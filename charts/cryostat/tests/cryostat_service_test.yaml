@@ -136,7 +136,7 @@ tests:
 
   - it: should create a Service with the correct settings when oauth2-proxy self-signed TLS is enabled
     set:
-      oauth2Proxy.service.tls.selfSigned.enabled: true
+      oauth2Proxy.tls.selfSigned.enabled: true
     asserts:
       - hasDocuments:
           count: 1

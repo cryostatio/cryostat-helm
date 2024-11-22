@@ -12,7 +12,7 @@ data:
   alpha_config.yaml: |-
     server:
       BindAddress: http://0.0.0.0:4180
-      {{- if .Values.oauth2Proxy.service.tls.selfSigned.enabled }}
+      {{- if .Values.oauth2Proxy.tls.selfSigned.enabled }}
       SecureBindAddress: https://0.0.0.0:8443
       TLS:
         Key:
