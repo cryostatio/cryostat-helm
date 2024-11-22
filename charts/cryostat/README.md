@@ -45,6 +45,27 @@ cd cryostat-helm
 helm install cryostat ./charts/cryostat
 ```
 
+## Configuration
+
+See the sections below for Helm chart values which can be used for configuring various aspects of the Cryostat installation.
+
+If there are further customizations required to suit your deployment environment, choose the settings values that get
+you closest to what you need, then manually edit the resulting Kubernetes objects to suit your requirements. You may
+also consider using `helm install --dry-run` to render the Kubernetes YAML manifests without installing them, so that
+you can apply your own customization patches as needed.
+
+### TLS
+
+When installed on OpenShift with `authentication.openshift.enabled=true`, the cluster's
+["service serving certificates"](https://docs.openshift.com/container-platform/4.17/security/certificates/service-serving-certificate.html)
+feature is used to enable managed TLS configuration on the exposed HTTP(S) ports.
+
+When installed with `authentication.openshift.enabled=false` but `oauth2Proxy.tls.selfSigned.enabled=true` then a
+self-signed TLS certificate will be generated at installation time to serve similar purposes. These TLS certificates
+are not managed, will not automatically rotate, and will expire after 365 days. You will need to manually rotate the
+certificates, or reinstall the chart, or else apply your own customizations to the Kubernetes manifests to automate TLS
+certificate issuance and rotation.
+
 ## Parameters
 
 ### Cryostat Container
