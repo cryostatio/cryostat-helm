@@ -16,4 +16,8 @@ spec:
         namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: {{ .Release.Namespace }}
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            policy-group.network.openshift.io/ingress: ""
 {{- end }}
