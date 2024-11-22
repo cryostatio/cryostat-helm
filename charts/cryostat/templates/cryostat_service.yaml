@@ -19,7 +19,7 @@ spec:
       protocol: TCP
       name: http
       appProtocol: http
-    {{- if (.Values.authentication.openshift).enabled }}
+    {{- if ( include "cryostat.core.service.tls" . | eq "true" ) }}
     - port: 443
       targetPort: 8443
       protocol: TCP

@@ -107,7 +107,12 @@ tests:
               echo http://$SERVICE_IP:8181
               ```
 
-  - it: should render correct notes for ClusterIP service without ingress or route
+  - it: should render correct notes for ClusterIP service without ingress or route and TLS enabled
+    set:
+      oauth2Proxy:
+        tls:
+          selfSigned:
+            enabled: true
     asserts:
       - equalRaw:
           value: |
@@ -117,12 +122,40 @@ tests:
               No actions required with this configuration.
               ```
 
-            2. Forward local port to the application's pod:
+            2. Forward local port to the application's service:
               ```
               kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat-v4
 
-              export POD_NAME=$(kubectl get pods -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME,app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
-              kubectl -n NAMESPACE port-forward $POD_NAME 8080:http
+              export SVC_NAME=$(kubectl get services -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME,app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
+              kubectl -n NAMESPACE port-forward svc/$SVC_NAME 8443:https
+              ```
+
+            3. Visit the application at:
+              ```
+              https://localhost:8443
+              ```
+
+  - it: should render correct notes for ClusterIP service without ingress or route and TLS disabled
+    set:
+      oauth2Proxy:
+        tls:
+          selfSigned:
+            enabled: false
+    asserts:
+      - equalRaw:
+          value: |
+
+            1. Configure the application to serve external traffic:
+              ```
+              No actions required with this configuration.
+              ```
+
+            2. Forward local port to the application's service:
+              ```
+              kubectl -n NAMESPACE wait --for=condition=available --timeout=60s deploy/RELEASE-NAME-cryostat-v4
+
+              export SVC_NAME=$(kubectl get services -n NAMESPACE -l "app.kubernetes.io/name=cryostat,app.kubernetes.io/instance=RELEASE-NAME,app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
+              kubectl -n NAMESPACE port-forward svc/$SVC_NAME 8080:http
               ```
 
             3. Visit the application at:
