@@ -1,6 +1,5 @@
-{{- $fullName := include "cryostat.fullname" . -}}
----
 {{- if gt (int (.Values.reports).replicas) 0 -}}
+{{- $fullName := include "cryostat.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,6 +11,7 @@ spec:
   type: {{ .Values.reports.service.type }}
   ports:
     - port: {{ .Values.reports.service.httpPort }}
+      targetPort: {{ ternary "https" "http" (.Values.authentication.openshift).enabled }}
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: reports

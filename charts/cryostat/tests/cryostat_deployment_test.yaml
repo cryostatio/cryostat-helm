@@ -199,7 +199,19 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
-          value: http://RELEASE-NAME-cryostat-reports:10001
+          value: http://cryostat:$(REPORTS_PASS_SECRET_KEY)@RELEASE-NAME-cryostat-reports.NAMESPACE.svc:10001
+
+  - it: should set environment variable if sidecar report generator is enabled in OpenShift with HTTPS
+    set:
+      reports:
+        replicas: 1
+      authentication:
+        openshift:
+          enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
+          value: https://cryostat:$(REPORTS_PASS_SECRET_KEY)@RELEASE-NAME-cryostat-reports.NAMESPACE.svc:10001
 
   - it: should set oauth2proxy resource overrides
     set:

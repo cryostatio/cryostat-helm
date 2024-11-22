@@ -101,6 +101,12 @@ reports:
     type: ClusterIP
     ## @param reports.service.httpPort Port number to expose on the Service for the Report Generator Deployment
     httpPort: 10001
+  ## @param reports.reportsSecretName Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
+  reportsSecretName: ""
+  debug:
+    log:
+      ## @param reports.debug.log.level Log level for troubleshooting and debugging
+      level: INFO
   ## @param reports.replicas Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.
   replicas: 0
   resources:
@@ -273,7 +279,7 @@ oauth2Proxy:
       cpu: 25m
       ## @param oauth2Proxy.resources.requests.memory Memory resource request for the OAuth2 Proxy container.
       memory: 64Mi
-  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1). If the chart is installed in default namespaces (e.g. default), `securityContext.runAsUser` must be set if the proxy image does not specify a numeric non-root user. This is due to OpenShift Security Context Constraints are not applied in default namespaces. See [Understanding and Managing Pod Security Admission](https://docs.openshift.com/container-platform/4.15/authentication/understanding-and-managing-pod-security-admission.html#psa-privileged-namespaces_understanding-and-managing-pod-security-admission).
+  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1).
   securityContext:
     ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false

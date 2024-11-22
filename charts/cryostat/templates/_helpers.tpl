@@ -117,6 +117,24 @@ Get or generate a default secret key for object storage.
 {{- end -}}
 
 {{/*
+Get or generate a default secret password key for report generators.
+*/}}
+{{- define "cryostat.reportsPassSecretKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-reports-secret" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current secret. Do not regenerate.
+*/}}
+{{- $secret.data.REPORTS_PASS -}}
+{{- else -}}
+{{/*
+    Generate new secret
+*/}}
+{{- (randAlphaNum 32) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get or generate a default secret key for auth proxy cookies.
 */}}
 {{- define "cryostat.cookieSecret" -}}
@@ -130,7 +148,7 @@ Get or generate a default secret key for auth proxy cookies.
 {{/*
     Generate new secret
 */}}
-{{- (randAlphaNum 32) | b64enc | quote -}}
+{{- (randAlphaNum 32) | b64enc -}}
 {{- end -}}
 {{- end -}}
 

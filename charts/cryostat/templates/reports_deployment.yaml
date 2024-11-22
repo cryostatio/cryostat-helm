@@ -34,6 +34,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- include "cryostat.reportsAuthProxy" . | nindent 8 }}
         - name: {{ printf "%s-%s" .Chart.Name "reports" }}
           securityContext:
             {{- toYaml (.Values.reports).securityContext | nindent 12 }}
@@ -42,6 +43,8 @@ spec:
           env:
             - name: QUARKUS_HTTP_PORT
               value: "{{ .Values.reports.service.httpPort }}"
+            - name: QUARKUS_LOG_LEVEL
+              value: {{ .Values.reports.debug.log.level }}
           ports:
             - containerPort: {{ .Values.reports.service.httpPort }}
               protocol: TCP
@@ -70,5 +73,15 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: {{ .Release.Name }}-reports-secret
+        secret:
+          defaultMode: 0440
+          secretName: {{ .Release.Name }}-reports-secret
+      {{- if (.Values.authentication.openshift).enabled }}
+      - name: {{ .Release.Name }}-proxy-tls
+        secret:
+          secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
 {{- end -}}

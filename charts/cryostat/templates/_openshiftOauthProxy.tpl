@@ -20,7 +20,7 @@ Create OpenShift OAuth Proxy container.
     - --pass-basic-auth=false
     - --upstream=http://localhost:8181/
     - --upstream=http://localhost:3000/grafana/
-    - --cookie-secret="$(COOKIE_SECRET)"
+    - --cookie-secret=$(COOKIE_SECRET)
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
     - --proxy-websockets=true
     - --http-address=0.0.0.0:4180
