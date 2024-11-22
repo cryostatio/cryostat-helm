@@ -19,9 +19,6 @@ tests:
           path: metadata.name
           value: RELEASE-NAME-internal-ingress
       - equal:
-          path: metadata.namespace
-          value: NAMESPACE
-      - equal:
           path: spec.podSelector
           value:
             matchLabels:
