@@ -75,7 +75,7 @@ spec:
           - name: QUARKUS_REST_CLIENT_EXTENSIONS_API_VERIFY_HOST
             value: "false"
           - name: QUARKUS_REST_CLIENT_REPORTS_URL
-            value: {{ printf "%s://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports.%s.svc:%d" (ternary "https" "http" (.Values.authentication.openshift).enabled) $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
+            value: {{ printf "%s://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports.%s.svc:%d" (ternary "https" "http" (or (.Values.authentication.openshift).enabled .Values.oauth2Proxy.tls.selfSigned.enabled)) $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
           {{- end }}
           - name: QUARKUS_DATASOURCE_USERNAME
             value: cryostat
