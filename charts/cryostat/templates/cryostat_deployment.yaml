@@ -121,9 +121,16 @@ spec:
           {{- if .Values.core.discovery.kubernetes.enabled }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED
             value: "true"
+          {{- if .Values.core.discovery.kubernetes.allNamespaces }}
+          - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
+            value: '*'
+          {{- else }}
           {{- with .Values.core.discovery.kubernetes }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
             value: {{ include "cryostat.commaSepList" (list .namespaces $.Release.Namespace .installNamespaceDisabled) }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.core.discovery.kubernetes }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES
             value: {{ include "cryostat.commaSepList" (list .portNames "jfr-jmx" .builtInPortNamesDisabled) }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS

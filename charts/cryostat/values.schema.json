@@ -227,9 +227,14 @@
                                     "description": "When false and `namespaces` is empty, the Cryostat application will default to discovery targets in the install namespace (i.e. `{{ .Release.Namespace }}`)",
                                     "default": false
                                 },
+                                "allNamespaces": {
+                                    "type": "boolean",
+                                    "description": "When true, this overrides the `namespaces` list and configures Cryostat to monitor all namespaces in the cluster. This requires elevated permissions to create a ClusterRole and ClusterRoleBinding, which will be done automatically if the rbac.create value is true.",
+                                    "default": false
+                                },
                                 "namespaces": {
                                     "type": "array",
-                                    "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile",
+                                    "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile.",
                                     "default": [],
                                     "items": {}
                                 },
@@ -240,7 +245,7 @@
                                 },
                                 "portNames": {
                                     "type": "array",
-                                    "description": "List of port names that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "description": "List of port names that the Cryostat application should look for in order to consider a target as JMX connectable.",
                                     "default": [],
                                     "items": {}
                                 },
@@ -251,7 +256,7 @@
                                 },
                                 "portNumbers": {
                                     "type": "array",
-                                    "description": "List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable",
+                                    "description": "List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable.",
                                     "default": [],
                                     "items": {}
                                 }
