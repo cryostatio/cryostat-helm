@@ -141,6 +141,12 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          volumeMounts:
+          {{- range .Values.core.config.eventTemplates.configMapNames }}
+            - name: {{ . }}
+              mountPath: /opt/cryostat.d/templates.d/{{ . }}
+              readOnly: true
+          {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -219,4 +225,9 @@ spec:
       - name: {{ .Release.Name }}-oauth2proxy-tls
         secret:
           secretName: {{ .Release.Name }}-oauth2proxy-tls
+      {{- end }}
+      {{- range .Values.core.config.eventTemplates.configMapNames}}
+      - name: {{ . }}
+        configMap:
+          name: {{ . }}
       {{- end }}
