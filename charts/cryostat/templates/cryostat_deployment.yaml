@@ -145,6 +145,7 @@ spec:
           {{- range .Values.core.config.eventTemplates.configMapNames }}
             - name: {{ . }}
               mountPath: /opt/cryostat.d/templates.d/{{ . }}
+          {{- end }}
           {{- range .Values.core.config.tlsTruststore.secretNames }}
             - name: {{ . }}
               mountPath: /truststore/{{ . }}
