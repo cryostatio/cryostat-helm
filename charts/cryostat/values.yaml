@@ -94,6 +94,8 @@ core:
     tlsTruststore:
       ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
       secretNames: []
+  ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment
@@ -134,6 +136,8 @@ reports:
     capabilities:
       drop:
         - ALL
+  ## @param reports.nodeSelector [object] Node Selector for the Report Generator Pods. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database
@@ -166,6 +170,8 @@ db:
     capabilities:
       drop:
         - ALL
+  ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section Storage Container
 ## @extra storage Configuration for Cryostat's object storage provider
@@ -203,6 +209,8 @@ storage:
     capabilities:
       drop:
         - ALL
+  ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat
@@ -233,6 +241,8 @@ grafana:
     capabilities:
       drop:
         - ALL
+  ## @param grafana.nodeSelector [object] Node Selector for the Grafana Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -258,6 +268,8 @@ datasource:
     capabilities:
       drop:
         - ALL
+  ## @param datasource.nodeSelector [object] Node Selector for the JFR Datasource Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
 
 ## @section Authentication
 
@@ -386,7 +398,7 @@ networkPolicy:
     ## @param networkPolicy.ingress.enabled whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods.
     enabled: true
 
-## @param nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param nodeSelector [object] default Node Selector for the various Pods. Any Pod which does not have an individual nodeSelector setting will default to this. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}
 
 ## @param tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)

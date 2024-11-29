@@ -201,7 +201,7 @@ spec:
               - http://localhost:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.core.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

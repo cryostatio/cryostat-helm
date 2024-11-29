@@ -64,7 +64,7 @@ spec:
             failureThreshold: 2
           resources:
             {{- toYaml (.Values.reports).resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.reports.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

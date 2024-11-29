@@ -495,7 +495,29 @@ tests:
           path: spec.template.spec.affinity
       - exists:
           path: spec.template.spec.tolerations
-  
+
+  - it: should accept specific nodeSelector setting
+    set:
+      core.nodeSelector:
+        diskType: ssd
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            diskType: ssd
+
+  - it: should prefer specific nodeSelector over general
+    set:
+      nodeSelector:
+        disktype: hdd
+      core.nodeSelector:
+        diskType: ssd
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            diskType: ssd
+
   - it: should verify image pull policies for development snapshots
     set:
       core.image.tag: "4.0.0-snapshot"
