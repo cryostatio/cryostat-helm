@@ -195,7 +195,7 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (default .Values.tolerations .Values.core.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
