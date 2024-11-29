@@ -158,6 +158,45 @@ tests:
           value:
             diskType: ssd
 
+  - it: should accept specific tolerations setting
+    set:
+      reports.replicas: 1
+      reports.tolerations:
+        - key: "key1"
+          operator: "Equal"
+          value: "value1"
+          effect: "NoSchedule"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: "key1"
+              operator: "Equal"
+              value: "value1"
+              effect: "NoSchedule"
+
+  - it: should prefer specific tolerations over general
+    set:
+      reports.replicas: 1
+      tolerations:
+        - key: "key1"
+          operator: "Equal"
+          value: "value1"
+          effect: "NoSchedule"
+      reports.tolerations:
+        - key: "key2"
+          operator: "Equal"
+          value: "value2"
+          effect: "NoSchedule"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: "key2"
+              operator: "Equal"
+              value: "value2"
+              effect: "NoSchedule"
+
   - it: should verify image pull policies for development snapshots
     set:
       reports:
