@@ -19,10 +19,10 @@ spec:
   template:
     metadata:
       annotations:
-      {{- with .Values.reports.podAnnotations }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.reports.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
