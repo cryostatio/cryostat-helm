@@ -141,10 +141,10 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          {{- if .Values.core.config.eventTemplates.configMapNames}}
           volumeMounts:
-          {{- range .Values.core.config.eventTemplates.configMapNames }}
-            - name: {{ . }}
-              mountPath: /opt/cryostat.d/templates.d/{{ . }}
+            - name: declarative-event-templates
+              mountPath: /opt/cryostat.d/templates.d
               readOnly: true
           {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
@@ -222,9 +222,11 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
-      {{- range .Values.core.config.eventTemplates.configMapNames}}
-      - name: {{ . }}
-        configMap:
-          name: {{ . }}
-          optional: false
-      {{- end }}
+      - name: declarative-event-templates
+        projected:
+          sources:
+            {{- range .Values.core.config.eventTemplates.configMapNames}}
+            - configMap:
+                name: {{ . }}
+                optional: false
+            {{- end }}

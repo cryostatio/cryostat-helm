@@ -523,11 +523,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: a
-              mountPath: /opt/cryostat.d/templates.d/a
-              readOnly: true
-            - name: b
-              mountPath: /opt/cryostat.d/templates.d/b
+            - name: declarative-event-templates
+              mountPath: /opt/cryostat.d/templates.d
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -535,11 +532,12 @@ tests:
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
-            - name: a
-              configMap:
-                name: a
-                optional: false
-            - name: b
-              configMap:
-                name: b
-                optional: false
+            - name: declarative-event-templates
+              projected:
+                sources:
+                  - configMap:
+                      name: a
+                      optional: false
+                  - configMap:
+                      name: b
+                      optional: false
