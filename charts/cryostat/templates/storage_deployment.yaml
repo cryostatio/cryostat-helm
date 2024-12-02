@@ -99,7 +99,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.storage.resources.pvc).enabled) }}
+      {{- if ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-storage
