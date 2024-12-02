@@ -662,12 +662,6 @@
                             }
                         }
                     }
-                },
-                "tolerations": {
-                    "type": "array",
-                    "description": "Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
-                    "default": [],
-                    "items": {}
                 }
             }
         },
@@ -738,12 +732,6 @@
                             }
                         }
                     }
-                },
-                "tolerations": {
-                    "type": "array",
-                    "description": "Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
-                    "default": [],
-                    "items": {}
                 }
             }
         },
