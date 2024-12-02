@@ -85,6 +85,12 @@ core:
       builtInPortNumbersDisabled: false
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
+  ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param core.tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param core.affinity [object] Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment
@@ -123,6 +129,12 @@ reports:
     capabilities:
       drop:
         - ALL
+  ## @param reports.nodeSelector [object] Node Selector for the Report Generator Pods. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param reports.tolerations [array] Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param reports.affinity [object] Affinity for the Report Generator Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database
@@ -153,6 +165,12 @@ db:
     capabilities:
       drop:
         - ALL
+  ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param db.tolerations [array] Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param db.affinity [object] Affinity for the Database Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Storage Container
 ## @extra storage Configuration for Cryostat's object storage provider
@@ -188,6 +206,12 @@ storage:
     capabilities:
       drop:
         - ALL
+  ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param storage.tolerations [array] Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param storage.affinity [object] Affinity for the Storage Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat
@@ -362,13 +386,13 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-## @param nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param nodeSelector [object] default Node Selector for the various Pods. Any Pod which does not have an individual nodeSelector setting will default to this. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}
 
-## @param tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param tolerations [array] default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 tolerations: []
 
-## @param affinity [object] Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param affinity [object] default Affinity for the various Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 affinity: {}
 
 pvc:
