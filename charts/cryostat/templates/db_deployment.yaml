@@ -89,8 +89,7 @@ spec:
       - name: {{ .Chart.Name }}-db
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-db
-      {{- end }}
-      {{- if not ((.Values.db.pvc).enabled) }}
+      {{- else }}
       - name: {{ .Chart.Name }}-db
         emptyDir: {}
       {{- end }}

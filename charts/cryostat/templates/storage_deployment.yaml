@@ -103,8 +103,7 @@ spec:
       - name: {{ .Chart.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-storage
-      {{- end }}
-      {{- if not ((.Values.storage.resources.pvc).enabled) }}
+      {{- else }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
       {{- end }}
