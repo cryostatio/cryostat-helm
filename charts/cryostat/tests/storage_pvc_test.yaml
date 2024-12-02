@@ -5,7 +5,7 @@ templates:
 tests:
   - it: should create a PersistentVolumeClaim with correct settings
     set:
-      pvc:
+      storage.pvc:
         enabled: true
         storage: "10Gi"
         accessModes:
@@ -50,7 +50,7 @@ tests:
 
   - it: should not create a PersistentVolumeClaim when PVC is disabled
     set:
-      pvc:
+      storage.pvc:
         enabled: false
     asserts:
       - hasDocuments:
