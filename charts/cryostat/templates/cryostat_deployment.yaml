@@ -226,4 +226,5 @@ spec:
       - name: {{ . }}
         configMap:
           name: {{ . }}
+          optional: false
       {{- end }}

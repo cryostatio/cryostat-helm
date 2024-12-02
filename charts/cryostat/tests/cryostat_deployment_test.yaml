@@ -538,6 +538,8 @@ tests:
             - name: a
               configMap:
                 name: a
+                optional: false
             - name: b
               configMap:
                 name: b
+                optional: false
