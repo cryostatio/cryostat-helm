@@ -87,6 +87,7 @@ core:
       portNumbers: []
   config:
     declarative:
+      ## @param core.config.declarative.fsMode default filesystem mode (permissions) for declarative configuration volumes
       fsMode: 0440
     eventTemplates:
       ## @param core.config.eventTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.

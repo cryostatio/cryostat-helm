@@ -262,6 +262,16 @@
                 "config": {
                     "type": "object",
                     "properties": {
+                        "declarative": {
+                            "type": "object",
+                            "properties": {
+                                "fsMode": {
+                                    "type": "number",
+                                    "description": "default filesystem mode (permissions) for declarative configuration volumes",
+                                    "default": 440
+                                }
+                            }
+                        },
                         "eventTemplates": {
                             "type": "object",
                             "properties": {
