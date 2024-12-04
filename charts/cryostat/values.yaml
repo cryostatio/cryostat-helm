@@ -359,7 +359,7 @@ serviceAccount:
   ## @param serviceAccount.name The name of the service account to use. If not set and create is true, a name is generated using the fullname template
   name: ""
 
-## @param podAnnotations [object] Annotations to be applied to the various Pods
+## @param podAnnotations [object] Common annotations to be applied to all managed Pods
 podAnnotations: {}
 
 ## @param podSecurityContext [object] Security Context for the Cryostat Pod. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
