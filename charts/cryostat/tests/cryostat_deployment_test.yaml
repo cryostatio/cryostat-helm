@@ -523,11 +523,8 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: a
-              mountPath: /truststore/a
-              readOnly: true
-            - name: b
-              mountPath: /truststore/b
+            - name: declarative-trusted-tls-certs
+              mountPath: /truststore
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -535,9 +532,13 @@ tests:
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
-            - name: a
-              secret:
-                secretName: a
-            - name: b
-              secret:
-                secretName: b
+            - name: declarative-trusted-tls-certs
+              projected:
+                defaultMode: 0440
+                sources:
+                  - secret:
+                      secretName: a
+                      optional: false
+                  - secret:
+                      secretName: b
+                      optional: false

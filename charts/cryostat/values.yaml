@@ -86,6 +86,9 @@ core:
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
   config:
+    declarative:
+      ## @param core.config.declarative.fsMode default filesystem mode (permissions) for declarative configuration volumes
+      fsMode: 0440
     tlsTruststore:
       ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
       secretNames: []
