@@ -141,6 +141,10 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          volumeMounts:
+            - name: declarative-trusted-tls-certs
+              mountPath: /truststore
+              readOnly: true
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -216,3 +220,12 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
+      - name: declarative-trusted-tls-certs
+        projected:
+          defaultMode: {{ .Values.core.config.declarative.fsMode }}
+          sources:
+          {{- range .Values.core.config.tlsTruststore.secretNames }}
+            - secret:
+                secretName: {{ . }}
+                optional: false
+          {{- end }}
