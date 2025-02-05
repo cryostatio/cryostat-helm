@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "4.0.0-snapshot"
+                            "default": "4.1.0-snapshot"
                         }
                     }
                 },
@@ -280,7 +280,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Report Generator image",
-                            "default": "4.0.0-snapshot"
+                            "default": "4.1.0-snapshot"
                         }
                     }
                 },
