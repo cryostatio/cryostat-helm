@@ -8,7 +8,7 @@ version: "2.0.0-dev"
 
 kubeVersion: ">= 1.25.0-0"
 
-appVersion: "4.0.0-dev"
+appVersion: "4.1.0-dev"
 
 home: "https://cryostat.io"
 
