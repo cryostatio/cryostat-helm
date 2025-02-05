@@ -415,7 +415,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "latest"
+                            "default": "cryostat-v4.0"
                         }
                     }
                 },
@@ -505,7 +505,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "latest"
+                            "default": "cryostat-v4.0"
                         }
                     }
                 },
@@ -600,7 +600,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "latest"
+                            "default": "4.0-dev"
                         }
                     }
                 },
@@ -685,7 +685,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "latest"
+                            "default": "4.0.0-snapshot"
                         }
                     }
                 },
