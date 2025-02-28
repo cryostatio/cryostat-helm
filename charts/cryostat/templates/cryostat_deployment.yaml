@@ -141,6 +141,12 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          {{- if .Values.core.config.probeTemplates.configMapNames}}
+          volumeMounts:
+            - name: declarative-probe-templates
+              mountPath: /opt/cryostat.d/probes.d
+              readOnly: true
+          {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -216,3 +222,12 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
+      - name: declarative-probe-templates
+        projected:
+          defaultMode: {{ .values.core.config.declarative.fsMode }}
+          sources:
+            {{- range .values.core.config.probeTemplates.configMapNames}}
+            - configMap:
+                name: {{ . }}
+                optional: false
+            {{- end }}
