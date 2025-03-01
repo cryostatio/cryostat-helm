@@ -224,9 +224,9 @@ spec:
       {{- end }}
       - name: declarative-probe-templates
         projected:
-          defaultMode: {{ .values.core.config.declarative.fsMode }}
+          defaultMode: {{ .Values.core.config.declarative.fsMode }}
           sources:
-            {{- range .values.core.config.probeTemplates.configMapNames}}
+            {{- range .Values.core.config.probeTemplates.configMapNames}}
             - configMap:
                 name: {{ . }}
                 optional: false
