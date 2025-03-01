@@ -262,7 +262,7 @@
                 "config": {
                     "type": "object",
                     "properties": {
-                       "declarative": {
+                        "declarative": {
                             "type": "object",
                             "properties": {
                                 "fsMode": {
@@ -271,8 +271,8 @@
                                     "default": 440
                                 }
                             }
-                       },
-                       "probeTemplates": {
+                        },
+                        "probeTemplates": {
                             "type": "object",
                             "properties": {
                                 "configMapNames": {
@@ -282,7 +282,7 @@
                                     "items": {}
                                 }
                             }
-                       } 
+                        }
                     }
                 }
             }
