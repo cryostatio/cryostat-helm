@@ -560,7 +560,7 @@ tests:
                 name: RELEASE-NAME-alpha-config
             - name: declarative-probe-templates
               projected:
-                defualtMode: 0644
+                defaultMode: 0644
                 sources:
                   - configMap:
                       name: a
