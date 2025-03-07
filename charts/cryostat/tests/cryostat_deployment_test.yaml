@@ -180,7 +180,8 @@ tests:
             requests:
               cpu: 500m
               memory: 384Mi
-
+      - notExists:
+          path: spec.template.spec.contains[?(@.name=='cryostat')].volumeMounts
   - it: should set log level
     set:
       core:
@@ -513,4 +514,56 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
           value: "IfNotPresent"
-
+  - it: should add volume mounts for declarative automated rules
+    set:
+      core.config.rules.configMapNames: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: declarative-rules
+              mountPath: /opt/cryostat.d/rules.d
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: declarative-rules
+              projected:
+                defaultMode: 0440
+                sources:
+                  - configMap:
+                      name: a
+                      optional: false
+                  - configMap:
+                      name: b
+                      optional: false
+  - it: should add volume mounts for declarative rules with a specific default fs mode
+    set:
+      core.config.rules.configMapNames: ['a', 'b']
+      core.config.declarative.fsMode: 0644
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: declarative-rules
+              mountPath: /opt/cryostat.d/rules.d
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: declarative-rules
+              projected:
+                defaultMode: 0644
+                sources:
+                  - configMap:
+                      name: a
+                      optional: false
+                  - configMap:
+                      name: b
+                      optional: false  
