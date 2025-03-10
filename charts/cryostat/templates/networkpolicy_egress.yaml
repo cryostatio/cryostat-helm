@@ -1,0 +1,40 @@
+{{- if ((.Values.networkPolicy.egress).enabled) }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-internal-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  policyTypes:
+    - Egress
+  podSelector:
+    matchLabels:
+      {{- include "cryostat.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: cryostat
+  egress:
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: {{ .Release.Namespace }}
+{{- if .Values.authentication.openshift.enabled }}
+{{- $kubernetesEndpoint := lookup "v1" "Endpoints" "default" "kubernetes" }}
+{{- $kubernetesAddress := (first $kubernetesEndpoint.subsets).addresses }}
+{{- $kubernetesIP := (first $kubernetesAddress).ip }}
+    - to:
+      - ipBlock:
+          cidr: {{ $kubernetesIP }}/32
+{{- end }}
+    - to:
+      - namespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values:
+                - default
+                - kube-system
+                - openshift
+                - {{ .Release.Namespace }}
+                {{- range .Values.core.discovery.kubernetes.namespaces }}
+                - {{ . }}
+                {{- end }}
+{{- end }}
