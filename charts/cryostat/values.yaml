@@ -85,9 +85,6 @@ core:
       builtInPortNumbersDisabled: false
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
-    kubernetes2:
-      ## @param core.discovery.kubernetes2.enabled Enables Kubernetes API discovery mechanism
-      enabled: false
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment

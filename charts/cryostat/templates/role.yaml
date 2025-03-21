@@ -19,14 +19,6 @@ rules:
   - list
   - watch
 - apiGroups:
-  - discovery.k8s.io
-  resources:
-  - endpointslices
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
   - ""
   resources:
   - pods
@@ -58,7 +50,7 @@ rules:
 {{- end -}}
 {{- end -}}
 
-{{- if and .Values.rbac.create (or .Values.core.discovery.kubernetes.enabled .Values.core.discovery.kubernetes2.enabled) -}}
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
 {{- $watchNs := compact (default list .Values.core.discovery.kubernetes.namespaces) | uniq -}}
 {{- if and (not $watchNs) (not .Values.core.discovery.kubernetes.installNamespaceDisabled) -}}
 {{- $watchNs = list .Release.Namespace -}}
