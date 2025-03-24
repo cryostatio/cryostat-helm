@@ -258,6 +258,32 @@
                             }
                         }
                     }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "declarative": {
+                            "type": "object",
+                            "properties": {
+                                "fsMode": {
+                                    "type": "number",
+                                    "description": "default filesystem mode (permissions) for declarative configuration volumes",
+                                    "default": 440
+                                }
+                            }
+                        },
+                        "credentials": {
+                            "type": "object",
+                            "properties": {
+                                "secretNames": {
+                                    "type": "array",
+                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are json Stored Credentials, to be mounted to the Cryostat container.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },

@@ -141,6 +141,12 @@ spec:
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
+          {{- if .Values.core.config.credentials.secretNames }}
+          volumeMounts:
+            - name: declarative-credentials
+              mountPath: /opt/cryostat.d/credentials.d
+              readOnly: true
+          {{- end}}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -216,3 +222,12 @@ spec:
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
       {{- end }}
+      - name: declarative-credentials
+        projected:
+          defaultMode: {{ .Values.core.config.declarative.fsMode }}
+          sources: 
+          {{- range .Values.core.config.credentials.secretNames }}
+            - secret:
+                secretName: {{ . }}
+                optional: false
+          {{- end }}
