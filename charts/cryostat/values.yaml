@@ -261,8 +261,6 @@ grafana:
   nodeSelector: {}
   ## @param grafana.tolerations [array] Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   tolerations: []
-  ## @param grafana.affinity [object] Affinity for the Grafana Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
-  affinity: {}
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -292,8 +290,6 @@ datasource:
   nodeSelector: {}
   ## @param datasource.tolerations [array] Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   tolerations: []
-  ## @param datasource.affinity [object] Affinity for the JFR Datasource Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
-  affinity: {}
 
 ## @section Authentication
 
