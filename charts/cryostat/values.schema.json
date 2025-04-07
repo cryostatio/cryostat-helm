@@ -285,6 +285,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -395,6 +401,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -480,6 +492,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -580,6 +598,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -665,6 +689,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -735,6 +765,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -1066,7 +1102,7 @@
         },
         "tolerations": {
             "type": "array",
-            "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+            "description": "default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
             "default": [],
             "items": {}
         },

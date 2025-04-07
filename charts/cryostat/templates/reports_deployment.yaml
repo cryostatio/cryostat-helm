@@ -64,15 +64,15 @@ spec:
             failureThreshold: 2
           resources:
             {{- toYaml (.Values.reports).resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.reports.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (default .Values.affinity .Values.reports.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (default .Values.tolerations .Values.reports.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
