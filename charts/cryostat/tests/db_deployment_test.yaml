@@ -31,9 +31,8 @@ tests:
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/component: db
             app.kubernetes.io/part-of: cryostat
-      - equal:
+      - notExists:
           path: spec.template.spec.serviceAccountName
-          value: RELEASE-NAME-cryostat
       - equal:
           path: spec.template.spec.securityContext.runAsNonRoot
           value: true
