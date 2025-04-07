@@ -272,6 +272,17 @@
                                     "items": {}
                                 }
                             }
+                        },
+                        "tlsTruststore": {
+                            "type": "object",
+                            "properties": {
+                                "secretNames": {
+                                    "type": "array",
+                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
                         }
                     }
                 }
