@@ -272,8 +272,3 @@ certificate issuance and rotation.
 | `nodeSelector`                  | default Node Selector for the various Pods. Any Pod which does not have an individual nodeSelector setting will default to this. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                                           | `{}`   |
 | `tolerations`                   | default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                                                                                                                                   | `[]`   |
 | `affinity`                      | default Affinity for the various Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)                                                                                                                                                         | `{}`   |
-
->>>>>>> 6266f47 (fix(pvc): split PVC configuration between Deployments)
->>>>>>> ea48416 (fix(pvc): split PVC configuration between Deployments)
-
-
