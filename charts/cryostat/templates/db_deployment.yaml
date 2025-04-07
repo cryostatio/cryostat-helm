@@ -87,12 +87,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.db.resources.pvc).enabled) }}
+      {{- if ((.Values.db.pvc).enabled) }}
       - name: {{ .Chart.Name }}-db
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-db
       {{- end }}
-      {{- if not ((.Values.db.resources.pvc).enabled) }}
+      {{- if not ((.Values.db.pvc).enabled) }}
       - name: {{ .Chart.Name }}-db
         emptyDir: {}
       {{- end }}
