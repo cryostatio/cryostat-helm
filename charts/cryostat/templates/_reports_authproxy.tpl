@@ -45,6 +45,62 @@
       readOnly: true
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
+{{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
+- name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
+  securityContext:
+    {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 4 }}
+  image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
+  imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
+  env:
+    - name: OAUTH2_PROXY_CLIENT_ID
+      value: dummy
+    - name: OAUTH2_PROXY_CLIENT_SECRET
+      value: none
+    - name: OAUTH2_PROXY_HTTP_ADDRESS
+      value: 0.0.0.0:4180
+    - name: OAUTH2_PROXY_HTTPS_ADDRESS
+      value: :8443
+    - name: OAUTH2_PROXY_TLS_CERT_FILE
+      value: /etc/tls/private/cert
+    - name: OAUTH2_PROXY_TLS_KEY_FILE
+      value: /etc/tls/private/key
+    - name: OAUTH2_PROXY_UPSTREAMS
+      value: http://localhost:10001/
+    - name: OAUTH2_PROXY_REDIRECT_URL
+      value: "http://localhost:4180/oauth2/callback"
+    - name: OAUTH2_PROXY_COOKIE_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
+          key: COOKIE_SECRET
+          optional: false
+    - name: OAUTH2_PROXY_EMAIL_DOMAINS
+      value: "*"
+    - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
+      value: write
+    - name: OAUTH2_PROXY_HTPASSWD_FILE
+      value: /etc/oauth2_proxy/basicauth/htpasswd
+    - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+      value: "^/health$"
+    - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
+      value: "false"
+  ports:
+    - containerPort: 4180
+      name: http
+      protocol: TCP
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+  resources:
+    {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
+  volumeMounts:
+    - name: {{ .Release.Name }}-reports-secret
+      mountPath: /etc/oauth2_proxy/basicauth
+      readOnly: true
+    {{- if .Values.oauth2Proxy.tls.selfSigned.enabled }}
+    - name: {{ .Release.Name }}-oauth2proxy-reports-tls
+      mountPath: /etc/tls/private
+    {{- end }}
 {{- else }}
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
