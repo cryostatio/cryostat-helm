@@ -156,3 +156,39 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].imagePullPolicy
           value: "IfNotPresent"
+
+  - it: should set default podAnnotations
+    set:
+      reports.replicas: 1
+      podAnnotations:
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            foo: bar
+
+  - it: should set pod-specific podAnnotations
+    set:
+      reports.replicas: 1
+      reports.podAnnotations:
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            foo: bar
+
+  - it: should set merge pod-specific and default podAnnotations
+    set:
+      reports.replicas: 1
+      reports.podAnnotations:
+        foo: bar
+      podAnnotations:
+        alice: bob
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            alice: bob
+            foo: bar

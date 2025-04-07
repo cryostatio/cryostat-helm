@@ -586,3 +586,36 @@ tests:
             - name: b
               secret:
                 secretName: b
+
+  - it: should set default podAnnotations
+    set:
+      podAnnotations:
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            foo: bar
+
+  - it: should set pod-specific podAnnotations
+    set:
+      core.podAnnotations:
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            foo: bar
+
+  - it: should set merge pod-specific and default podAnnotations
+    set:
+      core.podAnnotations:
+        foo: bar
+      podAnnotations:
+        alice: bob
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            alice: bob
+            foo: bar
