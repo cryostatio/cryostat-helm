@@ -7,13 +7,9 @@ core:
     ## @param core.image.pullPolicy Image pull policy for the main Cryostat container image
     pullPolicy: Always
     ## @param core.image.tag Tag for the main Cryostat container image
-<<<<<<< HEAD
     tag: "4.0.0-snapshot"
-=======
-    tag: "4.1.0-snapshot"
   ## @param core.podAnnotations [object] Annotations to be applied to the Cryostat Pods
   podAnnotations: {}
->>>>>>> d34cfea (feat(podAnnotations): individualized Pod Annotations (#222))
   service:
     ## @param core.service.type Type of Service to create for the Cryostat application
     type: ClusterIP
@@ -108,13 +104,9 @@ reports:
     ## @param reports.image.pullPolicy Image pull policy for the Report Generator container image
     pullPolicy: Always
     ## @param reports.image.tag Tag for the Report Generator image
-<<<<<<< HEAD
     tag: "4.0.0-snapshot"
-=======
-    tag: "4.1.0-snapshot"
   ## @param reports.podAnnotations [object] Annotations to be applied to the Report Generator Pods
   podAnnotations: {}
->>>>>>> d34cfea (feat(podAnnotations): individualized Pod Annotations (#222))
   service:
     ## @param reports.service.type Type of Service to create for the Report Generator Deployment
     type: ClusterIP
@@ -152,13 +144,9 @@ db:
     ## @param db.image.pullPolicy Image pull policy for the database container image
     pullPolicy: Always
     ## @param db.image.tag Tag for the database container image
-<<<<<<< HEAD
     tag: "cryostat-v4.0"
-=======
-    tag: "latest"
   ## @param db.podAnnotations [object] Annotations to be applied to the Database Pods
   podAnnotations: {}
->>>>>>> d34cfea (feat(podAnnotations): individualized Pod Annotations (#222))
   service:
     ## @param db.service.type Type of Service to create for the database
     type: ClusterIP

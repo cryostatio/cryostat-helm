@@ -417,7 +417,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "latest"
+                            "default": "cryostat-v4.0"
                         }
                     }
                 },
@@ -446,29 +446,6 @@
                         }
                     }
                 },
-<<<<<<< HEAD
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the database container image",
-                            "default": "quay.io/cryostat/cryostat-db"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the database container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the database container image",
-                            "default": "cryostat-v4.0"
-                        }
-                    }
-                },
-=======
->>>>>>> d34cfea (feat(podAnnotations): individualized Pod Annotations (#222))
                 "service": {
                     "type": "object",
                     "properties": {
