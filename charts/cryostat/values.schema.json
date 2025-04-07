@@ -448,26 +448,6 @@
                         }
                     }
                 },
-                "resources": {
-                    "type": "object",
-                    "properties": {
-                        "requests": {
-                            "type": "object",
-                            "properties": {
-                                "cpu": {
-                                    "type": "string",
-                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                                    "default": "25m"
-                                },
-                                "memory": {
-                                    "type": "string",
-                                    "description": "Memory resource request for the database container.",
-                                    "default": "64Mi"
-                                }
-                            }
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -493,6 +473,26 @@
                         }
                     }
                 },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the database container.",
+                                    "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
+                },
                 "pvc": {
                     "type": "object",
                     "properties": {
@@ -515,12 +515,6 @@
                             "items": {
                                 "type": "string"
                             }
-                        },
-                        "storageClassName": {
-                            "type": "string",
-                            "description": "The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
-                            "default": "",
-                            "nullable": true
                         }
                     }
                 },
@@ -560,16 +554,6 @@
                         }
                     }
                 },
-                "encryption": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.",
-                            "default": true
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -592,6 +576,16 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "encryption": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.",
+                            "default": true
                         }
                     }
                 },
@@ -652,12 +646,6 @@
                             "items": {
                                 "type": "string"
                             }
-                        },
-                        "storageClassName": {
-                            "type": "string",
-                            "description": "The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
-                            "default": "",
-                            "nullable": true
                         }
                     }
                 },

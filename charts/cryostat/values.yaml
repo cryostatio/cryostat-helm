@@ -183,7 +183,7 @@ db:
     ## @param db.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
     selector: {}
     ## @param db.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-    storageClassName: ""
+    # storageClassName: ""
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip db.securityContext.allowPrivilegeEscalation
@@ -240,7 +240,7 @@ storage:
     ## @param storage.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
     selector: {}
     ## @param storage.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-    storageClassName: ""
+    # storageClassName: ""
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip storage.securityContext.allowPrivilegeEscalation
