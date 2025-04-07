@@ -544,8 +544,10 @@ tests:
           value:
             - name: a
               mountPath: /opt/cryostat.d/templates.d/a
+              readOnly: true
             - name: b
               mountPath: /opt/cryostat.d/templates.d/b
+              readOnly: true
       - equal:
           path: spec.template.spec.volumes
           value:
