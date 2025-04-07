@@ -273,6 +273,10 @@ oauth2Proxy:
     pullPolicy: Always
     ## @param oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
     tag: "latest"
+  tls:
+    selfSigned:
+      ## @param oauth2Proxy.tls.selfSigned.enabled Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.
+      enabled: false
   resources:
     requests:
       ## @param oauth2Proxy.resources.requests.cpu CPU resource request for the OAuth2 Proxy container.
