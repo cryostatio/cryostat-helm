@@ -258,6 +258,22 @@
                             }
                         }
                     }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "eventTemplates": {
+                            "type": "object",
+                            "properties": {
+                                "configMapNames": {
+                                    "type": "array",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
