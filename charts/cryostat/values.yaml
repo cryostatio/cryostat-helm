@@ -85,6 +85,10 @@ core:
       builtInPortNumbersDisabled: false
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
+  config:
+    eventTemplates:
+      ## @param core.config.eventTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.
+      configMapNames: []
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment
