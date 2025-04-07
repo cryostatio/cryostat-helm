@@ -147,6 +147,11 @@ spec:
               mountPath: /opt/cryostat.d/templates.d/{{ . }}
               readOnly: true
           {{- end }}
+          {{- range .Values.core.config.tlsTruststore.secretNames }}
+            - name: {{ . }}
+              mountPath: /truststore/{{ . }}
+              readOnly: true
+          {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -230,4 +235,9 @@ spec:
       - name: {{ . }}
         configMap:
           name: {{ . }}
+      {{- end }}
+      {{- range .Values.core.config.tlsTruststore.secretNames }}
+      - name: {{ . }}
+        secret:
+          secretName: {{ . }}
       {{- end }}

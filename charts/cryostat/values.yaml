@@ -89,6 +89,9 @@ core:
     eventTemplates:
       ## @param core.config.eventTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.
       configMapNames: []
+    tlsTruststore:
+      ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
+      secretNames: []
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment
