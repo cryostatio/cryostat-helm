@@ -136,10 +136,30 @@ tests:
               cpu: 4000m
               memory: 2Gi
 
+  - it: should set PersistentVolumeClaim (pvc) reference
+    set:
+      db:
+        pvc:
+          enabled: true
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db')]
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db')]
+          value:
+            name: cryostat-db
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-db
+
   - it: should validate volumes and volume mounts
     asserts:
       - exists:
           path: spec.template.spec.volumes[?(@.name=='cryostat-db')]
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db')]
+          value:
+            name: cryostat-db
+            emptyDir: {}
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/lib/pgsql/data')]
 

@@ -101,12 +101,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.pvc).enabled) }}
+      {{- if ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-storage
       {{- end }}
-      {{- if not ((.Values.pvc).enabled) }}
+      {{- if not ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
       {{- end }}
