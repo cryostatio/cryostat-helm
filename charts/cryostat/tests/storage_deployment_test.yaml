@@ -165,10 +165,30 @@ tests:
               cpu: 4000m
               memory: 2Gi
 
+  - it: should set PersistentVolumeClaim (pvc) reference
+    set:
+      storage:
+        pvc:
+          enabled: true
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage')]
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage')]
+          value:
+            name: cryostat-storage
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-storage
+
   - it: should validate volumes and volume mounts
     asserts:
       - exists:
           path: spec.template.spec.volumes[?(@.name=='cryostat-storage')]
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage')]
+          value:
+            name: cryostat-storage
+            emptyDir: {}
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[?(@.mountPath=='/data')]
 

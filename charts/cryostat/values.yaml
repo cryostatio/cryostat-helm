@@ -170,6 +170,20 @@ db:
       cpu: 25m
       ## @param db.resources.requests.memory Memory resource request for the database container.
       memory: 64Mi
+  pvc:
+    ## @param db.pvc.enabled Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.
+    enabled: false
+    ## @param db.pvc.annotations [object] Annotations to add to the persistentVolumeClaim
+    annotations: {}
+    ## @param db.pvc.storage Storage size to request for the persistentVolumeClaim
+    storage: 500Mi
+    ## @param db.pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    accessModes:
+      - ReadWriteOnce
+    ## @param db.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    selector: {}
+    ## @param db.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # storageClassName: ""
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip db.securityContext.allowPrivilegeEscalation
@@ -213,6 +227,20 @@ storage:
       cpu: 50m
       ## @param storage.resources.requests.memory Memory resource request for the object storage container.
       memory: 256Mi
+  pvc:
+    ## @param storage.pvc.enabled Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.
+    enabled: false
+    ## @param storage.pvc.annotations [object] Annotations to add to the persistentVolumeClaim
+    annotations: {}
+    ## @param storage.pvc.storage Storage size to request for the persistentVolumeClaim
+    storage: 500Mi
+    ## @param storage.pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    accessModes:
+      - ReadWriteOnce
+    ## @param storage.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    selector: {}
+    ## @param storage.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # storageClassName: ""
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip storage.securityContext.allowPrivilegeEscalation
@@ -426,18 +454,3 @@ tolerations: []
 
 ## @param affinity [object] default Affinity for the various Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 affinity: {}
-
-pvc:
-  ## @param pvc.enabled Specify whether to use persistentVolumeClaim or EmptyDir storage
-  enabled: false
-  ## @param pvc.annotations [object] Annotations to add to the persistentVolumeClaim
-  annotations: {}
-  ## @param pvc.storage Storage size to request for the persistentVolumeClaim
-  storage: 500Mi
-  ## @param pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  accessModes:
-    - ReadWriteOnce
-  ## @param pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  selector: {}
-  ## @param pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  # storageClassName:
