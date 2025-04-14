@@ -18,8 +18,11 @@ spec:
       app.kubernetes.io/component: reports
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.reports.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -30,7 +33,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cryostat.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -62,15 +64,15 @@ spec:
             failureThreshold: 2
           resources:
             {{- toYaml (.Values.reports).resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.reports.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (default .Values.affinity .Values.reports.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (default .Values.tolerations .Values.reports.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -83,5 +85,9 @@ spec:
       - name: {{ .Release.Name }}-proxy-tls
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
+      {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
+      - name: {{ .Release.Name }}-oauth2proxy-reports-tls
+        secret:
+          secretName: {{ .Release.Name }}-oauth2proxy-reports-tls
       {{- end }}
 {{- end -}}

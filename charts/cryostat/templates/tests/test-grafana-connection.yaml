@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "cryostat.labels" . | nindent 4 }}
     app.kubernetes.io/component: test-grafana-connection
+    charts.cryostat.io/role: helm-test
   annotations:
     "helm.sh/hook": test
 spec:
