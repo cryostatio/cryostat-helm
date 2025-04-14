@@ -282,8 +282,36 @@
                                     "items": {}
                                 }
                             }
+                        },
+                        "eventTemplates": {
+                            "type": "object",
+                            "properties": {
+                                "configMapNames": {
+                                    "type": "array",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        },
+                        "tlsTruststore": {
+                            "type": "object",
+                            "properties": {
+                                "secretNames": {
+                                    "type": "array",
+                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -394,37 +422,18 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
         "db": {
             "type": "object",
             "properties": {
-                "securityContext": {
-                    "type": "object",
-                    "properties": {
-                        "capabilities": {
-                            "type": "object",
-                            "properties": {
-                                "drop": {
-                                    "type": "array",
-                                    "description": "",
-                                    "default": [
-                                        "ALL"
-                                    ],
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        },
-                        "allowPrivilegeEscalation": {
-                            "type": "boolean",
-                            "description": "",
-                            "default": false
-                        }
-                    }
-                },
                 "image": {
                     "type": "object",
                     "properties": {
@@ -460,31 +469,6 @@
                         }
                     }
                 },
-                "resources": {
-                    "type": "object",
-                    "properties": {
-                        "requests": {
-                            "type": "object",
-                            "properties": {
-                                "cpu": {
-                                    "type": "string",
-                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
-                                    "default": "25m"
-                                },
-                                "memory": {
-                                    "type": "string",
-                                    "description": "Memory resource request for the database container.",
-                                    "default": "64Mi"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "storage": {
-            "type": "object",
-            "properties": {
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -510,6 +494,62 @@
                         }
                     }
                 },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)",
+                                    "default": "25m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the database container.",
+                                    "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
+                },
+                "pvc": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.",
+                            "default": false
+                        },
+                        "storage": {
+                            "type": "string",
+                            "description": "Storage size to request for the persistentVolumeClaim",
+                            "default": "500Mi"
+                        },
+                        "accessModes": {
+                            "type": "array",
+                            "description": "Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
+                            "default": [
+                                "ReadWriteOnce"
+                            ],
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
+                }
+            }
+        },
+        "storage": {
+            "type": "object",
+            "properties": {
                 "storageSecretName": {
                     "type": "string",
                     "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
@@ -532,6 +572,31 @@
                             "type": "string",
                             "description": "Tag for the storage container image",
                             "default": "latest"
+                        }
+                    }
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
                         }
                     }
                 },
@@ -579,6 +644,37 @@
                             }
                         }
                     }
+                },
+                "pvc": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.",
+                            "default": false
+                        },
+                        "storage": {
+                            "type": "string",
+                            "description": "Storage size to request for the persistentVolumeClaim",
+                            "default": "500Mi"
+                        },
+                        "accessModes": {
+                            "type": "array",
+                            "description": "Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
+                            "default": [
+                                "ReadWriteOnce"
+                            ],
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -664,6 +760,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -734,6 +836,12 @@
                             }
                         }
                     }
+                },
+                "tolerations": {
+                    "type": "array",
+                    "description": "Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+                    "default": [],
+                    "items": {}
                 }
             }
         },
@@ -782,6 +890,21 @@
                             "type": "string",
                             "description": "Tag for the OAuth2 Proxy container image",
                             "default": "latest"
+                        }
+                    }
+                },
+                "tls": {
+                    "type": "object",
+                    "properties": {
+                        "selfSigned": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.",
+                                    "default": false
+                                }
+                            }
                         }
                     }
                 },
@@ -1033,36 +1156,26 @@
                 }
             }
         },
-        "tolerations": {
-            "type": "array",
-            "description": "Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
-            "default": [],
-            "items": {}
-        },
-        "pvc": {
+        "networkPolicy": {
             "type": "object",
             "properties": {
-                "enabled": {
-                    "type": "boolean",
-                    "description": "Specify whether to use persistentVolumeClaim or EmptyDir storage",
-                    "default": false
-                },
-                "storage": {
-                    "type": "string",
-                    "description": "Storage size to request for the persistentVolumeClaim",
-                    "default": "500Mi"
-                },
-                "accessModes": {
-                    "type": "array",
-                    "description": "Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)",
-                    "default": [
-                        "ReadWriteOnce"
-                    ],
-                    "items": {
-                        "type": "string"
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods.",
+                            "default": true
+                        }
                     }
                 }
             }
+        },
+        "tolerations": {
+            "type": "array",
+            "description": "default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
+            "default": [],
+            "items": {}
         }
     }
 }
