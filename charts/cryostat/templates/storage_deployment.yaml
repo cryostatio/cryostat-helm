@@ -17,8 +17,11 @@ spec:
       app.kubernetes.io/component: storage
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.storage.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -29,7 +32,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cryostat.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -86,25 +88,25 @@ spec:
             timeoutSeconds: 5
           resources:
             {{- toYaml (.Values.storage).resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.storage.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (default .Values.affinity .Values.storage.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (default .Values.tolerations .Values.storage.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.pvc).enabled) }}
+      {{- if ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-storage
       {{- end }}
-      {{- if not ((.Values.pvc).enabled) }}
+      {{- if not ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
       {{- end }}
