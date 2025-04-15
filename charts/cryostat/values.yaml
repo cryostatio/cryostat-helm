@@ -88,6 +88,12 @@ core:
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
   config:
+    declarative:
+      ## @param core.config.declarative.fsMode default filesystem mode (permissions) for declarative configuration volumes
+      fsMode: 0440
+    probeTemplates:
+      ## @param core.config.probeTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are XML JMC Agent Probe Templates, to be mounted to the Cryostat container.
+      configMapNames: []
     eventTemplates:
       ## @param core.config.eventTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.
       configMapNames: []
