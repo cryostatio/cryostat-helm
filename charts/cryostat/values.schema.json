@@ -283,6 +283,17 @@
                                 }
                             }
                         },
+                        "probeTemplates": {
+                            "type": "object",
+                            "properties": {
+                                "configMapNames": {
+                                    "type": "array",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are XML JMC Agent Probe Templates, to be mounted to the Cryostat container.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        },
                         "eventTemplates": {
                             "type": "object",
                             "properties": {
