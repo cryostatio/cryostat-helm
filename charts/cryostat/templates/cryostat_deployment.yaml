@@ -150,6 +150,11 @@ spec:
               mountPath: /opt/cryostat.d/templates.d/{{ . }}
               readOnly: true
           {{- end }}
+          {{- if .Values.core.config.rules.configMapNames}}
+            - name: declarative-rules
+              mountPath: /opt/cryostat.d/rules.d
+              readOnly: true
+          {{- end }}
           {{- if .Values.core.config.probeTemplates.configMapNames}}
             - name: declarative-probe-templates
               mountPath: /opt/cryostat.d/probes.d
@@ -255,6 +260,17 @@ spec:
           defaultMode: {{ .Values.core.config.declarative.fsMode }}
           sources:
             {{- range .Values.core.config.probeTemplates.configMapNames}}
+            - configMap:
+                name: {{ . }}
+                optional: false
+            {{- end }}
+      {{- end }}
+      {{- if .Values.core.config.rules.configMapNames}}
+      - name: declarative-rules
+        projected:
+          defaultMode: {{ .Values.core.config.declarative.fsMode }}
+          sources:
+            {{- range .Values.core.config.rules.configMapNames}}
             - configMap:
                 name: {{ . }}
                 optional: false

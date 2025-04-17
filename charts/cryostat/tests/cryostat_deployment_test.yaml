@@ -651,58 +651,6 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
           value: "IfNotPresent"
 
-  - it: should add volume mounts for declarative event templates
-    set:
-      core.config.eventTemplates.configMapNames: ['a', 'b']
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
-          value:
-            - name: a
-              mountPath: /opt/cryostat.d/templates.d/a
-              readOnly: true
-            - name: b
-              mountPath: /opt/cryostat.d/templates.d/b
-              readOnly: true
-      - equal:
-          path: spec.template.spec.volumes
-          value:
-            - name: alpha-config
-              configMap:
-                name: RELEASE-NAME-alpha-config
-            - name: a
-              configMap:
-                name: a
-            - name: b
-              configMap:
-                name: b
-
-  - it: should add volume mounts for declarative TLS truststore
-    set:
-      core.config.tlsTruststore.secretNames: ['a', 'b']
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
-          value:
-            - name: a
-              mountPath: /truststore/a
-              readOnly: true
-            - name: b
-              mountPath: /truststore/b
-              readOnly: true
-      - equal:
-          path: spec.template.spec.volumes
-          value:
-            - name: alpha-config
-              configMap:
-                name: RELEASE-NAME-alpha-config
-            - name: a
-              secret:
-                secretName: a
-            - name: b
-              secret:
-                secretName: b
-
   - it: should set default podAnnotations
     set:
       podAnnotations:
@@ -735,6 +683,115 @@ tests:
           value:
             alice: bob
             foo: bar
+
+
+  - it: should add volume mounts for declarative TLS truststore
+    set:
+      core.config.tlsTruststore.secretNames: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: a
+              mountPath: /truststore/a
+              readOnly: true
+            - name: b
+              mountPath: /truststore/b
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: a
+              secret:
+                secretName: a
+            - name: b
+              secret:
+                secretName: b
+
+
+  - it: should add volume mounts for declarative event templates
+    set:
+      core.config.eventTemplates.configMapNames: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: a
+              mountPath: /opt/cryostat.d/templates.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/templates.d/b
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: a
+              configMap:
+                name: a
+            - name: b
+              configMap:
+                name: b
+
+  - it: should add volume mounts for declarative automated rules
+    set:
+      core.config.rules.configMapNames: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: declarative-rules
+              mountPath: /opt/cryostat.d/rules.d
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: declarative-rules
+              projected:
+                defaultMode: 0440
+                sources:
+                  - configMap:
+                      name: a
+                      optional: false
+                  - configMap:
+                      name: b
+                      optional: false
+
+  - it: should add volume mounts for declarative rules with a specific default fs mode
+    set:
+      core.config.rules.configMapNames: ['a', 'b']
+      core.config.declarative.fsMode: 0644
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: declarative-rules
+              mountPath: /opt/cryostat.d/rules.d
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: declarative-rules
+              projected:
+                defaultMode: 0644
+                sources:
+                  - configMap:
+                      name: a
+                      optional: false
+                  - configMap:
+                      name: b
+                      optional: false  
 
   - it: should add volume mounts for declarative probe templates
     set:

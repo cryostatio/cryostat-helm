@@ -272,6 +272,17 @@
                                 }
                             }
                         },
+                        "rules": {
+                            "type": "object",
+                            "properties": {
+                                "configMapNames": {
+                                    "type": "array",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are automated rule definitions, to be mounted to the Cryostat container.",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        },
                         "probeTemplates": {
                             "type": "object",
                             "properties": {
