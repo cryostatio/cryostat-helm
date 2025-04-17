@@ -847,3 +847,31 @@ tests:
                   - configMap:
                       name: b
                       optional: false
+
+  - it: should add volume mounts for declarative credentials with a specific default fs mode
+    set:
+      core.config.credentials.secretNames: ['a', 'b']
+      core.config.declarative.fsMode: 0644
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
+          value:
+            - name: declarative-credentials
+              mountPath: /opt/cryostat.d/credentials.d
+              readOnly: true
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: alpha-config
+              configMap:
+                name: RELEASE-NAME-alpha-config
+            - name: declarative-credentials
+              projected:
+                defaultMode: 0644
+                sources:
+                  - secret:
+                      secretName: a
+                      optional: false
+                  - secret:
+                      secretName: b
+                      optional: false  
