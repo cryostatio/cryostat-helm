@@ -143,6 +143,15 @@ tests:
                     app.kubernetes.io/instance: RELEASE-NAME
                     app.kubernetes.io/name: cryostat
                     app.kubernetes.io/part-of: cryostat
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: NAMESPACE
+                podSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: reports
+                    app.kubernetes.io/instance: RELEASE-NAME
+                    app.kubernetes.io/name: cryostat
+                    app.kubernetes.io/part-of: cryostat
               ports:
                 - protocol: TCP
                   port: 8333
