@@ -1289,7 +1289,7 @@ tests:
 
   - it: should allow Kubernetes All Namespaces mode
     set:
-      core.discovery.kubernetes.allNamespaces: true
+      core.discovery.kubernetes.allowAllNamespaces: true
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
@@ -1306,7 +1306,7 @@ tests:
 
   - it: Kubernetes All Namespaces mode should override individual namespace settings
     set:
-      core.discovery.kubernetes.allNamespaces: true
+      core.discovery.kubernetes.allowAllNamespaces: true
       core.discovery.kubernetes.namespaces: ['a', 'b']
     asserts:
       - equal:
