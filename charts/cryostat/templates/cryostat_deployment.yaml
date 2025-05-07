@@ -121,7 +121,7 @@ spec:
           {{- if .Values.core.discovery.kubernetes.enabled }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED
             value: "true"
-          {{- if .Values.core.discovery.kubernetes.allNamespaces }}
+          {{- if .Values.core.discovery.kubernetes.allowAllNamespaces }}
           - name: CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES
             value: '*'
           {{- else }}
