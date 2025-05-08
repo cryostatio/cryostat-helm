@@ -34,7 +34,7 @@ tests:
     set:
       rbac.create: true
       core.discovery.kubernetes.enabled: true
-      core.discovery.kubernetes.allNamespaces: true
+      core.discovery.kubernetes.allowAllNamespaces: true
     asserts:
       - hasDocuments:
           count: 1
