@@ -60,6 +60,7 @@ tests:
               - ""
               resources:
               - endpoints
+              - namespaces
               verbs:
               - get
               - list
