@@ -1,4 +1,4 @@
-{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled .Values.core.discovery.kubernetes.allNamespaces -}}
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled .Values.core.discovery.kubernetes.allowAllNamespaces-}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
