@@ -9,8 +9,13 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - endpoints
   - namespaces
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
   verbs:
   - get
   - list
