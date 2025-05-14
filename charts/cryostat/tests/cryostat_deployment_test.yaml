@@ -745,8 +745,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: declarative-rules
-              mountPath: /opt/cryostat.d/rules.d
+            - name: a
+              mountPath: /opt/cryostat.d/rules.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/rules.d/b
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -773,8 +776,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: declarative-rules
-              mountPath: /opt/cryostat.d/rules.d
+            - name: a
+              mountPath: /opt/cryostat.d/rules.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/rules.d/b
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -800,8 +806,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: declarative-probe-templates
-              mountPath: /opt/cryostat.d/probes.d
+            - name: a
+              mountPath: /opt/cryostat.d/probes.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/probes.d/b
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -828,8 +837,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value: 
-            - name: declarative-probe-templates
-              mountPath: /opt/cryostat.d/probes.d
+            - name: a
+              mountPath: /opt/cryostat.d/probes.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/probes.d/b
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -856,8 +868,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts
           value:
-            - name: declarative-credentials
-              mountPath: /opt/cryostat.d/credentials.d
+            - name: a
+              mountPath: /opt/cryostat.d/credentials.d/a
+              readOnly: true
+            - name: b
+              mountPath: /opt/cryostat.d/credentials.d/b
               readOnly: true
       - equal:
           path: spec.template.spec.volumes
@@ -865,13 +880,11 @@ tests:
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
-            - name: declarative-credentials
-              projected:
-                defaultMode: 0644
-                sources:
-                  - secret:
-                      secretName: a
-                      optional: false
-                  - secret:
-                      secretName: b
-                      optional: false  
+            - name: a
+              secret:
+                secretName: a
+                optional: false
+            - name: b
+              secret:
+                secretName: b
+                optional: false  
