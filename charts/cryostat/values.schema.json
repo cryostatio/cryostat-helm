@@ -654,7 +654,7 @@
                         "region": {
                             "type": "string",
                             "description": "S3 object storage provider region. This may be used by the storage provider to geolocate the physical storage in a particular region for regulatory, performance, or cost reasons",
-                            "default": "us-east-1"
+                            "default": ""
                         },
                         "authentication": {
                             "type": "object",

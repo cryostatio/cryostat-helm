@@ -271,7 +271,7 @@ storage:
     ## @param storage.provider.usePathStyleAccess whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility, but subdomain resolution generally offers better performance if it is available
     usePathStyleAccess: true
     ## @param storage.provider.region S3 object storage provider region. This may be used by the storage provider to geolocate the physical storage in a particular region for regulatory, performance, or cost reasons
-    region: us-east-1
+    region: ''
     authentication:
       ## @param storage.provider.authentication.credentialsType configuration for how the S3 client will locate credentials for the S3 service. See: [Quarkus S3 client](https://docs.quarkiverse.io/quarkus-amazon-services/dev/amazon-s3.html#)
       credentialsType: default
