@@ -1,5 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
+{{- if not (.Values.storage.provider).url -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,7 +45,11 @@ spec:
           - name: CRYOSTAT_BUCKETS
             value: archivedrecordings,archivedreports,eventtemplates,probes
           - name: CRYOSTAT_ACCESS_KEY
-            value: cryostat
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
+                key: STORAGE_ACCESS_KEY_ID
+                optional: false
           - name: CRYOSTAT_SECRET_KEY
             valueFrom:
               secretKeyRef:
@@ -117,3 +122,4 @@ spec:
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
       {{- end }}
+{{- end -}}

@@ -635,8 +635,48 @@
             "properties": {
                 "storageSecretName": {
                     "type": "string",
-                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. If using an external S3 provider requiring authentication then this **must** be provided. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable)",
                     "default": ""
+                },
+                "provider": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "URL to the S3 object storage provider instance. This can be an in-cluster self-hosted instance with a hostname like s3.storage.local, or it can be an external commercial service. This should include scheme, host, and port. User authenication information should be provided using a *Secret* and *storage.storageSecretName*. If this is not specified then a [cryostat-storage](https://github.com/cryostatio/cryostat-storage) instance will be automatically deployed and configured. Production installations of Cryostat should not rely on `cryostat-storage`",
+                            "default": ""
+                        },
+                        "usePathStyleAccess": {
+                            "type": "boolean",
+                            "description": "whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility, but subdomain resolution generally offers better performance if it is available",
+                            "default": true
+                        },
+                        "region": {
+                            "type": "string",
+                            "description": "S3 object storage provider region. This may be used by the storage provider to geolocate the physical storage in a particular region for regulatory, performance, or cost reasons",
+                            "default": "us-east-1"
+                        },
+                        "authentication": {
+                            "type": "object",
+                            "properties": {
+                                "credentialsType": {
+                                    "type": "string",
+                                    "description": "configuration for how the S3 client will locate credentials for the S3 service. See: [Quarkus S3 client](https://docs.quarkiverse.io/quarkus-amazon-services/dev/amazon-s3.html#)",
+                                    "default": "default"
+                                }
+                            }
+                        },
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "trustAll": {
+                                    "type": "boolean",
+                                    "description": "enable this to disable TLS certificate verification on the S3 client",
+                                    "default": false
+                                }
+                            }
+                        }
+                    }
                 },
                 "image": {
                     "type": "object",
