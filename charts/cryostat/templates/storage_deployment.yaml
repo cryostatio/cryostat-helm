@@ -1,6 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
-{{- if not (quote (.Values.storage.provider).url | empty) }}
+{{- if (empty (.Values.storage.provider).url) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

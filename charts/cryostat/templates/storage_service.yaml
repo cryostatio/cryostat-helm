@@ -1,6 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
-{{- if not (.Values.storage.provider).url }}
+{{- if (empty (.Values.storage.provider).url) }}
 apiVersion: v1
 kind: Service
 metadata:
