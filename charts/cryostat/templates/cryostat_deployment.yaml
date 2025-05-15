@@ -93,15 +93,19 @@ spec:
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: archivedrecordings
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: http://{{ $fullName }}-storage:8333
+            value: {{ default "http://{{ $fullName }}-storage:8333" .Values.storage.provider.url }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
-            value: "true"
+            value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: QUARKUS_S3_AWS_REGION
-            value: us-east-1
+            value: {{ .Values.storage.provider.region }}
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
-            value: static
+            value: {{ .Values.storage.provider.authentication.credentialsType }}
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
-            value: cryostat
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
+                key: STORAGE_ACCESS_KEY_ID
+                optional: false
           - name: AWS_ACCESS_KEY_ID
             value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
           - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
