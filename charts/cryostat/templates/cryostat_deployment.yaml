@@ -97,25 +97,21 @@ spec:
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: QUARKUS_S3_AWS_REGION
-            value: {{ .Values.storage.provider.region }}
+            value: {{ ternary .Values.storage.provider.region "us-east-1" (not (empty .Values.storage.provider.url)) }}
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
             value: {{ .Values.storage.provider.authentication.credentialsType }}
-          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
+          - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
                 name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
                 key: STORAGE_ACCESS_KEY_ID
                 optional: false
-          - name: AWS_ACCESS_KEY_ID
-            value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
-          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
+          - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
                 key: STORAGE_ACCESS_KEY
                 optional: false
-          - name: AWS_SECRET_ACCESS_KEY
-            value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
           - name: GRAFANA_DATASOURCE_URL
             value: http://localhost:8800
           - name: GRAFANA_DASHBOARD_URL

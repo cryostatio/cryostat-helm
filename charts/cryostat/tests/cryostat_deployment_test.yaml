@@ -113,23 +113,17 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
           value: "us-east-1"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_TYPE')].value
-          value: "static"
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].valueFrom.secretKeyRef
+          value:
+              key: "STORAGE_ACCESS_KEY_ID"
+              name: "RELEASE-NAME-storage-secret"
+              optional: false
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID')].value
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].value
-          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
               key: "STORAGE_ACCESS_KEY"
               name: "RELEASE-NAME-storage-secret"
               optional: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
-          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
       - notExists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
       - equal:
