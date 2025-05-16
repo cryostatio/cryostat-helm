@@ -98,6 +98,10 @@ spec:
             value: {{ .Values.storage.buckets.names.jmcAgentProbeTemplates }}
           - name: CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME
             value: {{ .Values.storage.buckets.names.archivedReports }}
+          {{- if (.Values.storage.provider.tls).trustAll }}
+          - name: QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE
+            value: trust-all
+          {{- end }}
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
             value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
