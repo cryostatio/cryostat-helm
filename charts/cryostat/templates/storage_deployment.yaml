@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: {{ (.Values.storage).image.pullPolicy }}
           env:
           - name: CRYOSTAT_BUCKETS
-            value: {{ join "," (.Values.storage.buckets.names | values) }}
+            value: {{ join "," (.Values.storage.buckets.names | values | uniq | sortAlpha) }}
           - name: CRYOSTAT_ACCESS_KEY
             valueFrom:
               secretKeyRef:
