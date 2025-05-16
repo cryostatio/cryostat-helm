@@ -698,6 +698,36 @@
                         }
                     }
                 },
+                "buckets": {
+                    "type": "object",
+                    "properties": {
+                        "names": {
+                            "type": "object",
+                            "properties": {
+                                "archivedRecordings": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Flight Recordings",
+                                    "default": "archivedrecordings"
+                                },
+                                "archivedReports": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing the Automated Analysis Report for archived Flight Recordings",
+                                    "default": "archivedreports"
+                                },
+                                "eventTemplates": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing Custom Event Templates",
+                                    "default": "eventtemplates"
+                                },
+                                "jmcAgentProbeTemplates": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing JMC Agent Probe Templates",
+                                    "default": "probes"
+                                }
+                            }
+                        }
+                    }
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
