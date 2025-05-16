@@ -261,6 +261,36 @@ storage:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra storage.config.extra Extra configurations for the object storage container
+    extra:
+      ## @param storage.config.extra.envVars [array] Extra environment variables for the object storage container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      # 1. Static environment variable:
+      #  - name: FOO
+      #    value: "BAR"
+      # 2. Secret environment variable:
+      # - name: USERNAME
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: mysecret
+      #       key: username
+      # 3. Configmap environment variable:
+      # - name: SPECIAL_VAR
+      #   valueFrom:
+      #     configMapKeyRef:
+      #       name: myconfigmap
+      #       key: special_var
+      envVars: []
+      ## @param storage.config.extra.envSources [array] Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      # 1. From config map:
+      #  - configMapRef:
+      #      name: special-config
+      #      optional: false
+      # 2. From secret:
+      #  - secretRef:
+      #      name: special-config
+      #      optional: false
+      envSources: []
   ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param storage.tolerations [array] Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
