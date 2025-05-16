@@ -296,7 +296,7 @@ storage:
       ## @param storage.buckets.names.jmcAgentProbeTemplates the name of the storage bucket containing JMC Agent Probe Templates
       jmcAgentProbeTemplates: probes
   encryption:
-    ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security. This setting only 
+    ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.
     enabled: true
   ## @param storage.podAnnotations [object] Annotations to be applied to the Storage Pods
   podAnnotations: {}
