@@ -69,7 +69,7 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedreports,eventtemplates,probes,archivedrecordings"
+          value: "archivedrecordings,archivedreports,eventtemplates,probes"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
@@ -136,6 +136,20 @@ tests:
             requests:
               cpu: 50m
               memory: 256Mi
+
+  - it: should precreate buckets based on supplied bucket names
+    set:
+      storage:
+        buckets:
+          names:
+            archivedRecordings: a
+            archivedReports: b
+            eventTemplates: c
+            jmcAgentProbeTemplates: d
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
+          value: "a,b,c,d"
 
   - it: should allow disabling at-rest encryption
     set:
