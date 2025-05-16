@@ -91,7 +91,13 @@ spec:
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: jdbc:postgresql://{{ $fullName }}-db:5432/cryostat
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
-            value: archivedrecordings
+            value: {{ .Values.storage.buckets.names.archivedRecordings }}
+          - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME
+            value: {{ .Values.storage.buckets.names.eventTemplates }}
+          - name: STORAGE_BUCKETS_PROBE_TEMPLATES_NAME
+            value: {{ .Values.storage.buckets.names.jmcAgentProbeTemplates }}
+          - name: CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME
+            value: {{ .Values.storage.buckets.names.archivedReports }}
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
             value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
