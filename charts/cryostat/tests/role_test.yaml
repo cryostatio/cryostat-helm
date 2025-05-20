@@ -62,10 +62,10 @@ tests:
     asserts:
       - equal:
           path: rules[0].apiGroups
-          value: [""]
+          value: ["discovery.k8s.io"]
       - equal:
           path: rules[0].resources
-          value: ["endpoints"]
+          value: ["endpointslices"]
       - equal:
           path: rules[0].verbs
           value: ["get", "list", "watch"]
