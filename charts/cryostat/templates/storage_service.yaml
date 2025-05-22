@@ -19,4 +19,4 @@ spec:
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: storage
-{{- end -}}
+{{- end }}
