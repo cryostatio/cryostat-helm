@@ -695,6 +695,16 @@
                                     "default": false
                                 }
                             }
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "properties": {
+                                "storageMode": {
+                                    "type": "string",
+                                    "description": "the strategy Cryostat will use for storing archived recordings' metadata. The default strategy stores metadata as object Tags. Select 'bucketed' to store metadata as separate files in a separate bucket. Select 'noop' to simply drop metadata from archived recordings.",
+                                    "default": "tagging"
+                                }
+                            }
                         }
                     }
                 },
@@ -708,6 +718,11 @@
                                     "type": "string",
                                     "description": "the name of the storage bucket containing archived Flight Recordings",
                                     "default": "archivedrecordings"
+                                },
+                                "archivedRecordingsMetadata": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Flight Recordings' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucketed'.",
+                                    "default": "archivedmeta"
                                 },
                                 "archivedReports": {
                                     "type": "string",
