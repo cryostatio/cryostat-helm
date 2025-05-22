@@ -69,7 +69,7 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedrecordings,archivedreports,eventtemplates,probes"
+          value: "archivedmeta,archivedrecordings,archivedreports,eventtemplates,probes"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
@@ -142,14 +142,15 @@ tests:
       storage:
         buckets:
           names:
-            archivedRecordings: a
-            archivedReports: b
-            eventTemplates: c
-            jmcAgentProbeTemplates: d
+            archivedRecordingsMetadata: a
+            archivedRecordings: b
+            archivedReports: c
+            eventTemplates: d
+            jmcAgentProbeTemplates: e
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "a,b,c,d"
+          value: "a,b,c,d,e"
 
   - it: should allow disabling at-rest encryption
     set:
