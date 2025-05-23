@@ -130,6 +130,13 @@ spec:
             value: {{ include "cryostat.commaSepList" (list .portNumbers 9091 .builtInPortNumbersDisabled) }}
           {{- end }}
           {{- end }}
+          {{- with (.Values.core.config.extra).envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.core.config.extra).envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           ports:
             - containerPort: 8181
               protocol: TCP

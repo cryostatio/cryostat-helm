@@ -888,3 +888,56 @@ tests:
               secret:
                 secretName: b
                 optional: false  
+
+  - it: should set extra env vars and env sources for main container
+    set:
+      core.config.extra:
+        envVars:
+        - name: FOO
+          value: "bar"
+        - name: ANOTHER_FOO
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: another_foo
+              optional: true
+        - name: FOO_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: foo_secret
+              optional: false
+        envSources:
+        - secretRef:
+            name: sercret-special-config
+            optional: false
+        - configMapRef:
+            name: cm-special-config
+            optional: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='FOO')].value
+          value: "bar"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='ANOTHER_FOO')].valueFrom
+          value:
+            configMapKeyRef:
+              name: "myconfigmap"
+              key: "another_foo"
+              optional: true
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='FOO_SECRET')].valueFrom
+          value:
+            secretKeyRef:
+              name: "mysecret"
+              key: "foo_secret"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].envFrom
+          value:
+          - secretRef:
+              name: sercret-special-config
+              optional: false
+          - configMapRef:
+              name: cm-special-config
+              optional: false

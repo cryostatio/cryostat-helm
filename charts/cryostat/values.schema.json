@@ -326,6 +326,23 @@
                                     "items": {}
                                 }
                             }
+                        },
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for main Cryostat container container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
                         }
                     }
                 },
@@ -375,11 +392,6 @@
                         }
                     }
                 },
-                "reportsSecretName": {
-                    "type": "string",
-                    "description": "Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
-                    "default": ""
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -404,6 +416,11 @@
                             "default": false
                         }
                     }
+                },
+                "reportsSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
                 },
                 "debug": {
                     "type": "object",

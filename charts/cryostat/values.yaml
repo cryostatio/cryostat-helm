@@ -106,6 +106,35 @@ core:
     tlsTruststore:
       ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
       secretNames: []
+    ## @extra core.config.extra Extra configurations for the main Cryostat container
+    extra:
+      ## @param core.config.extra.envVars [array] Extra environment variables for main Cryostat container container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      # 1. Static environment variable:
+      #  - name: FOO
+      #    value: "BAR"
+      # 2. Secret environment variable:
+      # - name: USERNAME
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: mysecret
+      #       key: username
+      # 3. Configmap environment variable:
+      # - name: SPECIAL_VAR
+      #   valueFrom:
+      #     configMapKeyRef:
+      #       name: myconfigmap
+      #       key: special_var
+      envVars: []
+      ## @param core.config.extra.envSources [array] Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      # 1. From config map:
+      #  - configMapRef:
+      #      name: special-config
+      #      optional: false
+      # 2. From secret:
+      #  - secretRef:
+      #      name: special-config
+      #      optional: false
+      envSources: []
   ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param core.tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
