@@ -57,6 +57,13 @@ spec:
             value: 0.0.0.0
           - name: REST_ENCRYPTION_ENABLE
             value: "{{ .Values.storage.encryption.enabled | ternary 1 0 }}"
+          {{- with (.Values.storage.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.storage.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           ports:
             - containerPort: 8333
               protocol: TCP

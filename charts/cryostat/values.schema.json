@@ -709,6 +709,28 @@
                         }
                     }
                 },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the object storage container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
+                },
                 "tolerations": {
                     "type": "array",
                     "description": "Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
