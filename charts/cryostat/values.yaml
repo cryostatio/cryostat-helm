@@ -340,6 +340,13 @@ grafana:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra grafana.config.extra Extra configurations for the Grafana container
+    extra:
+      ## @param grafana.config.extra.envVars [array] Extra environment variables for for the Grafana container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param grafana.config.extra.envSources [array] Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param grafana.nodeSelector [object] Node Selector for the Grafana Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param grafana.tolerations [array] Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)

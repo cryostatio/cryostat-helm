@@ -193,6 +193,13 @@ spec:
             value: "true"
           - name: JFR_DATASOURCE_URL
             value: http://localhost:8800
+          {{- with (.Values.grafana.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.grafana.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           ports:
           - containerPort: 3000
             protocol: TCP
