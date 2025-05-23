@@ -233,6 +233,13 @@ db:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra db.config.extra Extra configurations for the database container
+    extra:
+      ## @param db.config.extra.envVars [array] Extra environment variables for the database container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param db.config.extra.envSources [array] Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param db.tolerations [array] Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
