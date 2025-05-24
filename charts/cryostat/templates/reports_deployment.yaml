@@ -43,13 +43,20 @@ spec:
           image: "{{ (.Values.reports).image.repository }}:{{ (.Values.reports).image.tag }}"
           imagePullPolicy: {{ (.Values.reports).image.pullPolicy }}
           env:
-            - name: QUARKUS_HTTP_PORT
-              value: "{{ .Values.reports.service.httpPort }}"
-            - name: QUARKUS_LOG_LEVEL
-              value: {{ .Values.reports.debug.log.level }}
+          - name: QUARKUS_HTTP_PORT
+            value: "{{ .Values.reports.service.httpPort }}"
+          - name: QUARKUS_LOG_LEVEL
+            value: {{ .Values.reports.debug.log.level }}
+          {{- with (.Values.reports.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.reports.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           ports:
-            - containerPort: {{ .Values.reports.service.httpPort }}
-              protocol: TCP
+          - containerPort: {{ .Values.reports.service.httpPort }}
+            protocol: TCP
           startupProbe:
             httpGet:
               path: "/health"

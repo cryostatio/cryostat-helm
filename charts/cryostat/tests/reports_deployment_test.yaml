@@ -314,3 +314,59 @@ tests:
           value:
             alice: bob
             foo: bar
+
+  - it: should set extra env vars and env sources
+    set:
+      reports:
+        replicas: 1
+        config:
+          extra:
+            envVars:
+            - name: FOO
+              value: "bar"
+            - name: ANOTHER_FOO
+              valueFrom:
+                configMapKeyRef:
+                  name: myconfigmap
+                  key: another_foo
+                  optional: true
+            - name: FOO_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mysecret
+                  key: foo_secret
+                  optional: false
+            envSources:
+            - secretRef:
+                name: sercret-special-config
+                optional: false
+            - configMapRef:
+                name: cm-special-config
+                optional: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='FOO')].value
+          value: "bar"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='ANOTHER_FOO')].valueFrom
+          value:
+            configMapKeyRef:
+              name: "myconfigmap"
+              key: "another_foo"
+              optional: true
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='FOO_SECRET')].valueFrom
+          value:
+            secretKeyRef:
+              name: "mysecret"
+              key: "foo_secret"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].envFrom
+          value:
+          - secretRef:
+              name: sercret-special-config
+              optional: false
+          - configMapRef:
+              name: cm-special-config
+              optional: false
