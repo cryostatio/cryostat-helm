@@ -7,12 +7,25 @@ Create OpenShift OAuth Proxy container.
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
   env:
-    - name: COOKIE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
-          key: COOKIE_SECRET
-          optional: false
+  - name: COOKIE_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
+        key: COOKIE_SECRET
+        optional: false
+  {{- with (.Values.openshiftOauthProxy.config.extra).envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.openshiftOauthProxy.config.extra).inPod.main.envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  envFrom:
+  {{- with (.Values.openshiftOauthProxy.config.extra).envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.openshiftOauthProxy.config.extra).inPod.main.envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   args:
     - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
     - --pass-access-token=false

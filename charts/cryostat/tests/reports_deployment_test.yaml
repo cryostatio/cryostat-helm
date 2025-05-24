@@ -370,3 +370,162 @@ tests:
           - configMapRef:
               name: cm-special-config
               optional: false
+
+  - it: should set extra env vars and env sources for oauth2-proxy container
+    set:
+      reports.replicas: 1
+      oauth2Proxy.config.extra:
+        envVars:
+        - name: FOO
+          value: "bar"
+        - name: ANOTHER_FOO
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: another_foo
+              optional: true
+        - name: FOO_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: foo_secret
+              optional: false
+        envSources:
+        - secretRef:
+            name: sercret-special-config
+            optional: false
+        - configMapRef:
+            name: cm-special-config
+            optional: false
+        inPod:
+          main:
+            envVars:
+            - name: ONLY_IN_MAIN
+              value: "true"
+            envSources:
+            - secretRef:
+                name: sercret-special-config-for-main
+                optional: false
+          reports:
+            envVars:
+            - name: ONLY_IN_REPORTS
+              value: "true"
+            envSources:
+            - secretRef:
+                name: sercret-special-config-for-reports
+                optional: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='FOO')].value
+          value: "bar"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ANOTHER_FOO')].valueFrom
+          value:
+            configMapKeyRef:
+              name: "myconfigmap"
+              key: "another_foo"
+              optional: true
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ONLY_IN_REPORTS')].value
+          value: "true"
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ONLY_IN_MAIN')].value
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='FOO_SECRET')].valueFrom
+          value:
+            secretKeyRef:
+              name: "mysecret"
+              key: "foo_secret"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].envFrom
+          value:
+          - secretRef:
+              name: sercret-special-config
+              optional: false
+          - configMapRef:
+              name: cm-special-config
+              optional: false
+          - secretRef:
+              name: sercret-special-config-for-reports
+              optional: false
+
+  - it: should set extra env vars and env sources for openshift-oauth container
+    set:
+      reports.replicas: 1
+      authentication.openshift.enabled: true
+      openshiftOauthProxy.config.extra:
+        envVars:
+        - name: FOO
+          value: "bar"
+        - name: ANOTHER_FOO
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: another_foo
+              optional: true
+        - name: FOO_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: foo_secret
+              optional: false
+        envSources:
+        - secretRef:
+            name: sercret-special-config
+            optional: false
+        - configMapRef:
+            name: cm-special-config
+            optional: false
+        inPod:
+          main:
+            envVars:
+            - name: ONLY_IN_MAIN
+              value: "true"
+            envSources:
+            - secretRef:
+                name: sercret-special-config-for-main
+                optional: false
+          reports:
+            envVars:
+            - name: ONLY_IN_REPORTS
+              value: "true"
+            envSources:
+            - secretRef:
+                name: sercret-special-config-for-reports
+                optional: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='FOO')].value
+          value: "bar"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ANOTHER_FOO')].valueFrom
+          value:
+            configMapKeyRef:
+              name: "myconfigmap"
+              key: "another_foo"
+              optional: true
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ONLY_IN_REPORTS')].value
+          value: "true"
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='ONLY_IN_MAIN')].value
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env[?(@.name=='FOO_SECRET')].valueFrom
+          value:
+            secretKeyRef:
+              name: "mysecret"
+              key: "foo_secret"
+              optional: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].envFrom
+          value:
+          - secretRef:
+              name: sercret-special-config
+              optional: false
+          - configMapRef:
+              name: cm-special-config
+              optional: false
+          - secretRef:
+              name: sercret-special-config-for-reports
+              optional: false

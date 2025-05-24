@@ -1076,6 +1076,117 @@
                             }
                         }
                     }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the OAuth2 Proxy container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "inPod": {
+                                    "type": "object",
+                                    "properties": {
+                                        "main": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OAuth2 Proxy container **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        },
+                                        "reports": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OAuth2 Proxy container **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OAuth2 Proxy container **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "authentication": {
+            "type": "object",
+            "properties": {
+                "cookieSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
+                },
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "default": false
+                        },
+                        "clusterRole": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the ClusterRole to bind for the OpenShift OAuth Proxy",
+                                    "default": "system:auth-delegator"
+                                }
+                            }
+                        }
+                    }
+                },
+                "basicAuth": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
+                            "default": false
+                        },
+                        "secretName": {
+                            "type": "string",
+                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        },
+                        "filename": {
+                            "type": "string",
+                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
+                            "default": ""
+                        }
+                    }
                 }
             }
         },
@@ -1191,54 +1302,65 @@
                             "default": ""
                         }
                     }
-                }
-            }
-        },
-        "authentication": {
-            "type": "object",
-            "properties": {
-                "cookieSecretName": {
-                    "type": "string",
-                    "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
-                    "default": ""
                 },
-                "openshift": {
+                "config": {
                     "type": "object",
                     "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
-                            "default": false
-                        },
-                        "clusterRole": {
+                        "extra": {
                             "type": "object",
                             "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "The name of the ClusterRole to bind for the OpenShift OAuth Proxy",
-                                    "default": "system:auth-delegator"
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the OpenShift OAuth Proxy. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "inPod": {
+                                    "type": "object",
+                                    "properties": {
+                                        "main": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        },
+                                        "reports": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OpenShift OAuth Proxy **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                },
-                "basicAuth": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "description": "Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication",
-                            "default": false
-                        },
-                        "secretName": {
-                            "type": "string",
-                            "description": "Name of the Secret that contains the credentials within Cryostat's namespace **(Required if basicAuth is enabled)**",
-                            "default": ""
-                        },
-                        "filename": {
-                            "type": "string",
-                            "description": "Key within Secret containing the `htpasswd` file. The file should contain one user definition entry per line, with the syntax \"user:passHash\", where \"user\" is the username and \"passHash\" is the `bcrypt` hash of the desired password. Such an entry can be generated with ex. `htpasswd -nbB username password` **(Required if basicAuth is enabled)**",
-                            "default": ""
                         }
                     }
                 }

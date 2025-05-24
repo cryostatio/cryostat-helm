@@ -442,6 +442,24 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra oauth2Proxy.config.extra Extra configurations for the OAuth2 Proxy container
+    extra:
+      ## @param oauth2Proxy.config.extra.envVars [array] Extra environment variables for the OAuth2 Proxy container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param oauth2Proxy.config.extra.envSources [array] Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param oauth2Proxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param oauth2Proxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the report generator pods**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the report generator pods**
+          envSources: []
 
 ## @section OpenShift OAuth Proxy
 
@@ -484,6 +502,24 @@ openshiftOauthProxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra openshiftOauthProxy.config.extra Extra configurations for the OpenShift OAuth Proxy
+    extra:
+      ## @param openshiftOauthProxy.config.extra.envVars [array] Extra environment variables for the OpenShift OAuth Proxy. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param openshiftOauthProxy.config.extra.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envSources: []
 
 ## @section Other Parameters
 
