@@ -219,6 +219,13 @@ spec:
             value: localhost
           - name: QUARKUS_HTTP_PORT
             value: "8800"
+          {{- with (.Values.datasource.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.datasource.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           ports:
           - containerPort: 8800
             protocol: TCP
