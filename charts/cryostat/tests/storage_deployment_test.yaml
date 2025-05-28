@@ -69,7 +69,7 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedmeta,archivedrecordings,archivedreports,eventtemplates,probes"
+          value: "archivedrecordings,archivedreports,eventtemplates,metadata,probes"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
@@ -142,7 +142,7 @@ tests:
       storage:
         buckets:
           names:
-            archivedRecordingsMetadata: a
+            metadata: a
             archivedRecordings: b
             archivedReports: c
             eventTemplates: d

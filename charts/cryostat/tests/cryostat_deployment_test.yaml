@@ -110,6 +110,12 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_PROBE_TEMPLATES_NAME')].value
           value: "probes"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
+          value: "metadata"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
+          value: "tagging"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME')].value
           value: "archivedreports"
       - equal:
@@ -191,13 +197,20 @@ tests:
   - it: should allow overriding S3 bucket names
     set:
       storage:
+        provider:
+          metadata:
+            storageMode: bucket
         buckets:
           names:
             archivedRecordings: a
             archivedReports: b
             eventTemplates: c
             jmcAgentProbeTemplates: d
+            metadata: e
     asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
+          value: "bucket"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "a"
@@ -210,6 +223,9 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_PROBE_TEMPLATES_NAME')].value
           value: "d"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
+          value: "e"
 
   - it: should allow disabling S3 TLS validation
     set:

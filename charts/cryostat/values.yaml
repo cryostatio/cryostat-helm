@@ -286,20 +286,20 @@ storage:
       ## @param storage.provider.tls.trustAll enable this to disable TLS certificate verification on the S3 client
       trustAll: false
     metadata:
-      ## @param storage.provider.metadata.storageMode the strategy Cryostat will use for storing archived recordings' metadata. The default strategy stores metadata as object Tags. Select 'bucketed' to store metadata as separate files in a separate bucket. Select 'noop' to simply drop metadata from archived recordings.
+      ## @param storage.provider.metadata.storageMode the strategy Cryostat will use for storing files' metadata. The default 'tagging' strategy stores all metadata as object Tags. The 'metadata' strategy stores metadata as object Metadata, which is immutable but allows for more entries than Tags. The 'bucket' strategy stores metadata as separate files (ex. JSON object maps) in a dedicated bucket, with prefixes to differentiate the kind of object the metadata belongs to.
       storageMode: tagging
   buckets:
     names:
       ## @param storage.buckets.names.archivedRecordings the name of the storage bucket containing archived Flight Recordings
       archivedRecordings: archivedrecordings
-      ## @param storage.buckets.names.archivedRecordingsMetadata the name of the storage bucket containing archived Flight Recordings' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucketed'.
-      archivedRecordingsMetadata: archivedmeta
       ## @param storage.buckets.names.archivedReports the name of the storage bucket containing the Automated Analysis Report for archived Flight Recordings
       archivedReports: archivedreports
       ## @param storage.buckets.names.eventTemplates the name of the storage bucket containing Custom Event Templates
       eventTemplates: eventtemplates
       ## @param storage.buckets.names.jmcAgentProbeTemplates the name of the storage bucket containing JMC Agent Probe Templates
       jmcAgentProbeTemplates: probes
+      ## @param storage.buckets.names.metadata the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.
+      metadata: metadata
   encryption:
     ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.
     enabled: true
