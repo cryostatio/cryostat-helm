@@ -57,6 +57,13 @@ spec:
                 name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: ENCRYPTION_KEY
                 optional: false
+          {{- with (.Values.db.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.db.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}          
           ports:
             - containerPort: 5432
               protocol: TCP

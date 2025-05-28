@@ -326,6 +326,23 @@
                                     "items": {}
                                 }
                             }
+                        },
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for main Cryostat container container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
                         }
                     }
                 },
@@ -375,11 +392,6 @@
                         }
                     }
                 },
-                "reportsSecretName": {
-                    "type": "string",
-                    "description": "Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
-                    "default": ""
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -404,6 +416,11 @@
                             "default": false
                         }
                     }
+                },
+                "reportsSecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "default": ""
                 },
                 "debug": {
                     "type": "object",
@@ -445,6 +462,28 @@
                         }
                     }
                 },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the Report Generator container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the Report Generator container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
+                },
                 "tolerations": {
                     "type": "array",
                     "description": "Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
@@ -476,21 +515,6 @@
                         }
                     }
                 },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "Type of Service to create for the database",
-                            "default": "ClusterIP"
-                        },
-                        "port": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service",
-                            "default": 5432
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -513,6 +537,21 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the database",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 5432
                         }
                     }
                 },
@@ -561,6 +600,28 @@
                         }
                     }
                 },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the database container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
+                },
                 "tolerations": {
                     "type": "array",
                     "description": "Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
@@ -576,26 +637,6 @@
                     "type": "string",
                     "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
                     "default": ""
-                },
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the storage container image",
-                            "default": "quay.io/cryostat/cryostat-storage"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the storage container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the storage container image",
-                            "default": "latest"
-                        }
-                    }
                 },
                 "securityContext": {
                     "type": "object",
@@ -619,6 +660,26 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the storage container image",
+                            "default": "quay.io/cryostat/cryostat-storage"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the storage container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the storage container image",
+                            "default": "latest"
                         }
                     }
                 },
@@ -688,6 +749,28 @@
                             ],
                             "items": {
                                 "type": "string"
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the object storage container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
                             }
                         }
                     }
@@ -783,6 +866,28 @@
                         }
                     }
                 },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for for the Grafana container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                }
+                            }
+                        }
+                    }
+                },
                 "tolerations": {
                     "type": "array",
                     "description": "Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
@@ -854,6 +959,28 @@
                                     "type": "string",
                                     "description": "Memory resource request for the JFR Data Source container.",
                                     "default": "200Mi"
+                                }
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for for the JFR Data Source container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the JFR Data Source container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
                                 }
                             }
                         }
@@ -945,6 +1072,67 @@
                                     "type": "string",
                                     "description": "Memory resource request for the OAuth2 Proxy container.",
                                     "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the OAuth2 Proxy container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "inPod": {
+                                    "type": "object",
+                                    "properties": {
+                                        "main": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OAuth2 Proxy container **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        },
+                                        "reports": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OAuth2 Proxy container **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OAuth2 Proxy container **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1112,6 +1300,67 @@
                             "type": "string",
                             "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.",
                             "default": ""
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "envVars": {
+                                    "type": "array",
+                                    "description": "Extra environment variables for the OpenShift OAuth Proxy. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "envSources": {
+                                    "type": "array",
+                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "inPod": {
+                                    "type": "object",
+                                    "properties": {
+                                        "main": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        },
+                                        "reports": {
+                                            "type": "object",
+                                            "properties": {
+                                                "envVars": {
+                                                    "type": "array",
+                                                    "description": "Extra environment variables for the OpenShift OAuth Proxy **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                },
+                                                "envSources": {
+                                                    "type": "array",
+                                                    "description": "Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**",
+                                                    "default": [],
+                                                    "items": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

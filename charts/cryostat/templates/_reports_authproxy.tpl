@@ -5,12 +5,25 @@
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
   image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
   env:
-    - name: COOKIE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
-          key: COOKIE_SECRET
-          optional: false
+  - name: COOKIE_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
+        key: COOKIE_SECRET
+        optional: false
+  {{- with (.Values.openshiftOauthProxy.config.extra).envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.openshiftOauthProxy.config.extra).inPod.reports.envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  envFrom:
+  {{- with (.Values.openshiftOauthProxy.config.extra).envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.openshiftOauthProxy.config.extra).inPod.reports.envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   args:
     - --pass-access-token=false
     - --pass-user-bearer-token=false
@@ -52,38 +65,51 @@
   image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
-    - name: OAUTH2_PROXY_CLIENT_ID
-      value: dummy
-    - name: OAUTH2_PROXY_CLIENT_SECRET
-      value: none
-    - name: OAUTH2_PROXY_HTTP_ADDRESS
-      value: 0.0.0.0:4180
-    - name: OAUTH2_PROXY_HTTPS_ADDRESS
-      value: :8443
-    - name: OAUTH2_PROXY_TLS_CERT_FILE
-      value: /etc/tls/private/cert
-    - name: OAUTH2_PROXY_TLS_KEY_FILE
-      value: /etc/tls/private/key
-    - name: OAUTH2_PROXY_UPSTREAMS
-      value: http://localhost:10001/
-    - name: OAUTH2_PROXY_REDIRECT_URL
-      value: "http://localhost:4180/oauth2/callback"
-    - name: OAUTH2_PROXY_COOKIE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
-          key: COOKIE_SECRET
-          optional: false
-    - name: OAUTH2_PROXY_EMAIL_DOMAINS
-      value: "*"
-    - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
-      value: write
-    - name: OAUTH2_PROXY_HTPASSWD_FILE
-      value: /etc/oauth2_proxy/basicauth/htpasswd
-    - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
-      value: "^/health$"
-    - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
-      value: "false"
+  - name: OAUTH2_PROXY_CLIENT_ID
+    value: dummy
+  - name: OAUTH2_PROXY_CLIENT_SECRET
+    value: none
+  - name: OAUTH2_PROXY_HTTP_ADDRESS
+    value: 0.0.0.0:4180
+  - name: OAUTH2_PROXY_HTTPS_ADDRESS
+    value: :8443
+  - name: OAUTH2_PROXY_TLS_CERT_FILE
+    value: /etc/tls/private/cert
+  - name: OAUTH2_PROXY_TLS_KEY_FILE
+    value: /etc/tls/private/key
+  - name: OAUTH2_PROXY_UPSTREAMS
+    value: http://localhost:10001/
+  - name: OAUTH2_PROXY_REDIRECT_URL
+    value: "http://localhost:4180/oauth2/callback"
+  - name: OAUTH2_PROXY_COOKIE_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
+        key: COOKIE_SECRET
+        optional: false
+  - name: OAUTH2_PROXY_EMAIL_DOMAINS
+    value: "*"
+  - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
+    value: write
+  - name: OAUTH2_PROXY_HTPASSWD_FILE
+    value: /etc/oauth2_proxy/basicauth/htpasswd
+  - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+    value: "^/health$"
+  - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
+    value: "false"
+  {{- with (.Values.oauth2Proxy.config.extra).envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.oauth2Proxy.config.extra).inPod.reports.envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  envFrom:
+  {{- with (.Values.oauth2Proxy.config.extra).envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.oauth2Proxy.config.extra).inPod.reports.envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   ports:
     - containerPort: 4180
       name: http
@@ -108,32 +134,45 @@
   image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
-    - name: OAUTH2_PROXY_CLIENT_ID
-      value: dummy
-    - name: OAUTH2_PROXY_CLIENT_SECRET
-      value: none
-    - name: OAUTH2_PROXY_HTTP_ADDRESS
-      value: 0.0.0.0:4180
-    - name: OAUTH2_PROXY_UPSTREAMS
-      value: http://localhost:10001/
-    - name: OAUTH2_PROXY_REDIRECT_URL
-      value: "http://localhost:4180/oauth2/callback"
-    - name: OAUTH2_PROXY_COOKIE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
-          key: COOKIE_SECRET
-          optional: false
-    - name: OAUTH2_PROXY_EMAIL_DOMAINS
-      value: "*"
-    - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
-      value: write
-    - name: OAUTH2_PROXY_HTPASSWD_FILE
-      value: /etc/oauth2_proxy/basicauth/htpasswd
-    - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
-      value: "^/health$"
-    - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
-      value: "false"
+  - name: OAUTH2_PROXY_CLIENT_ID
+    value: dummy
+  - name: OAUTH2_PROXY_CLIENT_SECRET
+    value: none
+  - name: OAUTH2_PROXY_HTTP_ADDRESS
+    value: 0.0.0.0:4180
+  - name: OAUTH2_PROXY_UPSTREAMS
+    value: http://localhost:10001/
+  - name: OAUTH2_PROXY_REDIRECT_URL
+    value: "http://localhost:4180/oauth2/callback"
+  - name: OAUTH2_PROXY_COOKIE_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ default (printf "%s-cookie-secret" .Release.Name) .Values.authentication.cookieSecretName }}
+        key: COOKIE_SECRET
+        optional: false
+  - name: OAUTH2_PROXY_EMAIL_DOMAINS
+    value: "*"
+  - name: OAUTH2_PROXY_HTPASSWD_USER_GROUP
+    value: write
+  - name: OAUTH2_PROXY_HTPASSWD_FILE
+    value: /etc/oauth2_proxy/basicauth/htpasswd
+  - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+    value: "^/health$"
+  - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
+    value: "false"
+  {{- with (.Values.oauth2Proxy.config.extra).envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.oauth2Proxy.config.extra).inPod.reports.envVars }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  envFrom:
+  {{- with (.Values.oauth2Proxy.config.extra).envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with (.Values.oauth2Proxy.config.extra).inPod.reports.envSources }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   ports:
     - containerPort: 4180
       name: http

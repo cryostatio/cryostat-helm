@@ -106,6 +106,35 @@ core:
     tlsTruststore:
       ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
       secretNames: []
+    ## @extra core.config.extra Extra configurations for the main Cryostat container
+    extra:
+      ## @param core.config.extra.envVars [array] Extra environment variables for main Cryostat container container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      # 1. Static environment variable:
+      #  - name: FOO
+      #    value: "BAR"
+      # 2. Secret environment variable:
+      # - name: USERNAME
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: mysecret
+      #       key: username
+      # 3. Configmap environment variable:
+      # - name: SPECIAL_VAR
+      #   valueFrom:
+      #     configMapKeyRef:
+      #       name: myconfigmap
+      #       key: special_var
+      envVars: []
+      ## @param core.config.extra.envSources [array] Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      # 1. From config map:
+      #  - configMapRef:
+      #      name: special-config
+      #      optional: false
+      # 2. From secret:
+      #  - secretRef:
+      #      name: special-config
+      #      optional: false
+      envSources: []
   ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param core.tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -152,6 +181,13 @@ reports:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra reports.config.extra Extra configurations for the Report Generator container
+    extra:
+      ## @param reports.config.extra.envVars [array] Extra environment variables for the Report Generator container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param reports.config.extra.envSources [array] Sources for extra variables for the Report Generator container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param reports.nodeSelector [object] Node Selector for the Report Generator Pods. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param reports.tolerations [array] Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -204,6 +240,13 @@ db:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra db.config.extra Extra configurations for the database container
+    extra:
+      ## @param db.config.extra.envVars [array] Extra environment variables for the database container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param db.config.extra.envSources [array] Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param db.tolerations [array] Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -261,6 +304,13 @@ storage:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra storage.config.extra Extra configurations for the object storage container
+    extra:
+      ## @param storage.config.extra.envVars [array] Extra environment variables for the object storage container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param storage.config.extra.envSources [array] Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param storage.tolerations [array] Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -297,6 +347,13 @@ grafana:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra grafana.config.extra Extra configurations for the Grafana container
+    extra:
+      ## @param grafana.config.extra.envVars [array] Extra environment variables for for the Grafana container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param grafana.config.extra.envSources [array] Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param grafana.nodeSelector [object] Node Selector for the Grafana Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param grafana.tolerations [array] Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -326,6 +383,13 @@ datasource:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra datasource.config.extra Extra configurations for the JFR Data Source container
+    extra:
+      ## @param datasource.config.extra.envVars [array] Extra environment variables for for the JFR Data Source container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param datasource.config.extra.envSources [array] Sources for extra variables for the JFR Data Source container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
   ## @param datasource.nodeSelector [object] Node Selector for the JFR Datasource Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param datasource.tolerations [array] Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -378,6 +442,24 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra oauth2Proxy.config.extra Extra configurations for the OAuth2 Proxy container
+    extra:
+      ## @param oauth2Proxy.config.extra.envVars [array] Extra environment variables for the OAuth2 Proxy container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param oauth2Proxy.config.extra.envSources [array] Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param oauth2Proxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param oauth2Proxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the report generator pods**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the report generator pods**
+          envSources: []
 
 ## @section OpenShift OAuth Proxy
 
@@ -420,6 +502,24 @@ openshiftOauthProxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra openshiftOauthProxy.config.extra Extra configurations for the OpenShift OAuth Proxy
+    extra:
+      ## @param openshiftOauthProxy.config.extra.envVars [array] Extra environment variables for the OpenShift OAuth Proxy. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param openshiftOauthProxy.config.extra.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envSources: []
 
 ## @section Other Parameters
 
