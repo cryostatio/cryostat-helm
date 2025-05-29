@@ -336,11 +336,6 @@ grafana:
     pullPolicy: Always
     ## @param grafana.image.tag Tag for the Grafana container image
     tag: "latest"
-  service:
-    ## @param grafana.service.type Type of Service to create for Grafana
-    type: ClusterIP
-    ## @param grafana.service.port Port number to expose on the Service for Grafana's HTTP server
-    port: 3000
   resources:
     requests:
       ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
