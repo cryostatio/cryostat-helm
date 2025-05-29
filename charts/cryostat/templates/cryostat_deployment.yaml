@@ -91,27 +91,43 @@ spec:
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: jdbc:postgresql://{{ $fullName }}-db:5432/cryostat
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
-            value: archivedrecordings
+            value: {{ .Values.storage.buckets.names.archivedRecordings }}
+          - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME
+            value: {{ .Values.storage.buckets.names.eventTemplates }}
+          - name: STORAGE_BUCKETS_PROBE_TEMPLATES_NAME
+            value: {{ .Values.storage.buckets.names.jmcAgentProbeTemplates }}
+          - name: STORAGE_BUCKETS_METADATA_NAME
+            value: {{ .Values.storage.buckets.names.metadata }}
+          - name: CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME
+            value: {{ .Values.storage.buckets.names.archivedReports }}
+          - name: STORAGE_METADATA_STORAGE_MODE
+            value: {{ .Values.storage.provider.metadata.storageMode }}
+          {{- if (.Values.storage.provider.tls).trustAll }}
+          - name: QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE
+            value: trust-all
+          {{- end }}
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: http://{{ $fullName }}-storage:8333
+            value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
-            value: "true"
+            value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: QUARKUS_S3_AWS_REGION
-            value: us-east-1
+            # if an external provider URL is supplied then a region must also be supplied.
+            # Otherwise we are deploying a managed storage instance and can set a default value
+            value: {{ ternary .Values.storage.provider.region "us-east-1" (not (empty .Values.storage.provider.url)) }}
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
-            value: static
-          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID
-            value: cryostat
+            value: {{ .Values.storage.provider.authentication.credentialsType }}
           - name: AWS_ACCESS_KEY_ID
-            value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
-          - name: QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
+                key: STORAGE_ACCESS_KEY_ID
+                optional: false
+          - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 name: {{ default (printf "%s-storage-secret" .Release.Name) .Values.storage.storageSecretName }}
                 key: STORAGE_ACCESS_KEY
                 optional: false
-          - name: AWS_SECRET_ACCESS_KEY
-            value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
           - name: GRAFANA_DATASOURCE_URL
             value: http://localhost:8800
           - name: GRAFANA_DASHBOARD_URL
