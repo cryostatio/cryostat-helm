@@ -831,21 +831,6 @@
                         }
                     }
                 },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "Type of Service to create for Grafana",
-                            "default": "ClusterIP"
-                        },
-                        "port": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service for Grafana's HTTP server",
-                            "default": 3000
-                        }
-                    }
-                },
                 "resources": {
                     "type": "object",
                     "properties": {
