@@ -15,6 +15,8 @@ core:
     type: ClusterIP
     ## @param core.service.httpPort Port number to expose on the Service for Cryostat's HTTP server
     httpPort: 8181
+    ## @param core.service.annotations [object] Annotations to be applied to the Service for Cryostat's HTTP server
+    annotations: {}
   debug:
     log:
       ## @param core.debug.log.level Log level for troubleshooting and debugging
@@ -159,6 +161,8 @@ reports:
     type: ClusterIP
     ## @param reports.service.httpPort Port number to expose on the Service for the Report Generator Deployment
     httpPort: 10001
+    ## @param reports.service.annotations [object] Annotations to be applied to the Service for the Report Generator Deployment
+    annotations: {}
   ## @param reports.reportsSecretName Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
   reportsSecretName: ""
   debug:
@@ -212,6 +216,8 @@ db:
     type: ClusterIP
     ## @param db.service.port Port number to expose on the Service
     port: 5432
+    ## @param db.service.annotations [object] Annotations to be applied to the Service for the database
+    annotations: {}
   resources:
     requests:
       ## @param db.resources.requests.cpu CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
@@ -276,6 +282,8 @@ storage:
     type: ClusterIP
     ## @param storage.service.port Port number to expose on the Service
     port: 8333
+    ## @param storage.service.annotations [object] Annotations to be applied to the Service for the object storage
+    annotations: {}
   resources:
     requests:
       ## @param storage.resources.requests.cpu CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)

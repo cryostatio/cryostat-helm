@@ -515,6 +515,21 @@
                         }
                     }
                 },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the database",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 5432
+                        }
+                    }
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -537,21 +552,6 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
-                        }
-                    }
-                },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "Type of Service to create for the database",
-                            "default": "ClusterIP"
-                        },
-                        "port": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service",
-                            "default": 5432
                         }
                     }
                 },
@@ -638,6 +638,26 @@
                     "description": "Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
                     "default": ""
                 },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the storage container image",
+                            "default": "quay.io/cryostat/cryostat-storage"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the storage container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the storage container image",
+                            "default": "latest"
+                        }
+                    }
+                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -660,26 +680,6 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
-                        }
-                    }
-                },
-                "image": {
-                    "type": "object",
-                    "properties": {
-                        "repository": {
-                            "type": "string",
-                            "description": "Repository for the storage container image",
-                            "default": "quay.io/cryostat/cryostat-storage"
-                        },
-                        "pullPolicy": {
-                            "type": "string",
-                            "description": "Image pull policy for the storage container image",
-                            "default": "Always"
-                        },
-                        "tag": {
-                            "type": "string",
-                            "description": "Tag for the storage container image",
-                            "default": "latest"
                         }
                     }
                 },

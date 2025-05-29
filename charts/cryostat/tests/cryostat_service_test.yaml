@@ -193,3 +193,37 @@ tests:
             app.kubernetes.io/version: "4.1.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: cryostat
+
+  - it: should create a Service with additional user-provided annotations
+    set:
+      core.service.annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+        service.beta.kubernetes.io/aws-load-balancer-type: external    
+    asserts:
+      - exists:
+          path: metadata.annotations
+      - equal:
+          path: metadata.annotations
+          value:
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-type: external
+
+  - it: should create a Service with OpenShift specific annotations and additional user-provided annotations when OpenShift auth is enabled
+    set:
+      authentication.openshift.enabled: true
+      core.service.annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+        service.beta.kubernetes.io/aws-load-balancer-type: external    
+    asserts:
+      - exists:
+          path: metadata.annotations
+      - equal:
+          path: metadata.annotations
+          value:
+            service.alpha.openshift.io/serving-cert-secret-name: RELEASE-NAME-proxy-tls
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-type: external    
