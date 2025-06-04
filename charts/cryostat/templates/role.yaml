@@ -11,9 +11,9 @@ metadata:
     {{- include "cryostat.labels" . | nindent 4 }}
 rules:
 - apiGroups:
-  - ""
+  - discovery.k8s.io
   resources:
-  - endpoints
+  - endpointslices
   verbs:
   - get
   - list
