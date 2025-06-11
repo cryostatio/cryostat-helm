@@ -5,9 +5,9 @@ core:
     ## @param core.image.repository Repository for the main Cryostat container image
     repository: "quay.io/cryostat/cryostat"
     ## @param core.image.pullPolicy Image pull policy for the main Cryostat container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param core.image.tag Tag for the main Cryostat container image
-    tag: "4.0.1"
+    tag: "4.0.2-snapshot"
   ## @param core.podAnnotations [object] Annotations to be applied to the Cryostat Pods
   podAnnotations: {}
   service:
@@ -108,9 +108,9 @@ reports:
     ## @param reports.image.repository Repository for the Report Generator container image
     repository: "quay.io/cryostat/cryostat-reports"
     ## @param reports.image.pullPolicy Image pull policy for the Report Generator container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param reports.image.tag Tag for the Report Generator image
-    tag: "4.0.1"
+    tag: "4.0.2-snapshot"
   ## @param reports.podAnnotations [object] Annotations to be applied to the Report Generator Pods
   podAnnotations: {}
   service:
@@ -154,9 +154,9 @@ db:
     ## @param db.image.repository Repository for the database container image
     repository: "quay.io/cryostat/cryostat-db"
     ## @param db.image.pullPolicy Image pull policy for the database container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param db.image.tag Tag for the database container image
-    tag: "4.0.1"
+    tag: "cryostat-v4.0"
   ## @param db.podAnnotations [object] Annotations to be applied to the Database Pods
   podAnnotations: {}
   service:
@@ -208,9 +208,9 @@ storage:
     ## @param storage.image.repository Repository for the storage container image
     repository: "quay.io/cryostat/cryostat-storage"
     ## @param storage.image.pullPolicy Image pull policy for the storage container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param storage.image.tag Tag for the storage container image
-    tag: "4.0.1"
+    tag: "cryostat-v4.0"
   encryption:
     ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.
     enabled: true
@@ -263,9 +263,9 @@ grafana:
     ## @param grafana.image.repository Repository for the Grafana container image
     repository: "quay.io/cryostat/cryostat-grafana-dashboard"
     ## @param grafana.image.pullPolicy Image pull policy for the Grafana container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param grafana.image.tag Tag for the Grafana container image
-    tag: "4.0.1"
+    tag: "4.0"
   service:
     ## @param grafana.service.type Type of Service to create for Grafana
     type: ClusterIP
@@ -297,9 +297,9 @@ datasource:
     ## @param datasource.image.repository Repository for the JFR Data Source container image
     repository: "quay.io/cryostat/jfr-datasource"
     ## @param datasource.image.pullPolicy Image pull policy for the JFR Data Source container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param datasource.image.tag Tag for the JFR Data Source container image
-    tag: "4.0.1"
+    tag: "4.0.2-snapshot"
   resources:
     requests:
       ## @param datasource.resources.requests.cpu CPU resource request for the JFR Data Source container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
@@ -374,9 +374,9 @@ openshiftOauthProxy:
     ## @param openshiftOauthProxy.image.repository Repository for the OpenShift OAuth Proxy container image
     repository: "quay.io/cryostat/openshift-oauth-proxy"
     ## @param openshiftOauthProxy.image.pullPolicy Image pull policy for the OpenShift OAuth Proxy container image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
-    tag: "4.0.1"
+    tag: "4.0"
   resources:
     requests:
       ## @param openshiftOauthProxy.resources.requests.cpu CPU resource request for the OpenShift OAuth Proxy container.
