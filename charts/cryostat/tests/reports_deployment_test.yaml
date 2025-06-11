@@ -50,10 +50,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.0.1
+            helm.sh/chart: cryostat-2.0.2-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.0.1"
+            app.kubernetes.io/version: "4.0.2-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: reports
             app.kubernetes.io/part-of: cryostat
@@ -78,7 +78,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].image
-          value: "quay.io/cryostat/cryostat-reports:4.0.1"
+          value: "quay.io/cryostat/cryostat-reports:4.0.2-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "10001"
@@ -95,7 +95,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].image
-          value: "quay.io/cryostat/openshift-oauth-proxy:4.0.1"
+          value: "quay.io/cryostat/openshift-oauth-proxy:4.0"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].ports
           value:
@@ -261,11 +261,11 @@ tests:
       reports:
         replicas: 1
         image:
-          tag: "4.0.1-snapshot"
+          tag: "4.0.2-snapshot"
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].imagePullPolicy
-          value: IfNotPresent
+          value: "Always"
 
   - it: should verify image pull policies for release versions
     set:
