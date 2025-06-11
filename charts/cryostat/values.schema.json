@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -313,7 +313,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Report Generator image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -429,7 +429,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -550,7 +550,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -701,7 +701,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -792,7 +792,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },
@@ -1003,7 +1003,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "4.0.0"
+                            "default": "4.0.1"
                         }
                     }
                 },

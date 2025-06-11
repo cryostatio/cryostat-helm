@@ -4,11 +4,11 @@ description: Securely manage JFR recordings for your containerized Java workload
 
 type: application
 
-version: "2.0.0"
+version: "2.0.1"
 
 kubeVersion: ">= 1.25.0-0"
 
-appVersion: "4.0.0"
+appVersion: "4.0.1"
 
 home: "https://cryostat.io"
 
