@@ -63,9 +63,9 @@ tests:
               verbs:
               - list
             - apiGroups:
-              - ""
+              - discovery.k8s.io
               resources:
-              - endpoints
+              - endpointslices
               verbs:
               - get
               - list
