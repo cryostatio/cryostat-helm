@@ -34,12 +34,12 @@
 
 {{- if $portForwards }}
 
-{{ $listNum }}. Forward local port to the application's pod:
+{{ $listNum }}. Forward local port to the application's service:
   ```
   kubectl -n {{ .Release.Namespace }} wait --for=condition=available --timeout=60s deploy/{{ include "cryostat.deploymentName" . }}
 
-  export POD_NAME=$(kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
-  kubectl -n {{ .Release.Namespace }} port-forward $POD_NAME 8080:http
+  export SVC_NAME=$(kubectl get services -n {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cryostat.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=cryostat" --sort-by=.metadata.creationTimestamp -o jsonpath="{.items[-1:].metadata.name}")
+  kubectl -n {{ .Release.Namespace }} port-forward svc/$SVC_NAME {{ include "cryostat.core.service.port" . }}:{{ include "cryostat.core.service.scheme" . }}
   ```
   {{- $listNum = add1 $listNum }}
 {{- end }}
@@ -59,6 +59,6 @@
 {{- else if contains "LoadBalancer" .Values.core.service.type }}
   echo http://$SERVICE_IP:{{ .Values.core.service.httpPort }}
 {{- else if contains "ClusterIP" .Values.core.service.type }}
-  http://localhost:8080
+  {{ include "cryostat.core.service.scheme" . }}://localhost:{{ include "cryostat.core.service.port" . }}
 {{- end }}
   ```

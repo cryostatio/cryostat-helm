@@ -76,3 +76,22 @@ tests:
             app.kubernetes.io/version: "4.1.0-dev"
             helm.sh/chart: cryostat-2.0.0-dev
             app.kubernetes.io/component: reports
+
+  - it: should create a Service with additional user-provided annotations
+    set:
+      reports:
+          replicas: 1
+          service:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+              service.beta.kubernetes.io/aws-load-balancer-type: external
+    asserts:
+      - exists:
+          path: metadata.annotations
+      - equal:
+          path: metadata.annotations
+          value:
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-type: external

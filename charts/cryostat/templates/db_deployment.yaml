@@ -17,8 +17,11 @@ spec:
       app.kubernetes.io/component: db
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.db.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -29,7 +32,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cryostat.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -55,6 +57,13 @@ spec:
                 name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: ENCRYPTION_KEY
                 optional: false
+          {{- with (.Values.db.config).extra.envVars }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with (.Values.db.config).extra.envSources }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}          
           ports:
             - containerPort: 5432
               protocol: TCP
@@ -72,25 +81,25 @@ spec:
               - cryostat
           resources:
             {{- toYaml (.Values.db).resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.db.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (default .Values.affinity .Values.db.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (default .Values.tolerations .Values.db.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      {{- if ((.Values.pvc).enabled) }}
+      {{- if ((.Values.db.pvc).enabled) }}
       - name: {{ .Chart.Name }}-db
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-db
       {{- end }}
-      {{- if not ((.Values.pvc).enabled) }}
+      {{- if not ((.Values.db.pvc).enabled) }}
       - name: {{ .Chart.Name }}-db
         emptyDir: {}
       {{- end }}

@@ -7,6 +7,10 @@ metadata:
   labels:
     {{- include "cryostat.labels" $ | nindent 4 }}
     app.kubernetes.io/component: storage
+  {{- with .Values.storage.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.storage.service.type }}
   ports:

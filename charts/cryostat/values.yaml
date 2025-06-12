@@ -8,11 +8,15 @@ core:
     pullPolicy: Always
     ## @param core.image.tag Tag for the main Cryostat container image
     tag: "4.1.0-snapshot"
+  ## @param core.podAnnotations [object] Annotations to be applied to the Cryostat Pods
+  podAnnotations: {}
   service:
     ## @param core.service.type Type of Service to create for the Cryostat application
     type: ClusterIP
     ## @param core.service.httpPort Port number to expose on the Service for Cryostat's HTTP server
     httpPort: 8181
+    ## @param core.service.annotations [object] Annotations to be applied to the Service for Cryostat's HTTP server
+    annotations: {}
   debug:
     log:
       ## @param core.debug.log.level Log level for troubleshooting and debugging
@@ -85,6 +89,60 @@ core:
       builtInPortNumbersDisabled: false
       ## @param core.discovery.kubernetes.portNumbers [array] List of port numbers that the Cryostat application should look for in order to consider a target as JMX connectable
       portNumbers: []
+  config:
+    declarative:
+      ## @param core.config.declarative.fsMode default filesystem mode (permissions) for declarative configuration volumes
+      fsMode: 0440
+    credentials:
+      ## @param core.config.credentials.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are json Stored Credentials, to be mounted to the Cryostat container.
+      secretNames: []
+    rules:
+      ## @param core.config.rules.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are automated rule definitions, to be mounted to the Cryostat container.
+      configMapNames: []
+    probeTemplates:
+      ## @param core.config.probeTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are XML JMC Agent Probe Templates, to be mounted to the Cryostat container.
+      configMapNames: []
+    eventTemplates:
+      ## @param core.config.eventTemplates.configMapNames [array] List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.
+      configMapNames: []
+    tlsTruststore:
+      ## @param core.config.tlsTruststore.secretNames [array] List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.
+      secretNames: []
+    ## @extra core.config.extra Extra configurations for the main Cryostat container
+    extra:
+      ## @param core.config.extra.envVars [array] Extra environment variables for main Cryostat container container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      # 1. Static environment variable:
+      #  - name: FOO
+      #    value: "BAR"
+      # 2. Secret environment variable:
+      # - name: USERNAME
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: mysecret
+      #       key: username
+      # 3. Configmap environment variable:
+      # - name: SPECIAL_VAR
+      #   valueFrom:
+      #     configMapKeyRef:
+      #       name: myconfigmap
+      #       key: special_var
+      envVars: []
+      ## @param core.config.extra.envSources [array] Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      # 1. From config map:
+      #  - configMapRef:
+      #      name: special-config
+      #      optional: false
+      # 2. From secret:
+      #  - secretRef:
+      #      name: special-config
+      #      optional: false
+      envSources: []
+  ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param core.tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param core.affinity [object] Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Report Generator Deployment
 ## @extra reports Configuration for the Reports Generator deployment
@@ -96,11 +154,15 @@ reports:
     pullPolicy: Always
     ## @param reports.image.tag Tag for the Report Generator image
     tag: "4.1.0-snapshot"
+  ## @param reports.podAnnotations [object] Annotations to be applied to the Report Generator Pods
+  podAnnotations: {}
   service:
     ## @param reports.service.type Type of Service to create for the Report Generator Deployment
     type: ClusterIP
     ## @param reports.service.httpPort Port number to expose on the Service for the Report Generator Deployment
     httpPort: 10001
+    ## @param reports.service.annotations [object] Annotations to be applied to the Service for the Report Generator Deployment
+    annotations: {}
   ## @param reports.reportsSecretName Name of the secret containing the report generator access keys. This secret must contain a REPORTS_PASS secret which is the secret credential for the report generators. It must not be updated across chart upgrades, or else the connection between Cryostat and report generators will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
   reportsSecretName: ""
   debug:
@@ -123,6 +185,19 @@ reports:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra reports.config.extra Extra configurations for the Report Generator container
+    extra:
+      ## @param reports.config.extra.envVars [array] Extra environment variables for the Report Generator container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param reports.config.extra.envSources [array] Sources for extra variables for the Report Generator container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+  ## @param reports.nodeSelector [object] Node Selector for the Report Generator Pods. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param reports.tolerations [array] Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param reports.affinity [object] Affinity for the Report Generator Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Database Container
 ## @extra db Configuration for Cryostat's database
@@ -134,17 +209,35 @@ db:
     pullPolicy: Always
     ## @param db.image.tag Tag for the database container image
     tag: "latest"
+  ## @param db.podAnnotations [object] Annotations to be applied to the Database Pods
+  podAnnotations: {}
   service:
     ## @param db.service.type Type of Service to create for the database
     type: ClusterIP
     ## @param db.service.port Port number to expose on the Service
     port: 5432
+    ## @param db.service.annotations [object] Annotations to be applied to the Service for the database
+    annotations: {}
   resources:
     requests:
       ## @param db.resources.requests.cpu CPU resource request for the database container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 25m
       ## @param db.resources.requests.memory Memory resource request for the database container.
       memory: 64Mi
+  pvc:
+    ## @param db.pvc.enabled Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.
+    enabled: false
+    ## @param db.pvc.annotations [object] Annotations to add to the persistentVolumeClaim
+    annotations: {}
+    ## @param db.pvc.storage Storage size to request for the persistentVolumeClaim
+    storage: 500Mi
+    ## @param db.pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    accessModes:
+      - ReadWriteOnce
+    ## @param db.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    selector: {}
+    ## @param db.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # storageClassName: ""
   ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip db.securityContext.allowPrivilegeEscalation
@@ -153,6 +246,19 @@ db:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra db.config.extra Extra configurations for the database container
+    extra:
+      ## @param db.config.extra.envVars [array] Extra environment variables for the database container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param db.config.extra.envSources [array] Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+  ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param db.tolerations [array] Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param db.affinity [object] Affinity for the Database Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Storage Container
 ## @extra storage Configuration for Cryostat's object storage provider
@@ -169,17 +275,35 @@ storage:
   encryption:
     ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.
     enabled: true
+  ## @param storage.podAnnotations [object] Annotations to be applied to the Storage Pods
+  podAnnotations: {}
   service:
     ## @param storage.service.type Type of Service to create for the object storage
     type: ClusterIP
     ## @param storage.service.port Port number to expose on the Service
     port: 8333
+    ## @param storage.service.annotations [object] Annotations to be applied to the Service for the object storage
+    annotations: {}
   resources:
     requests:
       ## @param storage.resources.requests.cpu CPU resource request for the object storage container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
       cpu: 50m
       ## @param storage.resources.requests.memory Memory resource request for the object storage container.
       memory: 256Mi
+  pvc:
+    ## @param storage.pvc.enabled Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.
+    enabled: false
+    ## @param storage.pvc.annotations [object] Annotations to add to the persistentVolumeClaim
+    annotations: {}
+    ## @param storage.pvc.storage Storage size to request for the persistentVolumeClaim
+    storage: 500Mi
+    ## @param storage.pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    accessModes:
+      - ReadWriteOnce
+    ## @param storage.pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    selector: {}
+    ## @param storage.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
+    # storageClassName: ""
   ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip storage.securityContext.allowPrivilegeEscalation
@@ -188,6 +312,19 @@ storage:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra storage.config.extra Extra configurations for the object storage container
+    extra:
+      ## @param storage.config.extra.envVars [array] Extra environment variables for the object storage container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param storage.config.extra.envSources [array] Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+  ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param storage.tolerations [array] Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
+  ## @param storage.affinity [object] Affinity for the Storage Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  affinity: {}
 
 ## @section Grafana Container
 ## @extra grafana Configuration for the customized Grafana instance for Cryostat
@@ -199,11 +336,6 @@ grafana:
     pullPolicy: Always
     ## @param grafana.image.tag Tag for the Grafana container image
     tag: "latest"
-  service:
-    ## @param grafana.service.type Type of Service to create for Grafana
-    type: ClusterIP
-    ## @param grafana.service.port Port number to expose on the Service for Grafana's HTTP server
-    port: 3000
   resources:
     requests:
       ## @param grafana.resources.requests.cpu CPU resource request for the Grafana container. See: [ResourceRequirements](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources)
@@ -218,6 +350,17 @@ grafana:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra grafana.config.extra Extra configurations for the Grafana container
+    extra:
+      ## @param grafana.config.extra.envVars [array] Extra environment variables for for the Grafana container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param grafana.config.extra.envSources [array] Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+  ## @param grafana.nodeSelector [object] Node Selector for the Grafana Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param grafana.tolerations [array] Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
 
 ## @section JFR Data Source Container
 ## @extra datasource Configuration for the JFR Data Source component, which translates recording events into a format consumable by Grafana
@@ -243,6 +386,17 @@ datasource:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra datasource.config.extra Extra configurations for the JFR Data Source container
+    extra:
+      ## @param datasource.config.extra.envVars [array] Extra environment variables for for the JFR Data Source container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param datasource.config.extra.envSources [array] Sources for extra variables for the JFR Data Source container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+  ## @param datasource.nodeSelector [object] Node Selector for the JFR Datasource Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  nodeSelector: {}
+  ## @param datasource.tolerations [array] Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+  tolerations: []
 
 ## @section Authentication
 
@@ -273,6 +427,10 @@ oauth2Proxy:
     pullPolicy: Always
     ## @param oauth2Proxy.image.tag Tag for the OAuth2 Proxy container image
     tag: "latest"
+  tls:
+    selfSigned:
+      ## @param oauth2Proxy.tls.selfSigned.enabled Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.
+      enabled: false
   resources:
     requests:
       ## @param oauth2Proxy.resources.requests.cpu CPU resource request for the OAuth2 Proxy container.
@@ -287,6 +445,24 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra oauth2Proxy.config.extra Extra configurations for the OAuth2 Proxy container
+    extra:
+      ## @param oauth2Proxy.config.extra.envVars [array] Extra environment variables for the OAuth2 Proxy container. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param oauth2Proxy.config.extra.envSources [array] Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param oauth2Proxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param oauth2Proxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the report generator pods**
+          envVars: []
+          ## @param oauth2Proxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OAuth2 Proxy container **only in the report generator pods**
+          envSources: []
 
 ## @section OpenShift OAuth Proxy
 
@@ -329,6 +505,24 @@ openshiftOauthProxy:
     capabilities:
       drop:
         - ALL
+  config:
+    ## @extra openshiftOauthProxy.config.extra Extra configurations for the OpenShift OAuth Proxy
+    extra:
+      ## @param openshiftOauthProxy.config.extra.envVars [array] Extra environment variables for the OpenShift OAuth Proxy. See: [Define Environment Variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+      envVars: []
+      ## @param openshiftOauthProxy.config.extra.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
+      envSources: []
+      inPod:
+        main:
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.main.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
+          envSources: []
+        reports:
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envVars: []
+          ## @param openshiftOauthProxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**
+          envSources: []
 
 ## @section Other Parameters
 
@@ -351,7 +545,7 @@ serviceAccount:
   ## @param serviceAccount.name The name of the service account to use. If not set and create is true, a name is generated using the fullname template
   name: ""
 
-## @param podAnnotations [object] Annotations to be applied to the Cryostat Pod
+## @param podAnnotations [object] Annotations to be applied to the various Pods
 podAnnotations: {}
 
 ## @param podSecurityContext [object] Security Context for the Cryostat Pod. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [PodSecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
@@ -362,26 +556,16 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-## @param nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+networkPolicy:
+  ingress:
+    ## @param networkPolicy.ingress.enabled whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods.
+    enabled: true
+
+## @param nodeSelector [object] default Node Selector for the various Pods. Any Pod which does not have an individual nodeSelector setting will default to this. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 nodeSelector: {}
 
-## @param tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param tolerations [array] default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 tolerations: []
 
-## @param affinity [object] Affinity for the Cryostat Pod. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
+## @param affinity [object] default Affinity for the various Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 affinity: {}
-
-pvc:
-  ## @param pvc.enabled Specify whether to use persistentVolumeClaim or EmptyDir storage
-  enabled: false
-  ## @param pvc.annotations [object] Annotations to add to the persistentVolumeClaim
-  annotations: {}
-  ## @param pvc.storage Storage size to request for the persistentVolumeClaim
-  storage: 500Mi
-  ## @param pvc.accessModes Access mode for the persistentVolumeClaim. See: [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  accessModes:
-    - ReadWriteOnce
-  ## @param pvc.selector [object] Selector for the persistentVolumeClaim. See: [Selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  selector: {}
-  ## @param pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
-  # storageClassName:

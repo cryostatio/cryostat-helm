@@ -63,6 +63,27 @@ Create the name of the service account to use.
 {{- end }}
 
 {{/*
+Cryostat service TLS enablement. Returns the string values "true" or "false".
+*/}}
+{{- define "cryostat.core.service.tls" -}}
+{{ or .Values.authentication.openshift.enabled .Values.oauth2Proxy.tls.selfSigned.enabled }}
+{{- end }}
+
+{{/*
+Cryostat service protocol. HTTPS if TLS is enabled, HTTP otherwise.
+*/}}
+{{- define "cryostat.core.service.scheme" -}}
+{{ ternary "https" "http" ( include "cryostat.core.service.tls" . | eq "true" ) }}
+{{- end }}
+
+{{/*
+Cryostat service port. 8443 if TLS is enabled, 8080 otherwise.
+*/}}
+{{- define "cryostat.core.service.port" -}}
+{{ ternary 8443 8080 ( ( include "cryostat.core.service.scheme" . ) | eq "https" ) }}
+{{- end }}
+
+{{/*
 Get or generate a default connection key for database.
 */}}
 {{- define "cryostat.databaseConnectionKey" -}}
