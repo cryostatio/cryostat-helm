@@ -20,7 +20,7 @@ subjects:
 {{- end -}}
 {{- end -}}
 
-{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled -}}
+{{- if and .Values.rbac.create .Values.core.discovery.kubernetes.enabled (not .Values.core.discovery.kubernetes.allowAllNamespaces) -}}
 {{- $watchNs := compact (default list .Values.core.discovery.kubernetes.namespaces) | uniq -}}
 {{- if and (not $watchNs) (not .Values.core.discovery.kubernetes.installNamespaceDisabled) -}}
 {{- $watchNs = list .Release.Namespace -}}

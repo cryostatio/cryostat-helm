@@ -3,6 +3,16 @@ templates:
   - role.yaml
 
 tests:
+
+  - it: should not be created if All Namespaces discovery is enabled
+    set:
+      rbac.create: true
+      core.discovery.kubernetes.enabled: true
+      core.discovery.kubernetes.allowAllNamespaces: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
   - it: should create Roles in target namespace
     set:
       rbac.create: true

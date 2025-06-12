@@ -174,7 +174,7 @@
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the Cryostat container.",
+                                    "description": "Memory resource request for the Cryostat container",
                                     "default": "384Mi"
                                 }
                             }
@@ -227,6 +227,11 @@
                                     "description": "When false and `namespaces` is empty, the Cryostat application will default to discovery targets in the install namespace (i.e. `{{ .Release.Namespace }}`)",
                                     "default": false
                                 },
+                                "allowAllNamespaces": {
+                                    "type": "boolean",
+                                    "description": "When true, this overrides the `core.discovery.kubernetes.namespaces` list and configures the Cryostat application to monitor all namespaces in the cluster. This requires elevated permissions to create a ClusterRole and ClusterRoleBinding, which will be done automatically if the `rbac.create` value is `true`. WARNING: This allows Cryostat to discover, and potentially connect to and collect data from, applications in *any* Namespace in the cluster. ALL users with access to this Cryostat instance will be able to read data from potentially any application in the cluster. For data security and isolation concerns it is recommended to leave this setting disabled, and instead install multiple Cryostat instances with lists of target namespaces, and apply sensible access controls for users to each instance as needed",
+                                    "default": false
+                                },
                                 "namespaces": {
                                     "type": "array",
                                     "description": "List of namespaces whose workloads the Cryostat application should be permitted to access and profile",
@@ -235,7 +240,7 @@
                                 },
                                 "builtInPortNamesDisabled": {
                                     "type": "boolean",
-                                    "description": "When false and `portNames` is empty, the Cryostat application will use the default port name `jfr-jmx` to look for JMX connectable targets.",
+                                    "description": "When false and `portNames` is empty, the Cryostat application will use the default port name `jfr-jmx` to look for JMX connectable targets",
                                     "default": false
                                 },
                                 "portNames": {
@@ -246,7 +251,7 @@
                                 },
                                 "builtInPortNumbersDisabled": {
                                     "type": "boolean",
-                                    "description": "When false and `portNumbers` is empty, the Cryostat application will use the default port number `9091` to look for JMX connectable targets.",
+                                    "description": "When false and `portNumbers` is empty, the Cryostat application will use the default port number `9091` to look for JMX connectable targets",
                                     "default": false
                                 },
                                 "portNumbers": {
@@ -277,7 +282,7 @@
                             "properties": {
                                 "secretNames": {
                                     "type": "array",
-                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are json Stored Credentials, to be mounted to the Cryostat container.",
+                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are json Stored Credentials, to be mounted to the Cryostat container",
                                     "default": [],
                                     "items": {}
                                 }
@@ -288,7 +293,7 @@
                             "properties": {
                                 "configMapNames": {
                                     "type": "array",
-                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are automated rule definitions, to be mounted to the Cryostat container.",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are automated rule definitions, to be mounted to the Cryostat container",
                                     "default": [],
                                     "items": {}
                                 }
@@ -299,7 +304,7 @@
                             "properties": {
                                 "configMapNames": {
                                     "type": "array",
-                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are XML JMC Agent Probe Templates, to be mounted to the Cryostat container.",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are XML JMC Agent Probe Templates, to be mounted to the Cryostat container",
                                     "default": [],
                                     "items": {}
                                 }
@@ -310,7 +315,7 @@
                             "properties": {
                                 "configMapNames": {
                                     "type": "array",
-                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container.",
+                                    "description": "List of ConfigMap names. Each ConfigMap is expected to contain one or more files, which are .jfc (XML) JFR Event Templates, to be mounted to the Cryostat container",
                                     "default": [],
                                     "items": {}
                                 }
@@ -321,7 +326,7 @@
                             "properties": {
                                 "secretNames": {
                                     "type": "array",
-                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore.",
+                                    "description": "List of Secret names. Each Secret is expected to contain one or more files, which are TLS certificates which target applications may use for their JMX servers, to be mounted to the Cryostat container for its TLS truststore",
                                     "default": [],
                                     "items": {}
                                 }
@@ -439,7 +444,7 @@
                 },
                 "replicas": {
                     "type": "number",
-                    "description": "Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own.",
+                    "description": "Number of Report Generator replicas to deploy. If zero, the Deployment and Service will not be created and the main Cryostat container will handle all report generations on its own",
                     "default": 0
                 },
                 "resources": {
@@ -450,12 +455,12 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for each Pod in the Report Generator Deployment.",
+                                    "description": "CPU resource request for each Pod in the Report Generator Deployment",
                                     "default": "500m"
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for each Pod in the Report Generator Deployment.",
+                                    "description": "Memory resource request for each Pod in the Report Generator Deployment",
                                     "default": "512Mi"
                                 }
                             }
@@ -568,7 +573,7 @@
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the database container.",
+                                    "description": "Memory resource request for the database container",
                                     "default": "64Mi"
                                 }
                             }
@@ -580,7 +585,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.",
+                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first",
                             "default": false
                         },
                         "storage": {
@@ -688,7 +693,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security.",
+                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security",
                             "default": true
                         }
                     }
@@ -721,7 +726,7 @@
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the object storage container.",
+                                    "description": "Memory resource request for the object storage container",
                                     "default": "256Mi"
                                 }
                             }
@@ -733,7 +738,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first.",
+                            "description": "Specify whether to use persistentVolumeClaim (true) or EmptyDir storage (false). This is recommended to be enabled, but the storage size and selector should be chosen carefully first",
                             "default": false
                         },
                         "storage": {
@@ -844,7 +849,7 @@
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the Grafana container.",
+                                    "description": "Memory resource request for the Grafana container",
                                     "default": "80Mi"
                                 }
                             }
@@ -942,7 +947,7 @@
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the JFR Data Source container.",
+                                    "description": "Memory resource request for the JFR Data Source container",
                                     "default": "200Mi"
                                 }
                             }
@@ -1035,7 +1040,7 @@
                             "properties": {
                                 "enabled": {
                                     "type": "boolean",
-                                    "description": "Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used.",
+                                    "description": "Whether a self-signed TLS certificate for oauth2-proxy HTTPS is generated and used",
                                     "default": false
                                 }
                             }
@@ -1050,12 +1055,12 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the OAuth2 Proxy container.",
+                                    "description": "CPU resource request for the OAuth2 Proxy container",
                                     "default": "25m"
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the OAuth2 Proxy container.",
+                                    "description": "Memory resource request for the OAuth2 Proxy container",
                                     "default": "64Mi"
                                 }
                             }
@@ -1138,7 +1143,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one.",
+                            "description": "Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one",
                             "default": false
                         },
                         "clusterRole": {
@@ -1231,12 +1236,12 @@
                             "properties": {
                                 "cpu": {
                                     "type": "string",
-                                    "description": "CPU resource request for the OpenShift OAuth Proxy container.",
+                                    "description": "CPU resource request for the OpenShift OAuth Proxy container",
                                     "default": "25m"
                                 },
                                 "memory": {
                                     "type": "string",
-                                    "description": "Memory resource request for the OpenShift OAuth Proxy container.",
+                                    "description": "Memory resource request for the OpenShift OAuth Proxy container",
                                     "default": "64Mi"
                                 }
                             }
@@ -1248,7 +1253,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token.",
+                            "description": "Whether the SubjectAccessReview/TokenAccessReview role checks for users and clients are enabled. If this is disabled then the proxy will only check that the user has valid credentials or holds a valid token",
                             "default": true
                         },
                         "group": {
@@ -1258,32 +1263,32 @@
                         },
                         "resource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": "pods"
                         },
                         "subresource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": "exec"
                         },
                         "name": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": ""
                         },
                         "namespace": {
                             "type": "string",
-                            "description": "The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": "{{ .Release.Namespace }}"
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": "create"
                         },
                         "version": {
                             "type": "string",
-                            "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for.",
+                            "description": "The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for",
                             "default": ""
                         }
                     }
@@ -1420,7 +1425,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods.",
+                            "description": "whether a NetworkPolicy for restricting Cryostat component Pods' traffic is installed. This prevents other Pods from sending unwanted traffic to Cryostat's Pods. Traffic should flow via the Service (or Route, or other Ingress) only, not by directly targeting Pods",
                             "default": true
                         }
                     }

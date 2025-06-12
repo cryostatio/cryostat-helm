@@ -1204,3 +1204,120 @@ tests:
           - secretRef:
               name: sercret-special-config-for-main
               optional: false
+
+  - it: should allow Kubernetes discovery disabling
+    set:
+      core.discovery.kubernetes.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')]
+
+  - it: should allow Kubernetes discovery built-in names and number disabling
+    set:
+      core.discovery.kubernetes.builtInPortNamesDisabled: true
+      core.discovery.kubernetes.builtInPortNumbersDisabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "NAMESPACE"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: ""
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: ""
+
+  - it: should allow Kubernetes discovery namespaces customization
+    set:
+      core.discovery.kubernetes.namespaces: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "a,b"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
+
+  - it: should allow Kubernetes discovery port name customization
+    set:
+      core.discovery.kubernetes.portNames: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "NAMESPACE"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "a,b"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
+
+  - it: should allow Kubernetes discovery port number customization
+    set:
+      core.discovery.kubernetes.portNumbers: [1, 2]
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "NAMESPACE"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "1,2"
+
+  - it: should allow Kubernetes All Namespaces mode
+    set:
+      core.discovery.kubernetes.allowAllNamespaces: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "*"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
+
+  - it: Kubernetes All Namespaces mode should override individual namespace settings
+    set:
+      core.discovery.kubernetes.allowAllNamespaces: true
+      core.discovery.kubernetes.namespaces: ['a', 'b']
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_NAMESPACES')].value
+          value: "*"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NAMES')].value
+          value: "jfr-jmx"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
+          value: "9091"
