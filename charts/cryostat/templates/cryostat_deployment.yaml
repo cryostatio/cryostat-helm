@@ -81,15 +81,24 @@ spec:
             value: {{ printf "%s://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports.%s.svc:%d" (include "cryostat.core.service.scheme" .) $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
           {{- end }}
           - name: QUARKUS_DATASOURCE_USERNAME
-            value: cryostat
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
+                key: USERNAME
+                optional: false
           - name: QUARKUS_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
+          {{- if empty (.Values.db.provider).url }}
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: jdbc:postgresql://{{ $fullName }}-db:5432/cryostat
+          {{- else }}
+          - name: QUARKUS_DATASOURCE_JDBC_URL
+            value: {{ .Values.db.provider.url }}
+          {{- end }}
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: {{ .Values.storage.buckets.names.archivedRecordings }}
           - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME

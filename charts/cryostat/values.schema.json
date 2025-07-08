@@ -208,7 +208,7 @@
                 },
                 "databaseSecretName": {
                     "type": "string",
-                    "description": "Name of the secret containing database keys. This secret must contain a CONNECTION_KEY secret which is the database connection password, and an ENCRYPTION_KEY secret which is the key used to encrypt sensitive data stored within the database, such as the target credentials keyring. It must not be updated across chart upgrades. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
+                    "description": "Name of the secret containing database keys. This secret must contain a USERNAME secret which is the database connection username, a CONNECTION_KEY secret which is the database connection password, and an ENCRYPTION_KEY secret which is the key used to encrypt sensitive data stored within the database, such as the target credentials keyring. It must not be updated across chart upgrades. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
                     "default": ""
                 },
                 "discovery": {
@@ -517,6 +517,16 @@
                             "type": "string",
                             "description": "Tag for the database container image",
                             "default": "latest"
+                        }
+                    }
+                },
+                "provider": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "URL to the database instance. This can be an in-cluster self-hosted instance with a hostname like db.myapp.local, or it can be an external commercial service. This should be a complete JDBC URL with scheme, host, and port. User authentication information should be provided using a *Secret* and *core.databaseSecretName*. If this URL is not specified then a managed [cryostat-db](https://github.com/cryostatio/cryostat-db) instance will be automatically deployed and configured. If an unmanaged database instance is specified here then other database configuration settings (Pod annotations, Service configurations) do not apply. The database must be a Postgres instance with the pgcrypto extension enabled.",
+                            "default": ""
                         }
                     }
                 },

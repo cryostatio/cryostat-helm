@@ -1,5 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
+{{- if (empty (.Values.db.provider).url) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,7 +43,11 @@ spec:
           imagePullPolicy: {{ (.Values.db).image.pullPolicy }}
           env:
           - name: POSTGRESQL_USER
-            value: cryostat
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
+                key: USERNAME
+                optional: false
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -103,3 +108,4 @@ spec:
       - name: {{ .Chart.Name }}-db
         emptyDir: {}
       {{- end }}
+{{- end }}

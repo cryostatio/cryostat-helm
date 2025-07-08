@@ -84,6 +84,24 @@ Cryostat service port. 8443 if TLS is enabled, 8080 otherwise.
 {{- end }}
 
 {{/*
+Get or generate a default username key for database.
+*/}}
+{{- define "cryostat.databaseUsernameKey" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db" .Release.Name)) -}}
+{{- if $secret -}}
+{{/*
+   Use current key. Do not regenerate.
+*/}}
+{{- $secret.data.USERNAME -}}
+{{- else -}}
+{{/*
+    Generate new key.
+*/}}
+{{- b64enc "cryostat" | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get or generate a default connection key for database.
 */}}
 {{- define "cryostat.databaseConnectionKey" -}}

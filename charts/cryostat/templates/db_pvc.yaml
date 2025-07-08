@@ -1,4 +1,4 @@
-{{- if ((.Values.db.pvc).enabled) }}
+{{- if and (empty (.Values.db.provider).url) ((.Values.db.pvc).enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
