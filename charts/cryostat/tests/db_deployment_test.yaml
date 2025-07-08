@@ -68,8 +68,11 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].imagePullPolicy
           value: "Always"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_USER')].value
-          value: "cryostat"
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_USER')].valueFrom.secretKeyRef
+          value:
+              name: "RELEASE-NAME-db"
+              key: "USERNAME"
+              optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-db')].env[?(@.name=='POSTGRESQL_PASSWORD')].valueFrom.secretKeyRef
           value:
