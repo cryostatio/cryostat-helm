@@ -92,13 +92,8 @@ spec:
                 name: {{ default (printf "%s-db" .Release.Name) .Values.core.databaseSecretName }}
                 key: CONNECTION_KEY
                 optional: false
-          {{- if empty (.Values.db.provider).url }}
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: jdbc:postgresql://{{ $fullName }}-db:5432/cryostat
-          {{- else }}
-          - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: {{ .Values.db.provider.url }}
-          {{- end }}
+            value: {{ default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) (.Values.db.provider).url }} 
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: {{ .Values.storage.buckets.names.archivedRecordings }}
           - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME

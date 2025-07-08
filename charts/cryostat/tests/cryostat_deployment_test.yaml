@@ -313,6 +313,16 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_LOG_LEVEL')].value
           value: TRACE
 
+  - it: should set environment variable if external database is configured
+    set:
+      db:
+        provider:
+          url: jdbc://postgresql://db.myapp.local:1234/mydb
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_JDBC_URL')].value
+          value: jdbc://postgresql://db.myapp.local:1234/mydb
+
   - it: should set environment variable if sidecar report generator is enabled
     set:
       reports:
