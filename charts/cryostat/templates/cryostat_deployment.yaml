@@ -48,7 +48,7 @@ spec:
           imagePullPolicy: {{ .Values.core.image.pullPolicy }}
           env:
           - name: QUARKUS_HTTP_HOST
-            value: localhost
+            value: 0.0.0.0
           - name: QUARKUS_LOG_LEVEL
             value: {{ .Values.core.debug.log.level }}
           - name: QUARKUS_HTTP_PORT
