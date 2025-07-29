@@ -160,17 +160,17 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].ports[0].protocol
           value: "TCP"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.path
-          value: "/health/liveness"
+          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.exec.command
+          value:
+            - curl
+            - --fail
+            - http://localhost:8181/health/liveness
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].livenessProbe.httpGet.port
-          value: 8181
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.path
-          value: "/health/liveness"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.httpGet.port
-          value: 8181
+          path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.exec.command
+          value:
+            - curl
+            - --fail
+            - http://localhost:8181/health/liveness
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].startupProbe.failureThreshold
           value: 18
