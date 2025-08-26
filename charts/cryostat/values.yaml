@@ -503,11 +503,11 @@ oauth2Proxy:
 openshiftOauthProxy:
   image:
     ## @param openshiftOauthProxy.image.repository Repository for the OpenShift OAuth Proxy container image
-    repository: "quay.io/cryostat/openshift-oauth-proxy"
+    repository: "quay.io/openshift/origin-oauth-proxy"
     ## @param openshiftOauthProxy.image.pullPolicy Image pull policy for the OpenShift OAuth Proxy container image
     pullPolicy: Always
     ## @param openshiftOauthProxy.image.tag Tag for the OpenShift OAuth Proxy container image
-    tag: "cryostat-v3.0"
+    tag: "latest"
   resources:
     requests:
       ## @param openshiftOauthProxy.resources.requests.cpu CPU resource request for the OpenShift OAuth Proxy container

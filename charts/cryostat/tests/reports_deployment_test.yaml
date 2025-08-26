@@ -95,7 +95,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].image
-          value: "quay.io/cryostat/openshift-oauth-proxy:cryostat-v3.0"
+          value: "quay.io/openshift/origin-oauth-proxy:latest"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].ports
           value:

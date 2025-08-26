@@ -1309,7 +1309,7 @@
                         "repository": {
                             "type": "string",
                             "description": "Repository for the OpenShift OAuth Proxy container image",
-                            "default": "quay.io/cryostat/openshift-oauth-proxy"
+                            "default": "quay.io/openshift/origin-oauth-proxy"
                         },
                         "pullPolicy": {
                             "type": "string",
@@ -1319,7 +1319,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "cryostat-v3.0"
+                            "default": "latest"
                         }
                     }
                 },
