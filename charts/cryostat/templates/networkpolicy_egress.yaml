@@ -15,7 +15,17 @@ spec:
     - to:
       - namespaceSelector:
           matchLabels:
-            kubernetes.io/metadata.name: {{ .Release.Namespace }}
+            kubernetes.io/metadata.name: kube-system
+    - to:
+      - namespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values:
+                - {{ .Release.Namespace }}
+                {{- range .Values.core.discovery.kubernetes.namespaces }}
+                - {{ . }}
+                {{- end }}
 {{- if .Values.authentication.openshift.enabled }}
 {{- $kubernetesEndpoint := lookup "v1" "Endpoints" "default" "kubernetes" }}
 {{- $kubernetesAddress := (first $kubernetesEndpoint.subsets).addresses }}
@@ -23,18 +33,9 @@ spec:
     - to:
       - ipBlock:
           cidr: {{ $kubernetesIP }}/32
-{{- end }}
     - to:
       - namespaceSelector:
-          matchExpressions:
-            - key: kubernetes.io/metadata.name
-              operator: In
-              values:
-                - default
-                - kube-system
-                - openshift
-                - {{ .Release.Namespace }}
-                {{- range .Values.core.discovery.kubernetes.namespaces }}
-                - {{ . }}
-                {{- end }}
+          matchLabels:
+            kubernetes.io/metadata.name: openshift
+{{- end }}
 {{- end }}

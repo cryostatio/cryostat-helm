@@ -35,16 +35,13 @@ tests:
             - to:
               - namespaceSelector:
                   matchLabels:
-                    kubernetes.io/metadata.name: NAMESPACE
+                    kubernetes.io/metadata.name: kube-system
             - to:
               - namespaceSelector:
                   matchExpressions:
                     - key: kubernetes.io/metadata.name
                       operator: In
                       values:
-                        - default
-                        - kube-system
-                        - openshift
                         - NAMESPACE
 
   - it: should allow additional egress to target namespaces
@@ -60,16 +57,13 @@ tests:
             - to:
               - namespaceSelector:
                   matchLabels:
-                    kubernetes.io/metadata.name: NAMESPACE
+                    kubernetes.io/metadata.name: kube-system
             - to:
               - namespaceSelector:
                   matchExpressions:
                     - key: kubernetes.io/metadata.name
                       operator: In
                       values:
-                        - default
-                        - kube-system
-                        - openshift
                         - NAMESPACE
                         - apps1
                         - apps2
