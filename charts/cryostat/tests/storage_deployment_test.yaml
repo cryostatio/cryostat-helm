@@ -42,10 +42,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.0.2-dev
+            helm.sh/chart: cryostat-2.0.2
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.0.2-dev"
+            app.kubernetes.io/version: "4.0.2"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: storage
             app.kubernetes.io/part-of: cryostat
@@ -63,10 +63,10 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].image
-          value: "quay.io/cryostat/cryostat-storage:cryostat-v4.0"
+          value: "quay.io/cryostat/cryostat-storage:4.0.2"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
-          value: "Always"
+          value: "IfNotPresent"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
           value: "archivedrecordings,archivedreports,eventtemplates,probes"
@@ -349,7 +349,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].imagePullPolicy
-          value: "Always"
+          value: "IfNotPresent"
 
   - it: should verify image pull policies for release versions
     set:
