@@ -618,16 +618,16 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].imagePullPolicy
-          value: Always
+          value: IfNotPresent
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
           value: Always
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
-          value: Always
+          value: IfNotPresent
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
-          value: Always
+          value: IfNotPresent
 
   - it: should verify image pull policies for release versions
     set:

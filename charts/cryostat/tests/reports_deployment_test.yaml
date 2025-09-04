@@ -265,7 +265,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].imagePullPolicy
-          value: "Always"
+          value: "IfNotPresent"
 
   - it: should verify image pull policies for release versions
     set:
