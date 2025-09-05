@@ -82,6 +82,13 @@ spec:
         namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      - podSelector:
+          matchLabels:
+            {{- include "cryostat.selectorLabels" $ | nindent 12 }}
+            app.kubernetes.io/component: reports
+        namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: {{ .Release.Namespace }}
       ports:
         - protocol: TCP
           port: 8333

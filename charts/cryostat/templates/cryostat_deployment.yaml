@@ -162,13 +162,17 @@ spec:
             - containerPort: 8181
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: "/health/liveness"
-              port: 8181
+            exec:
+              command:
+                - curl
+                - --fail
+                - http://localhost:8181/health/liveness
           startupProbe:
-            httpGet:
-              path: "/health/liveness"
-              port: 8181
+            exec:
+              command:
+                - curl
+                - --fail
+                - http://localhost:8181/health/liveness
             failureThreshold: 18
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
