@@ -69,16 +69,19 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedrecordings,archivedreports,eventtemplates,probes"
+          value: "archivedrecordings,archivedreports,eventtemplates,metadata,probes"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].value
-          value: "cryostat"
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].valueFrom.secretKeyRef
+          value:
+            name: "RELEASE-NAME-storage-secret"
+            key: "STORAGE_ACCESS_KEY_ID"
+            optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_SECRET_KEY')].valueFrom.secretKeyRef
           value:
-              name: "RELEASE-NAME-storage-secret"
-              key: "STORAGE_ACCESS_KEY"
-              optional: false
+            name: "RELEASE-NAME-storage-secret"
+            key: "STORAGE_ACCESS_KEY"
+            optional: false
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='DATA_DIR')].value
           value: "/data"
@@ -133,6 +136,21 @@ tests:
             requests:
               cpu: 50m
               memory: 256Mi
+
+  - it: should precreate buckets based on supplied bucket names
+    set:
+      storage:
+        buckets:
+          names:
+            metadata: a
+            archivedRecordings: b
+            archivedReports: c
+            eventTemplates: d
+            jmcAgentProbeTemplates: e
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
+          value: "a,b,c,d,e"
 
   - it: should allow disabling at-rest encryption
     set:

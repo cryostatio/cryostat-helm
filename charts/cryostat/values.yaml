@@ -265,8 +265,6 @@ db:
 ## @section Storage Container
 ## @extra storage Configuration for Cryostat's object storage provider
 storage:
-  ## @param storage.storageSecretName Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
-  storageSecretName: ""
   image:
     ## @param storage.image.repository Repository for the storage container image
     repository: "quay.io/cryostat/cryostat-storage"
@@ -274,6 +272,36 @@ storage:
     pullPolicy: Always
     ## @param storage.image.tag Tag for the storage container image
     tag: "latest"
+  ## @param storage.storageSecretName Name of the secret containing the object storage secret access key. This secret must contain a STORAGE_ACCESS_KEY secret which is the object storage secret access key. It must not be updated across chart upgrades, or else the connection between Cryostat components and object storage will not be able to initialize. If using an external S3 provider requiring authentication then this **must** be provided. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable)
+  storageSecretName: ""
+  provider:
+    ## @param storage.provider.url URL to the S3 object storage provider instance. This can be an in-cluster self-hosted instance with a hostname like s3.storage.local, or it can be an external commercial service. This should include scheme, host, and port. User authenication information should be provided using a *Secret* and *storage.storageSecretName*. If this is not specified then a managed [cryostat-storage](https://github.com/cryostatio/cryostat-storage) instance will be automatically deployed and configured. If an unmanaged S3 instance is specified here then other storage configuration settings (such as at-rest encryption, Pod annotations, Service configurations) do not apply. Production installations of Cryostat should not rely on `cryostat-storage`
+    url: ""
+    ## @param storage.provider.usePathStyleAccess whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility, but subdomain resolution generally offers better performance if it is available
+    usePathStyleAccess: true
+    ## @param storage.provider.region S3 object storage provider region. This may be used by the storage provider to geolocate the physical storage in a particular region for regulatory, performance, or cost reasons
+    region: ''
+    authentication:
+      ## @param storage.provider.authentication.credentialsType configuration for how the S3 client will locate credentials for the S3 service. See: [Quarkus S3 client](https://docs.quarkiverse.io/quarkus-amazon-services/dev/amazon-s3.html#)
+      credentialsType: default
+    tls:
+      ## @param storage.provider.tls.trustAll enable this to disable TLS certificate verification on the S3 client
+      trustAll: false
+    metadata:
+      ## @param storage.provider.metadata.storageMode the strategy Cryostat will use for storing files' metadata. The default 'tagging' strategy stores all metadata as object Tags. The 'metadata' strategy stores metadata as object Metadata, which is immutable but allows for more entries than Tags. The 'bucket' strategy stores metadata as separate files (ex. JSON object maps) in a dedicated bucket, with prefixes to differentiate the kind of object the metadata belongs to.
+      storageMode: tagging
+  buckets:
+    names:
+      ## @param storage.buckets.names.archivedRecordings the name of the storage bucket containing archived Flight Recordings
+      archivedRecordings: archivedrecordings
+      ## @param storage.buckets.names.archivedReports the name of the storage bucket containing the Automated Analysis Report for archived Flight Recordings
+      archivedReports: archivedreports
+      ## @param storage.buckets.names.eventTemplates the name of the storage bucket containing Custom Event Templates
+      eventTemplates: eventtemplates
+      ## @param storage.buckets.names.jmcAgentProbeTemplates the name of the storage bucket containing JMC Agent Probe Templates
+      jmcAgentProbeTemplates: probes
+      ## @param storage.buckets.names.metadata the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.
+      metadata: metadata
   encryption:
     ## @param storage.encryption.enabled Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security
     enabled: true

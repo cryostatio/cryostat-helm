@@ -104,8 +104,25 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
           value: "archivedrecordings"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_EVENT_TEMPLATES_NAME')].value
+          value: "eventtemplates"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_PROBE_TEMPLATES_NAME')].value
+          value: "probes"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
+          value: "metadata"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
+          value: "tagging"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME')].value
+          value: "archivedreports"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
           value: "http://RELEASE-NAME-cryostat-storage:8333"
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
           value: "true"
@@ -113,23 +130,17 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
           value: "us-east-1"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_TYPE')].value
-          value: "static"
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].valueFrom.secretKeyRef
+          value:
+              key: "STORAGE_ACCESS_KEY_ID"
+              name: "RELEASE-NAME-storage-secret"
+              optional: false
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID')].value
-          value: "cryostat"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_ACCESS_KEY_ID')].value
-          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_ACCESS_KEY_ID)
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
               key: "STORAGE_ACCESS_KEY"
               name: "RELEASE-NAME-storage-secret"
               optional: false
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='AWS_SECRET_ACCESS_KEY')].value
-          value: $(QUARKUS_S3_AWS_CREDENTIALS_STATIC_PROVIDER_SECRET_ACCESS_KEY)
       - notExists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_REST_CLIENT_REPORTS_URL')].value
       - equal:
@@ -182,6 +193,50 @@ tests:
               memory: 384Mi
       - notExists:
           path: spec.template.spec.contains[?(@.name=='cryostat')].volumeMounts
+
+  - it: should allow overriding S3 bucket names
+    set:
+      storage:
+        provider:
+          metadata:
+            storageMode: bucket
+        buckets:
+          names:
+            archivedRecordings: a
+            archivedReports: b
+            eventTemplates: c
+            jmcAgentProbeTemplates: d
+            metadata: e
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
+          value: "bucket"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_ARCHIVES_NAME')].value
+          value: "a"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME')].value
+          value: "b"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_EVENT_TEMPLATES_NAME')].value
+          value: "c"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_PROBE_TEMPLATES_NAME')].value
+          value: "d"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
+          value: "e"
+
+  - it: should allow disabling S3 TLS validation
+    set:
+      storage:
+        provider:
+          tls:
+            trustAll: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE')].value
+          value: trust-all
 
   - it: should set log level
     set:
