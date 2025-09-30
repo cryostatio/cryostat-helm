@@ -673,7 +673,7 @@
                         },
                         "usePathStyleAccess": {
                             "type": "boolean",
-                            "description": "whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility, but subdomain resolution generally offers better performance if it is available",
+                            "description": "whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility for low-footprint storage container installations, but subdomain resolution generally offers better performance if it is available and may be required for use with commercial storage providers.",
                             "default": true
                         },
                         "region": {
