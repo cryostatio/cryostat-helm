@@ -69,7 +69,7 @@ tests:
           value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "archivedrecordings,archivedreports,eventtemplates,metadata,probes"
+          value: "archivedrecordings,archivedreports,eventtemplates,heapdumps,metadata,probes,threaddumps"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_ACCESS_KEY')].valueFrom.secretKeyRef
           value:
@@ -147,10 +147,12 @@ tests:
             archivedReports: c
             eventTemplates: d
             jmcAgentProbeTemplates: e
+            threadDumps: f
+            heapDumps: g
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].env[?(@.name=='CRYOSTAT_BUCKETS')].value
-          value: "a,b,c,d,e"
+          value: "a,b,c,d,e,f,g"
 
   - it: should allow disabling at-rest encryption
     set:

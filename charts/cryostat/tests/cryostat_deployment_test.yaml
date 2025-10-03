@@ -110,6 +110,12 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_PROBE_TEMPLATES_NAME')].value
           value: "probes"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_THREAD_DUMPS_NAME')].value
+          value: "threaddumps"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_HEAP_DUMPS_NAME')].value
+          value: "heapdumps"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
           value: "metadata"
       - equal:
@@ -207,6 +213,8 @@ tests:
             eventTemplates: c
             jmcAgentProbeTemplates: d
             metadata: e
+            threadDumps: f
+            heapDumps: g
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
@@ -226,6 +234,12 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
           value: "e"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_THREAD_DUMPS_NAME')].value
+          value: "f"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_HEAP_DUMPS_NAME')].value
+          value: "g"
 
   - it: should allow disabling S3 TLS validation
     set:

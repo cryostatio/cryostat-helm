@@ -739,6 +739,16 @@
                                     "description": "the name of the storage bucket containing JMC Agent Probe Templates",
                                     "default": "probes"
                                 },
+                                "threadDumps": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Thread Dumps",
+                                    "default": "threaddumps"
+                                },
+                                "heapDumps": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Heap Dumps",
+                                    "default": "heapdumps"
+                                },
                                 "metadata": {
                                     "type": "string",
                                     "description": "the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.",
