@@ -300,6 +300,10 @@ storage:
       eventTemplates: eventtemplates
       ## @param storage.buckets.names.jmcAgentProbeTemplates the name of the storage bucket containing JMC Agent Probe Templates
       jmcAgentProbeTemplates: probes
+      ## @param storage.buckets.names.threadDumps the name of the storage bucket containing archived Thread Dumps
+      threadDumps: threaddumps
+      ## @param storage.buckets.names.heapDumps the name of the storage bucket containing archived Heap Dumps
+      heapDumps: heapdumps
       ## @param storage.buckets.names.metadata the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.
       metadata: metadata
   encryption:
