@@ -223,8 +223,9 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_TRANSFERS_ENABLED')].value
           value: "false"
-      - notExists:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_DOWNLOADS_ENABLED')].value
+          value: "false"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
           value: "a-b1"

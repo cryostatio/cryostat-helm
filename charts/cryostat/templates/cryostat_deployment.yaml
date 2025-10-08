@@ -116,10 +116,8 @@ spec:
             value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: STORAGE_PRESIGNED_TRANSFERS_ENABLED
             value: "{{ .Values.storage.provider.usePresignedRecordingTransfers }}"
-          {{- if not (eq nil .Values.storage.provider.usePresignedDownloads) }}
           - name: STORAGE_PRESIGNED_DOWNLOADS_ENABLED
             value: "{{ .Values.storage.provider.usePresignedDownloads }}"
-          {{- end }}
           - name: QUARKUS_S3_AWS_REGION
             # if an external provider URL is supplied then a region must also be supplied.
             # Otherwise we are deploying a managed storage instance and can set a default value
