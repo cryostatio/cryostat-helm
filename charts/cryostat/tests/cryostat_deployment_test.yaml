@@ -133,6 +133,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
           value: "true"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_TRANSFERS_ENABLED')].value
+          value: "true"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
           value: "us-east-1"
       - equal:
@@ -199,6 +202,33 @@ tests:
               memory: 384Mi
       - notExists:
           path: spec.template.spec.contains[?(@.name=='cryostat')].volumeMounts
+
+  - it: should allow configuration of external object storage provider
+    set:
+      storage:
+        provider:
+          url: 'https://s3.example.com:1234'
+          usePathStyleAccess: true
+          usePresignedRecordingTransfers: false
+          region: 'a-b1'
+          metadata:
+            storageMode: bucket
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
+          value: "https://s3.example.com:1234"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_TRANSFERS_ENABLED')].value
+          value: "false"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
+          value: "a-b1"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
+          value: "bucket"
 
   - it: should allow overriding S3 bucket names
     set:
