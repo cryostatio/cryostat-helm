@@ -25,8 +25,8 @@ tests:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
-            app.kubernetes.io/version: "4.0.3-dev"
-            helm.sh/chart: cryostat-2.0.3-dev
+            app.kubernetes.io/version: "4.0.3"
+            helm.sh/chart: cryostat-2.0.3
             app.kubernetes.io/component: db
             app.kubernetes.io/part-of: cryostat
 
@@ -55,7 +55,7 @@ tests:
             app.kubernetes.io/instance: RELEASE-NAME
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
-            app.kubernetes.io/version: "4.0.3-dev"
-            helm.sh/chart: cryostat-2.0.3-dev
+            app.kubernetes.io/version: "4.0.3"
+            helm.sh/chart: cryostat-2.0.3
             app.kubernetes.io/component: db
             app.kubernetes.io/part-of: cryostat
