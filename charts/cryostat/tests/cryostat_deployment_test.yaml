@@ -223,12 +223,28 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_TRANSFERS_ENABLED')].value
           value: "false"
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_DOWNLOADS_ENABLED')].value
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_AWS_REGION')].value
           value: "a-b1"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
           value: "bucket"
+
+  - it: should allow configuration of presigned downloads separately from presigned transfers
+    set:
+      storage:
+        provider:
+          usePresignedRecordingTransfers: true
+          usePresignedDownloads: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_TRANSFERS_ENABLED')].value
+          value: "true"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_PRESIGNED_DOWNLOADS_ENABLED')].value
+          value: "false"
 
   - it: should allow overriding S3 bucket names
     set:

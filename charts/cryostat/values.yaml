@@ -281,6 +281,8 @@ storage:
     usePathStyleAccess: true
     ## @param storage.provider.usePresignedRecordingTransfers whether object storage presigned GET URLs should be used for transferring files between Cryostat components (ex. for automated analysis report generation). If this is disabled then Cryostat will act as a "network pipe" between other components and handle streaming file contents. This is *true* by default to reduce network utilization and request latency
     usePresignedRecordingTransfers: true
+    ## @param storage.provider.usePresignedDownloads [string, nullable] whether object storage presigned GET URLs should be used for downloading files via the user's browser. If this is disabled then Cryostat will act as a "network pipe" between storage and the user's browser and handle streaming file contents. If the object storage URLs are not accessible from the user's network location then this must be disabled, otherwise enabling it will reduce network utilization and request latency. This is *blank* by default, which Cryostat will interpret as inheriting the storage.provider.usePresignedRecordingTransfers value.
+    usePresignedDownloads: null
     ## @param storage.provider.region S3 object storage provider region. This may be used by the storage provider to geolocate the physical storage in a particular region for regulatory, performance, or cost reasons
     region: ''
     authentication:
