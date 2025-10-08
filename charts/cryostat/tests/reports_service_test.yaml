@@ -37,8 +37,8 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/part-of: cryostat
-            app.kubernetes.io/version: "4.0.3-dev"
-            helm.sh/chart: cryostat-2.0.3-dev
+            app.kubernetes.io/version: "4.0.4-dev"
+            helm.sh/chart: cryostat-2.0.4-dev
             app.kubernetes.io/component: reports
 
   - it: should create a Service targeting the Pod https port when deployed in OpenShift
@@ -73,6 +73,6 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/part-of: cryostat
-            app.kubernetes.io/version: "4.0.3-dev"
-            helm.sh/chart: cryostat-2.0.3-dev
+            app.kubernetes.io/version: "4.0.4-dev"
+            helm.sh/chart: cryostat-2.0.4-dev
             app.kubernetes.io/component: reports

@@ -43,10 +43,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.0.3-dev
+            helm.sh/chart: cryostat-2.0.4-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.0.3-dev"
+            app.kubernetes.io/version: "4.0.4-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: cryostat
             app.kubernetes.io/part-of: cryostat
@@ -57,7 +57,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].image
-          value: "quay.io/cryostat/cryostat:4.0.3-snapshot"
+          value: "quay.io/cryostat/cryostat:4.0.4-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
           value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
@@ -387,7 +387,7 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].image
-          value: "quay.io/cryostat/jfr-datasource:4.0.3-snapshot"
+          value: "quay.io/cryostat/jfr-datasource:4.0.4-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
           value: "Always"
@@ -614,7 +614,7 @@ tests:
 
   - it: should verify image pull policies for development snapshots
     set:
-      core.image.tag: "4.0.3-snapshot"
+      core.image.tag: "4.0.4-snapshot"
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].imagePullPolicy
