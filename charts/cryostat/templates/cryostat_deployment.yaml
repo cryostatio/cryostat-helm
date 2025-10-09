@@ -248,6 +248,8 @@ spec:
             value: localhost
           - name: QUARKUS_HTTP_PORT
             value: "8800"
+          - name: CRYOSTAT_STORAGE_BASE_URI
+            value: http://{{ $fullName }}-storage:{{ .Values.storage.service.port }}
           {{- with (.Values.datasource.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
