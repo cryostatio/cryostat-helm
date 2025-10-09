@@ -47,8 +47,6 @@ spec:
             value: "{{ .Values.reports.service.httpPort }}"
           - name: QUARKUS_LOG_LEVEL
             value: {{ .Values.reports.debug.log.level }}
-          - name: CRYOSTAT_STORAGE_BASE_URI
-            value: http://{{ $fullName }}-storage:{{ .Values.storage.service.port }}
           {{- with (.Values.reports.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}

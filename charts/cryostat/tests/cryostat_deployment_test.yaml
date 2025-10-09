@@ -467,9 +467,6 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8800"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='CRYOSTAT_STORAGE_BASE_URI')].value
-          value: http://RELEASE-NAME-cryostat-storage:8333
-      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].ports[0].containerPort
           value: 8800
       - equal:

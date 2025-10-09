@@ -673,7 +673,7 @@
                         },
                         "usePathStyleAccess": {
                             "type": "boolean",
-                            "description": "whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility, but subdomain resolution generally offers better performance if it is available",
+                            "description": "whether path-style accesses are used for ex. object buckets. If path style access is not used then DNS subdomain resolution will be used. This is *true* by default for broader compatibility for low-footprint storage container installations, but subdomain resolution generally offers better performance if it is available and may be required for use with commercial storage providers.",
                             "default": true
                         },
                         "region": {
@@ -788,7 +788,7 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean",
-                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security",
+                            "description": "Enable at-rest encryption of stored objects. The storage container will generate a secret key for each stored object and use this key to encrypt and decrypt objects transparently. The key is written to the object metadata, so in the default storage container configuration this only adds a small layer of additional security. This is only used for the managed cryostat-storage instance and will have no effect if an external, unmanaged storage provider is configured.",
                             "default": true
                         }
                     }
