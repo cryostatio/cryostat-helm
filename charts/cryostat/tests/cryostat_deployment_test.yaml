@@ -526,7 +526,7 @@ tests:
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          pattern: "quay.io/cryostat/openshift-oauth-proxy:.*"
+          pattern: "quay.io/openshift/origin-oauth-proxy:.*"
 
   - it: should configure the OAuth2 Proxy when OpenShift OAuth is disabled and OAuth2 is enabled
     set:
