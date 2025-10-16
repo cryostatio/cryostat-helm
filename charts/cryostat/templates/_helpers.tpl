@@ -92,7 +92,7 @@ Get or generate a default username key for database.
 {{/*
    Use current key. Do not regenerate.
 */}}
-{{- $secret.data.USERNAME -}}
+{{- default "cryostat" $secret.data.USERNAME -}}
 {{- else -}}
 {{/*
     Generate new key.
