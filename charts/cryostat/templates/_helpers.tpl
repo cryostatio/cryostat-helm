@@ -102,14 +102,6 @@ Get or generate a default username key for database.
 {{- end -}}
 
 {{/*
-Check if the database secret contains a username.
-*/}}
-{{- define "cryostat.databaseHasUsernameKey" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db" .Release.Name)) -}}
-{{- not (empty ($secret.data).USERNAME) -}}
-{{- end -}}
-
-{{/*
 Get or generate a default connection key for database.
 */}}
 {{- define "cryostat.databaseConnectionKey" -}}
