@@ -50,7 +50,7 @@ spec:
                 key: USERNAME
                 optional: false
           {{- else }}
-          - name: QUARKUS_DATASOURCE_USERNAME
+          - name: POSTGRESQL_USER
             value: "cryostat"
           {{- end }}
           - name: POSTGRESQL_PASSWORD
