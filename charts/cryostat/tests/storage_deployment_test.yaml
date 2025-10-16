@@ -10,7 +10,7 @@ tests:
           value: Deployment
       - equal:
           path: metadata.name
-          value: RELEASE-NAME-cryostat-v4-storage
+          value: RELEASE-NAME-cryostat-v4.1-storage
       - equal:
           path: spec.replicas
           value: 1
