@@ -89,11 +89,8 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_SQL_LOAD_SCRIPT')].value
           value: "no-file"
       - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].valueFrom.secretKeyRef
-          value:
-            key: "USERNAME"
-            name: "RELEASE-NAME-db"
-            optional: false
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
+          value: "cryostat"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_PASSWORD')].valueFrom.secretKeyRef
           value:

@@ -80,7 +80,8 @@ spec:
           - name: QUARKUS_REST_CLIENT_REPORTS_URL
             value: {{ printf "%s://cryostat:$(REPORTS_PASS_SECRET_KEY)@%s-reports.%s.svc:%d" (include "cryostat.core.service.scheme" .) $fullName $.Release.Namespace (int .Values.reports.service.httpPort) }}
           {{- end }}
-          {{- if ( include "cryostat.databaseHasUsernameKey" . ) }}
+          {{- $hasSecret := (include "cryostat.databaseSecretHasUsernameKey" . ) }}
+          {{- if $hasSecret | eq "true" }}
           - name: QUARKUS_DATASOURCE_USERNAME
             valueFrom:
               secretKeyRef:
