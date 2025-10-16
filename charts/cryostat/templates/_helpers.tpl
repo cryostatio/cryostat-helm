@@ -209,5 +209,5 @@ Get the name for managed deployments.
 */}}
 {{- define "cryostat.deploymentName" -}}
 {{- $version := semver .Chart.AppVersion -}}
-{{- printf "%s-v%d.%d" (include "cryostat.fullname" .) $version.Major $version.Minor -}}
+{{- printf "%s-v%d" (include "cryostat.fullname" .) $version.Major -}}
 {{- end -}}
