@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: {{ (.Values.db).image.pullPolicy }}
           env:
           {{- $hasSecret := (include "cryostat.databaseSecretHasUsernameKey" . ) }}
-          {{- if $hasSecret | eq "true" }}
+          {{- if ($hasSecret | eq "true") }}
           - name: POSTGRESQL_USER
             valueFrom:
               secretKeyRef:

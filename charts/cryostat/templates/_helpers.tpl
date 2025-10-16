@@ -87,8 +87,12 @@ Cryostat service port. 8443 if TLS is enabled, 8080 otherwise.
 Check if the database secret contains a username.
 */}}
 {{- define "cryostat.databaseSecretHasUsernameKey" -}}
-{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-db" .Release.Name)) -}}
-{{ not (empty ($secret.data).USERNAME) }}
+{{- if empty .Values.core.databaseSecretName -}}
+{{ "false" -}}
+{{- else -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace .Values.core.databaseSecretName ) -}}
+{{ not (empty (($secret).data).USERNAME) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
