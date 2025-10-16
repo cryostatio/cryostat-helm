@@ -114,6 +114,10 @@ spec:
             value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "{{ .Values.storage.provider.usePathStyleAccess }}"
+          - name: STORAGE_PRESIGNED_TRANSFERS_ENABLED
+            value: "{{ .Values.storage.provider.usePresignedRecordingTransfers }}"
+          - name: STORAGE_PRESIGNED_DOWNLOADS_ENABLED
+            value: "{{ .Values.storage.provider.usePresignedDownloads }}"
           - name: QUARKUS_S3_AWS_REGION
             # if an external provider URL is supplied then a region must also be supplied.
             # Otherwise we are deploying a managed storage instance and can set a default value
