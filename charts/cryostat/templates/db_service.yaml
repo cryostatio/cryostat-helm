@@ -1,5 +1,6 @@
 {{- $fullName := include "cryostat.fullname" . -}}
 ---
+{{- if (empty (.Values.db.provider).url) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -18,3 +19,4 @@ spec:
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: db
+{{- end }}
