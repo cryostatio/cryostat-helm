@@ -33,7 +33,7 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/version: "4.1.0-dev"
-            helm.sh/chart: cryostat-2.0.0-dev
+            helm.sh/chart: cryostat-2.1.0-dev
       - equal:
           path: spec.accessModes
           value:
