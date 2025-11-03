@@ -7,7 +7,7 @@ core:
     ## @param core.image.pullPolicy Image pull policy for the main Cryostat container image
     pullPolicy: Always
     ## @param core.image.tag Tag for the main Cryostat container image
-    tag: "4.1.0-snapshot"
+    tag: "4.2.0-snapshot"
   ## @param core.podAnnotations [object] Annotations to be applied to the Cryostat Pods
   podAnnotations: {}
   service:
@@ -155,7 +155,7 @@ reports:
     ## @param reports.image.pullPolicy Image pull policy for the Report Generator container image
     pullPolicy: Always
     ## @param reports.image.tag Tag for the Report Generator image
-    tag: "4.1.0-snapshot"
+    tag: "4.2.0-snapshot"
   ## @param reports.podAnnotations [object] Annotations to be applied to the Report Generator Pods
   podAnnotations: {}
   service:

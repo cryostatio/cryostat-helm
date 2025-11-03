@@ -50,10 +50,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.0.0-dev
+            helm.sh/chart: cryostat-2.2.0-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.1.0-dev"
+            app.kubernetes.io/version: "4.2.0-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: reports
             app.kubernetes.io/part-of: cryostat
@@ -78,7 +78,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].image
-          value: "quay.io/cryostat/cryostat-reports:4.1.0-snapshot"
+          value: "quay.io/cryostat/cryostat-reports:4.2.0-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "10001"
@@ -272,7 +272,7 @@ tests:
       reports:
         replicas: 1
         image:
-          tag: "4.1.0"
+          tag: "4.2.0"
           pullPolicy: "IfNotPresent"
     asserts:
       - equal:

@@ -43,10 +43,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.0.0-dev
+            helm.sh/chart: cryostat-2.2.0-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.1.0-dev"
+            app.kubernetes.io/version: "4.2.0-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: cryostat
             app.kubernetes.io/part-of: cryostat
@@ -57,7 +57,7 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].image
-          value: "quay.io/cryostat/cryostat:4.1.0-snapshot"
+          value: "quay.io/cryostat/cryostat:4.2.0-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
           value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
@@ -757,7 +757,7 @@ tests:
 
   - it: should verify image pull policies for release versions
     set:
-      core.image.tag: "4.1.0"
+      core.image.tag: "4.2.0"
       core.image.pullPolicy: "IfNotPresent"
       oauth2Proxy.image.pullPolicy: "IfNotPresent"
       grafana.image.pullPolicy: "IfNotPresent"
