@@ -132,6 +132,11 @@ spec:
             # if an external provider URL is supplied then a region must also be supplied.
             # Otherwise we are deploying a managed storage instance and can set a default value
             value: {{ ternary .Values.storage.provider.region "us-east-1" (not (empty .Values.storage.provider.url)) }}
+          - name: QUARKUS_S3_CHECKSUM_VALIDATION
+            # if an external provider URL is supplied then use the configuration checksum validation value.
+            # Otherwise we are deploying a managed storage instance and should override this to false, since it is known to cause issues.
+            # See https://github.com/cryostatio/cryostat/issues/948
+            value: {{ ternary (quote .Values.storage.provider.useChecksumValidation) (quote "false") (not (empty .Values.storage.provider.url)) }}
           - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
             value: {{ .Values.storage.provider.authentication.credentialsType }}
           - name: AWS_ACCESS_KEY_ID

@@ -127,6 +127,9 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
           value: "http://RELEASE-NAME-cryostat-storage:8333"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
+          value: "false"
       - notExists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE')]
       - equal:
@@ -208,6 +211,7 @@ tests:
       storage:
         provider:
           url: 'https://s3.example.com:1234'
+          useChecksumValidation: true
           usePathStyleAccess: true
           usePresignedRecordingTransfers: false
           region: 'a-b1'
@@ -217,6 +221,9 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
           value: "https://s3.example.com:1234"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
+          value: "true"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_PATH_STYLE_ACCESS')].value
           value: "true"
@@ -232,6 +239,31 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
           value: "bucket"
+
+  - it: should allow configuration of external object storage provider without checksum validation
+    set:
+      storage:
+        provider:
+          url: 'https://s3.example.com:6789'
+          useChecksumValidation: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
+          value: "https://s3.example.com:6789"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
+          value: "false"
+
+  - it: should not allow configuration of managed object storage provider with checksum validation
+    set:
+      storage:
+        provider:
+          # no url configured, so a managed instance will be deployed
+          useChecksumValidation: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
+          value: "false"
 
   - it: should allow configuration of presigned downloads separately from presigned transfers
     set:
