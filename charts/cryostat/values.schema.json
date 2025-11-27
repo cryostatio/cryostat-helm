@@ -21,7 +21,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "4.1.0-snapshot"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
@@ -378,7 +378,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Report Generator image",
-                            "default": "4.1.0-snapshot"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
@@ -1050,7 +1050,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "4.1.0-snapshot"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
