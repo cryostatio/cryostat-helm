@@ -16,12 +16,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the main Cryostat container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the main Cryostat container image",
-                            "default": "4.1.0"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
@@ -373,12 +373,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the Report Generator container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Report Generator image",
-                            "default": "4.1.0"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
@@ -511,12 +511,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the database container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "4.1.0"
+                            "default": "cryostat-v4.1"
                         }
                     }
                 },
@@ -659,12 +659,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the storage container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "4.1.0"
+                            "default": "cryostat-v4.1"
                         }
                     }
                 },
@@ -947,12 +947,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the Grafana container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "4.1.0"
+                            "default": "4.1-dev"
                         }
                     }
                 },
@@ -1045,12 +1045,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the JFR Data Source container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "4.1.0"
+                            "default": "4.1.1-snapshot"
                         }
                     }
                 },
@@ -1339,12 +1339,12 @@
                         "pullPolicy": {
                             "type": "string",
                             "description": "Image pull policy for the OpenShift OAuth Proxy container image",
-                            "default": "IfNotPresent"
+                            "default": "Always"
                         },
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "4.20.0"
+                            "default": "latest"
                         }
                     }
                 },
