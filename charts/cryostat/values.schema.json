@@ -1148,7 +1148,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OAuth2 Proxy container image",
-                            "default": "latest"
+                            "default": "v7.13.0"
                         }
                     }
                 },
