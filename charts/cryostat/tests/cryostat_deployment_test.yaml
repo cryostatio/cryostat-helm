@@ -60,7 +60,7 @@ tests:
           value: "quay.io/cryostat/cryostat:4.1.1-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
+          value: "quay.io/oauth2-proxy/oauth2-proxy:v7.13.0"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8181"
