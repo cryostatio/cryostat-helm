@@ -43,7 +43,7 @@ jobs:
       - name: Fail if safe-to-test label NOT applied
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
         run: exit 1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up Helm
@@ -76,7 +76,7 @@ jobs:
       - name: fail if safe-to-test label NOT applied
         if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
         run: exit 1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up Helm
