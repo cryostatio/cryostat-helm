@@ -54,7 +54,7 @@ jobs:
         with:
           python-version: "3.x"
           check-latest: true
-      - uses: helm/chart-testing-action@v2.6.1
+      - uses: helm/chart-testing-action@v2.8.0
       - name: Set up Kind cluster
         uses: helm/kind-action@v1
         with:
