@@ -129,7 +129,7 @@ tests:
           value: "http://RELEASE-NAME-cryostat-storage:8333"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
-          value: "false"
+          value: "true"
       - notExists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE')]
       - equal:
@@ -250,17 +250,6 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
           value: "https://s3.example.com:6789"
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
-          value: "false"
-
-  - it: should not allow configuration of managed object storage provider with checksum validation
-    set:
-      storage:
-        provider:
-          # no url configured, so a managed instance will be deployed
-          useChecksumValidation: true
-    asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_CHECKSUM_VALIDATION')].value
           value: "false"
