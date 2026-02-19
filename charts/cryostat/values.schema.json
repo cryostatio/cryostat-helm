@@ -683,7 +683,7 @@
                         },
                         "useChecksumValidation": {
                             "type": "boolean",
-                            "description": "whether PUT object request checksum validations are used. These should normally be enabled, but are known to cause issues with SeaweedFS/cryostat-storage and later S3 SDK versions. This is *true* by default when storage.provider.url is configured, but if not configured and cryostat-storage is deployed then this will be taken as *false*.",
+                            "description": "whether PUT object request checksum validations are used. These should normally be enabled, but are known to cause issues with SeaweedFS/cryostat-storage and later S3 SDK versions. This is *true* by default.",
                             "default": true
                         },
                         "usePathStyleAccess": {
