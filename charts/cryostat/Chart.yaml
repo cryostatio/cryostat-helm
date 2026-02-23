@@ -6,7 +6,7 @@ type: application
 
 version: "2.1.1-dev"
 
-kubeVersion: ">= 1.29.0-0"
+kubeVersion: ">= 1.25.0-0"
 
 appVersion: "4.1.1-dev"
 
