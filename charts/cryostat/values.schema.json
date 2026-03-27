@@ -60,11 +60,6 @@
                     "properties": {
                         "mode": {
                             "type": "string",
-                            "enum": [
-                                "auto",
-                                "enabled",
-                                "disabled"
-                            ],
                             "description": "Control Cryostat audit logging. Accepted values are `auto`, `enabled`, or `disabled`. The default `auto` enables audit logging for new installations while upgrades preserve the current deployment behavior. Warning: enabling audit logging increases database storage usage over time.",
                             "default": "auto"
                         }
