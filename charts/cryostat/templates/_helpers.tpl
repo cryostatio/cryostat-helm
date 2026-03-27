@@ -84,6 +84,38 @@ Cryostat service port. 8443 if TLS is enabled, 8080 otherwise.
 {{- end }}
 
 {{/*
+Resolve the Cryostat audit logging setting.
+If explicitly configured, use it.
+If an existing deployment already has the audit env var, preserve its value.
+Otherwise default new installs to true.
+*/}}
+{{- define "cryostat.core.audit.enabled" -}}
+{{- $auditMode := .Values.core.audit.mode | toString -}}
+{{- if eq $auditMode "enabled" -}}
+true
+{{- else if eq $auditMode "disabled" -}}
+false
+{{- else -}}
+{{- $existingDeployment := lookup "apps/v1" "Deployment" .Release.Namespace (include "cryostat.deploymentName" .) -}}
+{{- if $existingDeployment -}}
+{{- $existingAudit := dict "value" "" -}}
+{{- range $container := $existingDeployment.spec.template.spec.containers -}}
+{{- if eq $container.name $.Chart.Name -}}
+{{- range $env := $container.env -}}
+{{- if eq $env.name "CRYOSTAT_AUDIT_ENABLED" -}}
+{{- $_ := set $existingAudit "value" ($env.value | toString) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- get $existingAudit "value" -}}
+{{- else -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Check if the database secret contains a username.
 */}}
 {{- define "cryostat.databaseSecretHasUsernameKey" -}}

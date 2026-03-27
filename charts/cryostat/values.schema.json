@@ -55,6 +55,21 @@
                         }
                     }
                 },
+                "audit": {
+                    "type": "object",
+                    "properties": {
+                        "mode": {
+                            "type": "string",
+                            "enum": [
+                                "auto",
+                                "enabled",
+                                "disabled"
+                            ],
+                            "description": "Control Cryostat audit logging. Accepted values are `auto`, `enabled`, or `disabled`. The default `auto` enables audit logging for new installations while upgrades preserve the current deployment behavior. Warning: enabling audit logging increases database storage usage over time.",
+                            "default": "auto"
+                        }
+                    }
+                },
                 "sslProxied": {
                     "type": "boolean",
                     "description": "Enables SSL Proxied Environment Variables, useful when you are offloading SSL/TLS at External Loadbalancer instead of Ingress",
@@ -530,21 +545,6 @@
                         }
                     }
                 },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "description": "Type of Service to create for the database",
-                            "default": "ClusterIP"
-                        },
-                        "port": {
-                            "type": "number",
-                            "description": "Port number to expose on the Service",
-                            "default": 5432
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -567,6 +567,21 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of Service to create for the database",
+                            "default": "ClusterIP"
+                        },
+                        "port": {
+                            "type": "number",
+                            "description": "Port number to expose on the Service",
+                            "default": 5432
                         }
                     }
                 },
