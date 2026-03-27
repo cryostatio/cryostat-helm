@@ -89,6 +89,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HIBERNATE_ORM_SQL_LOAD_SCRIPT')].value
           value: "no-file"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_AUDIT_ENABLED')].value
+          value: "true"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_DATASOURCE_USERNAME')].value
           value: "cryostat"
       - equal:
@@ -330,6 +333,29 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_LOG_LEVEL')].value
           value: TRACE
+
+  - it: should allow audit logging to be disabled explicitly
+    set:
+      core:
+        audit:
+          mode: disabled
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_AUDIT_ENABLED')].value
+          value: "false"
+
+  - it: should allow extra env vars to control audit logging
+    set:
+      core:
+        config:
+          extra:
+            envVars:
+              - name: CRYOSTAT_AUDIT_ENABLED
+                value: "false"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_AUDIT_ENABLED')].value
+          value: "false"
 
   - it: should set environment variable if external database is configured
     set:

@@ -171,8 +171,20 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
+          {{- $auditMode := .Values.core.audit.mode | toString -}}
+          {{- $auditEnabled := include "cryostat.core.audit.enabled" . | trim -}}
+          {{- $extraAuditEnvExists := false -}}
+          {{- range (.Values.core.config.extra).envVars }}
+          {{- if eq .name "CRYOSTAT_AUDIT_ENABLED" }}
+          {{- $extraAuditEnvExists = true -}}
+          {{- end }}
+          {{- end }}
           {{- with (.Values.core.config.extra).envVars }}
           {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- if and $auditEnabled (or (ne $auditMode "auto") (not $extraAuditEnvExists)) }}
+          - name: CRYOSTAT_AUDIT_ENABLED
+            value: {{ $auditEnabled | quote }}
           {{- end }}
           {{- with (.Values.core.config.extra).envSources }}
           envFrom:
