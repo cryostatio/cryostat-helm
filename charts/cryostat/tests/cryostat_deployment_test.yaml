@@ -60,7 +60,7 @@ tests:
           value: "quay.io/cryostat/cryostat:4.2.0-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
+          value: "quay.io/oauth2-proxy/oauth2-proxy:v7.15.2"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8181"
@@ -509,7 +509,7 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].image
-          value: "quay.io/cryostat/cryostat-grafana-dashboard:latest"
+          value: "quay.io/cryostat/cryostat-grafana-dashboard:4.2-dev"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
           value: "Always"
@@ -560,7 +560,7 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].image
-          value: "quay.io/cryostat/jfr-datasource:latest"
+          value: "quay.io/cryostat/jfr-datasource:4.2.0-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
           value: "Always"
@@ -628,9 +628,9 @@ tests:
     set:
       authentication.openshift.enabled: true
     asserts:
-      - matchRegex:
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          pattern: "quay.io/openshift/origin-oauth-proxy:.*"
+          value: "quay.io/openshift/origin-oauth-proxy:4.22"
 
   - it: should configure the OAuth2 Proxy when OpenShift OAuth is disabled and OAuth2 is enabled
     set:
@@ -639,9 +639,9 @@ tests:
     asserts:
     - exists:
         path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')]
-    - matchRegex:
+    - equal:
         path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-        pattern: "quay.io/oauth2-proxy/oauth2-proxy:.*"
+        value: "quay.io/oauth2-proxy/oauth2-proxy:v7.15.2"
 
   - it: should apply Kubernetes specific settings when configured
     set:
