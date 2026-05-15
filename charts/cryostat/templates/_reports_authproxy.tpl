@@ -3,7 +3,7 @@
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
-  image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
+  image: "{{ .Values.openshiftOauthProxy.image.repository }}{{ include "cryostat.imageSeparator" .Values.openshiftOauthProxy.image.tag }}{{ .Values.openshiftOauthProxy.image.tag }}"
   env:
   - name: COOKIE_SECRET
     valueFrom:
@@ -62,7 +62,7 @@
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 4 }}
-  image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
+  image: "{{ (.Values.oauth2Proxy).image.repository }}{{ include "cryostat.imageSeparator" (.Values.oauth2Proxy).image.tag }}{{ (.Values.oauth2Proxy).image.tag }}"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
   - name: OAUTH2_PROXY_CLIENT_ID
@@ -131,7 +131,7 @@
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 4 }}
-  image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
+  image: "{{ (.Values.oauth2Proxy).image.repository }}{{ include "cryostat.imageSeparator" (.Values.oauth2Proxy).image.tag }}{{ (.Values.oauth2Proxy).image.tag }}"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
   env:
   - name: OAUTH2_PROXY_CLIENT_ID
