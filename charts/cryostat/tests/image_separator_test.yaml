@@ -18,72 +18,72 @@ tests:
   - it: should auto-detect sha256 hash
     template: cryostat_deployment.yaml
     set:
-      core.image.repository: registry.redhat.io/cryostat/cryostat-rhel9
-      core.image.tag: sha256:4337c5a288918275f0b9fa5317a6aa2ee96953b1d2b162ce543778d5e5bdb05c
+      core.image.repository: quay.io/cryostat/cryostat
+      core.image.tag: sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=="cryostat")].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-rhel9@sha256:[a-f0-9]{64}$
+          pattern: ^quay\.io/cryostat/cryostat@sha256:[a-f0-9]{64}$
 
   - it: should auto-detect sha384 hash
     template: cryostat_deployment.yaml
     set:
-      core.image.repository: registry.redhat.io/cryostat/cryostat-rhel9
+      core.image.repository: quay.io/cryostat/cryostat
       core.image.tag: sha384:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=="cryostat")].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-rhel9@sha384:[a-f0-9]{96}$
+          pattern: ^quay\.io/cryostat/cryostat@sha384:[a-f0-9]{96}$
 
   - it: should auto-detect sha512 hash
     template: cryostat_deployment.yaml
     set:
-      core.image.repository: registry.redhat.io/cryostat/cryostat-rhel9
+      core.image.repository: quay.io/cryostat/cryostat
       core.image.tag: sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=="cryostat")].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-rhel9@sha512:[a-f0-9]{128}$
+          pattern: ^quay\.io/cryostat/cryostat@sha512:[a-f0-9]{128}$
 
   - it: should auto-detect hash for grafana container
     template: cryostat_deployment.yaml
     set:
-      grafana.image.repository: registry.redhat.io/cryostat/cryostat-grafana-dashboard-rhel9
-      grafana.image.tag: sha256:c8c4c8c171fd17390e229a635d0d9285e3d79bd33a8cce8192b1a0faf52273df
+      grafana.image.repository: quay.io/cryostat/cryostat-grafana-dashboard
+      grafana.image.tag: sha256:fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=="cryostat-grafana")].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-grafana-dashboard-rhel9@sha256:[a-f0-9]{64}$
+          pattern: ^quay\.io/cryostat/cryostat-grafana-dashboard@sha256:[a-f0-9]{64}$
 
   - it: should auto-detect hash for datasource container
     template: cryostat_deployment.yaml
     set:
-      datasource.image.repository: registry.redhat.io/cryostat/jfr-datasource-rhel9
-      datasource.image.tag: sha256:cfdc83d656688c1c4afe8f157dc1a9bee584a35ee9c4fa127f32be05175ecf16
+      datasource.image.repository: quay.io/cryostat/jfr-datasource
+      datasource.image.tag: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name=="cryostat-jfr-datasource")].image
-          pattern: ^registry\.redhat\.io/cryostat/jfr-datasource-rhel9@sha256:[a-f0-9]{64}$
+          pattern: ^quay\.io/cryostat/jfr-datasource@sha256:[a-f0-9]{64}$
 
   - it: should auto-detect hash for database deployment
     template: db_deployment.yaml
     set:
-      db.image.repository: registry.redhat.io/cryostat/cryostat-db-rhel9
-      db.image.tag: sha256:febbf0a9813fb16914e2fdc29afec58768b56a0da6974754f43d7efa0e76c133
+      db.image.repository: quay.io/cryostat/cryostat-db
+      db.image.tag: sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-db-rhel9@sha256:[a-f0-9]{64}$
+          pattern: ^quay\.io/cryostat/cryostat-db@sha256:[a-f0-9]{64}$
 
   - it: should auto-detect hash for storage deployment
     template: storage_deployment.yaml
     set:
-      storage.image.repository: registry.redhat.io/cryostat/cryostat-storage-rhel9
-      storage.image.tag: sha256:c74c32318d1773e54a2d1702631b244f42db99a268be3ec6e438e91497ff1979
+      storage.image.repository: quay.io/cryostat/cryostat-storage
+      storage.image.tag: sha256:9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: ^registry\.redhat\.io/cryostat/cryostat-storage-rhel9@sha256:[a-f0-9]{64}$
+          pattern: ^quay\.io/cryostat/cryostat-storage@sha256:[a-f0-9]{64}$
 
   - it: should use colon for regular tags
     template: db_deployment.yaml
