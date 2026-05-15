@@ -117,12 +117,12 @@ true
 
 {{/*
 Image reference separator. Returns ":" for tag-based references or "@" for hash-based references.
-Automatically detects hash references by checking if the tag starts with a hash algorithm prefix (sha256:, sha384:, sha512:).
+Automatically detects hash references by checking if the tag starts with a hash algorithm prefix.
 Usage: {{ include "cryostat.imageSeparator" .Values.core.image.tag }}
 */}}
 {{- define "cryostat.imageSeparator" -}}
 {{- $tag := default "" . -}}
-{{- if or (hasPrefix "sha256:" $tag) (hasPrefix "sha384:" $tag) (hasPrefix "sha512:" $tag) -}}
+{{- if regexMatch "^sha[0-9]{3,}:" $tag -}}
 @
 {{- else -}}
 :
