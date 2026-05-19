@@ -99,7 +99,7 @@ spec:
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: {{ default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) (.Values.db.provider).url }} 
+            value: {{ include "cryostat.db.jdbcUrl" . }}
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: {{ .Values.storage.buckets.names.archivedRecordings }}
           - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME
@@ -121,7 +121,7 @@ spec:
             value: trust-all
           {{- end }}
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
+            value: {{ include "cryostat.storage.endpointUrl" . }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: STORAGE_PRESIGNED_TRANSFERS_ENABLED

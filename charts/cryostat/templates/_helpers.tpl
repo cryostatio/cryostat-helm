@@ -251,3 +251,114 @@ Get the name for managed deployments.
 {{- $version := semver .Chart.AppVersion -}}
 {{- printf "%s-v%d" (include "cryostat.fullname" .) $version.Major -}}
 {{- end -}}
+
+{{/*
+Check if cert-manager integration is enabled. Returns the string values "true" or "false".
+*/}}
+{{- define "cryostat.certManager.enabled" -}}
+{{- .Values.tls.certManager.enabled | toString -}}
+{{- end -}}
+
+{{/*
+Get issuer reference for cert-manager. Returns issuer configuration or defaults to self-signed issuer.
+*/}}
+{{- define "cryostat.certManager.issuerRef" -}}
+{{- if .Values.tls.certManager.issuerRef.name -}}
+name: {{ .Values.tls.certManager.issuerRef.name }}
+kind: {{ .Values.tls.certManager.issuerRef.kind | default "Issuer" }}
+group: {{ .Values.tls.certManager.issuerRef.group | default "cert-manager.io" }}
+{{- else -}}
+name: {{ .Release.Name }}-selfsigned-issuer
+kind: Issuer
+group: cert-manager.io
+{{- end -}}
+{{- end -}}
+
+{{/*
+Determine if TLS should be enabled (cert-manager OR existing methods). Returns boolean.
+*/}}
+{{- define "cryostat.tls.enabled" -}}
+{{- or .Values.tls.certManager.enabled .Values.authentication.openshift.enabled .Values.oauth2Proxy.tls.selfSigned.enabled -}}
+{{- end -}}
+
+{{/*
+Generate JDBC URL for database connection with optional TLS parameters.
+*/}}
+{{- define "cryostat.db.jdbcUrl" -}}
+{{- $fullName := include "cryostat.fullname" . -}}
+{{- $baseUrl := default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) .Values.db.provider.url -}}
+{{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
+{{- if not (contains "?" $baseUrl) -}}
+{{- printf "%s?ssl=true&sslmode=require" $baseUrl -}}
+{{- else -}}
+{{- printf "%s&ssl=true&sslmode=require" $baseUrl -}}
+{{- end -}}
+{{- else -}}
+{{- $baseUrl -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Generate S3 storage endpoint URL with appropriate scheme (http/https).
+*/}}
+{{- define "cryostat.storage.endpointUrl" -}}
+{{- if .Values.storage.provider.url -}}
+{{- .Values.storage.provider.url -}}
+{{- else -}}
+{{- $fullName := include "cryostat.fullname" . -}}
+{{- $scheme := ternary "https" "http" ((include "cryostat.certManager.enabled" .) | eq "true") -}}
+{{- printf "%s://%s-storage:8333" $scheme $fullName -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Get the secret name for TLS certificates based on cert-manager or legacy mode.
+For cryostat main service.
+*/}}
+{{- define "cryostat.tls.cryostat.secretName" -}}
+{{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
+{{- printf "%s-cryostat-tls" .Release.Name -}}
+{{- else if .Values.authentication.openshift.enabled -}}
+{{- printf "%s-proxy-tls" .Release.Name -}}
+{{- else -}}
+{{- printf "%s-oauth2proxy-tls" .Release.Name -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Get the secret name for TLS certificates for reports service.
+*/}}
+{{- define "cryostat.tls.reports.secretName" -}}
+{{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
+{{- printf "%s-reports-tls" .Release.Name -}}
+{{- else if .Values.authentication.openshift.enabled -}}
+{{- printf "%s-proxy-tls" .Release.Name -}}
+{{- else -}}
+{{- printf "%s-oauth2proxy-reports-tls" .Release.Name -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Get the secret name for database TLS certificates.
+*/}}
+{{- define "cryostat.tls.db.secretName" -}}
+{{- printf "%s-db-tls" .Release.Name -}}
+{{- end }}
+
+{{/*
+Get the secret name for storage TLS certificates.
+*/}}
+{{- define "cryostat.tls.storage.secretName" -}}
+{{- printf "%s-storage-tls" .Release.Name -}}
+{{- end -}}
+
+{{/*
+Get the reports upstream URL based on cert-manager TLS configuration.
+*/}}
+{{- define "cryostat.reports.upstreamUrl" -}}
+{{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
+https://localhost:10001/
+{{- else -}}
+http://localhost:10001/
+{{- end -}}
+{{- end -}}

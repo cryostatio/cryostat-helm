@@ -62,6 +62,14 @@ spec:
             value: 0.0.0.0
           - name: REST_ENCRYPTION_ENABLE
             value: "{{ .Values.storage.encryption.enabled | ternary 1 0 }}"
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          - name: S3_TLS_ENABLED
+            value: "true"
+          - name: S3_TLS_CERT_FILE
+            value: "/etc/tls/tls.crt"
+          - name: S3_TLS_KEY_FILE
+            value: "/etc/tls/tls.key"
+          {{- end }}
           {{- with (.Values.storage.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -76,6 +84,11 @@ spec:
           - mountPath: /data
             name: {{ .Chart.Name }}-storage
             subPath: seaweed
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          - mountPath: /etc/tls
+            name: storage-tls
+            readOnly: true
+          {{- end }}
           startupProbe:
             httpGet:
               path: "/status"
@@ -121,5 +134,10 @@ spec:
       {{- if not ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
+      {{- end }}
+      {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: storage-tls
+        secret:
+          secretName: {{ include "cryostat.tls.storage.secretName" . }}
       {{- end }}
 {{- end }}

@@ -463,3 +463,50 @@ tests:
           - configMapRef:
               name: cm-special-config
               optional: false
+
+
+  - it: should not have TLS volumes when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name == "storage-tls")]
+
+  - it: should mount TLS certificate when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: test-release
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: storage-tls
+            secret:
+              secretName: test-release-storage-tls
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: storage-tls
+            mountPath: /etc/tls
+            readOnly: true
+
+  - it: should configure storage TLS when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: S3_TLS_ENABLED
+            value: "true"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: S3_TLS_CERT_FILE
+            value: /etc/tls/tls.crt
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: S3_TLS_KEY_FILE
+            value: /etc/tls/tls.key

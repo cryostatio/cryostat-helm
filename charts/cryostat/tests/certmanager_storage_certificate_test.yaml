@@ -1,0 +1,51 @@
+suite: Test cert-manager storage certificate
+templates:
+  - certmanager_storage_certificate.yaml
+tests:
+  - it: should not create certificate when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create certificate when external storage is used
+    set:
+      tls.certManager.enabled: true
+      storage.provider.url: "https://external-s3.example.com:9000"
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create certificate when cert-manager is enabled and using managed storage
+    set:
+      tls.certManager.enabled: true
+      storage.provider.url: ""
+    release:
+      name: test-release
+      namespace: test-namespace
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Certificate
+      - equal:
+          path: metadata.name
+          value: test-release-storage-tls
+      - equal:
+          path: spec.secretName
+          value: test-release-storage-tls
+
+  - it: should include correct DNS names for storage
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: my-release
+      namespace: my-namespace
+    asserts:
+      - contains:
+          path: spec.dnsNames
+          content: my-release-cryostat-storage.my-namespace.svc
+      - contains:
+          path: spec.dnsNames
+          content: my-release-cryostat-storage.my-namespace.svc.cluster.local

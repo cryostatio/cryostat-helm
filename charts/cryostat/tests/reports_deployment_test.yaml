@@ -529,3 +529,76 @@ tests:
           - secretRef:
               name: sercret-special-config-for-reports
               optional: false
+
+  - it: should configure reports TLS when cert-manager is enabled
+    set:
+      reports.replicas: 1
+      tls.certManager.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
+          content:
+            name: QUARKUS_HTTP_SSL_PORT
+            value: "10001"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
+          content:
+            name: QUARKUS_HTTP_SSL_CERTIFICATE_FILE
+            value: "/etc/reports-tls/tls.crt"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
+          content:
+            name: QUARKUS_HTTP_SSL_CERTIFICATE_KEY_FILE
+            value: "/etc/reports-tls/tls.key"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
+          content:
+            name: QUARKUS_HTTP_INSECURE_REQUESTS
+            value: "disabled"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts
+          content:
+            name: reports-tls
+            mountPath: /etc/reports-tls
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: reports-tls
+            secret:
+              secretName: RELEASE-NAME-reports-tls
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].startupProbe.httpGet.scheme
+          value: HTTPS
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].livenessProbe.httpGet.scheme
+          value: HTTPS
+
+  - it: should configure authproxy upstream URL for HTTPS when cert-manager is enabled
+    set:
+      reports.replicas: 1
+      tls.certManager.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env
+          content:
+            name: OAUTH2_PROXY_UPSTREAMS
+            value: "https://localhost:10001/"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts
+          content:
+            name: reports-tls
+            mountPath: /etc/reports-tls
+            readOnly: true
+
+  - it: should not configure reports TLS when cert-manager is disabled
+    set:
+      reports.replicas: 1
+      tls.certManager.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_SSL_PORT')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts[?(@.name=='reports-tls')]
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='reports-tls')]

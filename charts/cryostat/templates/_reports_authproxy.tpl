@@ -29,7 +29,7 @@
     - --pass-user-bearer-token=false
     - --pass-basic-auth=false
     - --htpasswd-file=/etc/oauth2_proxy/basicauth/htpasswd
-    - --upstream=http://localhost:10001/
+    - --upstream={{ include "cryostat.reports.upstreamUrl" . }}
     - --cookie-secret=$(COOKIE_SECRET)
     - --request-logging=true
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
@@ -56,6 +56,11 @@
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- end }}
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
@@ -78,7 +83,7 @@
   - name: OAUTH2_PROXY_TLS_KEY_FILE
     value: /etc/tls/private/key
   - name: OAUTH2_PROXY_UPSTREAMS
-    value: http://localhost:10001/
+    value: {{ include "cryostat.reports.upstreamUrl" . }}
   - name: OAUTH2_PROXY_REDIRECT_URL
     value: "http://localhost:4180/oauth2/callback"
   - name: OAUTH2_PROXY_COOKIE_SECRET
@@ -127,6 +132,11 @@
     - name: {{ .Release.Name }}-oauth2proxy-reports-tls
       mountPath: /etc/tls/private
     {{- end }}
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- end }}
 {{- else }}
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
@@ -141,7 +151,7 @@
   - name: OAUTH2_PROXY_HTTP_ADDRESS
     value: 0.0.0.0:4180
   - name: OAUTH2_PROXY_UPSTREAMS
-    value: http://localhost:10001/
+    value: {{ include "cryostat.reports.upstreamUrl" . }}
   - name: OAUTH2_PROXY_REDIRECT_URL
     value: "http://localhost:4180/oauth2/callback"
   - name: OAUTH2_PROXY_COOKIE_SECRET
@@ -183,5 +193,10 @@
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- end }}
 {{- end }}
 {{- end}}

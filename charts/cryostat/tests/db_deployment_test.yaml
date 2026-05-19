@@ -417,3 +417,50 @@ tests:
           - configMapRef:
               name: cm-special-config
               optional: false
+
+
+  - it: should not have TLS volumes when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name == "db-tls")]
+
+  - it: should mount TLS certificate when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: test-release
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: db-tls
+            secret:
+              secretName: test-release-db-tls
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: db-tls
+            mountPath: /var/lib/pgsql/tls
+            readOnly: true
+
+  - it: should configure PostgreSQL TLS when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: POSTGRESQL_SSL_MODE
+            value: require
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: POSTGRESQL_SSL_CERT_FILE
+            value: /var/lib/pgsql/tls/tls.crt
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: POSTGRESQL_SSL_KEY_FILE
+            value: /var/lib/pgsql/tls/tls.key

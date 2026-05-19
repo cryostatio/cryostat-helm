@@ -47,6 +47,16 @@ spec:
             value: "{{ .Values.reports.service.httpPort }}"
           - name: QUARKUS_LOG_LEVEL
             value: {{ .Values.reports.debug.log.level }}
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          - name: QUARKUS_HTTP_SSL_PORT
+            value: "{{ .Values.reports.service.httpPort }}"
+          - name: QUARKUS_HTTP_SSL_CERTIFICATE_FILE
+            value: "/etc/reports-tls/tls.crt"
+          - name: QUARKUS_HTTP_SSL_CERTIFICATE_KEY_FILE
+            value: "/etc/reports-tls/tls.key"
+          - name: QUARKUS_HTTP_INSECURE_REQUESTS
+            value: "disabled"
+          {{- end }}
           {{- with (.Values.reports.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -57,16 +67,28 @@ spec:
           ports:
           - containerPort: {{ .Values.reports.service.httpPort }}
             protocol: TCP
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          volumeMounts:
+          - name: reports-tls
+            mountPath: /etc/reports-tls
+            readOnly: true
+          {{- end }}
           startupProbe:
             httpGet:
               path: "/health"
               port: {{ .Values.reports.service.httpPort }}
+              {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+              scheme: HTTPS
+              {{- end }}
             periodSeconds: 10
             failureThreshold: 9
           livenessProbe:
             httpGet:
               path: "/health"
               port: {{ .Values.reports.service.httpPort }}
+              {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+              scheme: HTTPS
+              {{- end }}
             periodSeconds: 10
             failureThreshold: 2
           resources:
@@ -96,5 +118,10 @@ spec:
       - name: {{ .Release.Name }}-oauth2proxy-reports-tls
         secret:
           secretName: {{ .Release.Name }}-oauth2proxy-reports-tls
+      {{- end }}
+      {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: reports-tls
+        secret:
+          secretName: {{ include "cryostat.tls.reports.secretName" . }}
       {{- end }}
 {{- end -}}
