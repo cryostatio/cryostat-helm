@@ -488,7 +488,7 @@ tests:
           path: spec.template.spec.containers[0].volumeMounts
           content:
             name: storage-tls
-            mountPath: /etc/tls
+            mountPath: /etc/tls/s3
             readOnly: true
 
   - it: should configure storage TLS when cert-manager is enabled
@@ -496,17 +496,34 @@ tests:
       tls.certManager.enabled: true
     asserts:
       - contains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: S3_TLS_ENABLED
-            value: "true"
+          path: spec.template.spec.containers[0].args
+          content: "-s3.port=8333"
       - contains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: S3_TLS_CERT_FILE
-            value: /etc/tls/tls.crt
+          path: spec.template.spec.containers[0].args
+          content: "-s3.port.https=0"
       - contains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: S3_TLS_KEY_FILE
-            value: /etc/tls/tls.key
+          path: spec.template.spec.containers[0].args
+          content: "-s3.key.file=/etc/tls/s3/tls.key"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "-s3.cert.file=/etc/tls/s3/tls.crt"
+
+  - it: should configure HTTPS probes when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.scheme
+          value: HTTPS
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.scheme
+          value: HTTPS
+
+  - it: should not set HTTPS scheme on probes when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.scheme
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.scheme

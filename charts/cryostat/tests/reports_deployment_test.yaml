@@ -530,7 +530,7 @@ tests:
               name: sercret-special-config-for-reports
               optional: false
 
-  - it: should configure reports TLS when cert-manager is enabled
+  - it: should configure reports container as HTTP-only when cert-manager is enabled
     set:
       reports.replicas: 1
       tls.certManager.enabled: true
@@ -538,29 +538,17 @@ tests:
       - contains:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
           content:
-            name: QUARKUS_HTTP_SSL_PORT
+            name: QUARKUS_HTTP_HOST
+            value: localhost
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
+          content:
+            name: QUARKUS_HTTP_PORT
             value: "10001"
-      - contains:
-          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
-          content:
-            name: QUARKUS_HTTP_SSL_CERTIFICATE_FILE
-            value: "/etc/reports-tls/tls.crt"
-      - contains:
-          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
-          content:
-            name: QUARKUS_HTTP_SSL_CERTIFICATE_KEY_FILE
-            value: "/etc/reports-tls/tls.key"
-      - contains:
-          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env
-          content:
-            name: QUARKUS_HTTP_INSECURE_REQUESTS
-            value: "disabled"
-      - contains:
-          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts
-          content:
-            name: reports-tls
-            mountPath: /etc/reports-tls
-            readOnly: true
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_SSL_PORT')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].env[?(@.name=='QUARKUS_HTTP_SSL_CERTIFICATE_FILE')]
       - contains:
           path: spec.template.spec.volumes
           content:
@@ -569,12 +557,12 @@ tests:
               secretName: RELEASE-NAME-reports-tls
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].startupProbe.httpGet.scheme
-          value: HTTPS
+          value: HTTP
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports')].livenessProbe.httpGet.scheme
-          value: HTTPS
+          value: HTTP
 
-  - it: should configure authproxy upstream URL for HTTPS when cert-manager is enabled
+  - it: should configure authproxy with TLS when cert-manager is enabled
     set:
       reports.replicas: 1
       tls.certManager.enabled: true
@@ -583,13 +571,34 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env
           content:
             name: OAUTH2_PROXY_UPSTREAMS
-            value: "https://localhost:10001/"
+            value: "http://localhost:10001/"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env
+          content:
+            name: OAUTH2_PROXY_HTTPS_ADDRESS
+            value: ":8443"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env
+          content:
+            name: OAUTH2_PROXY_TLS_CERT_FILE
+            value: "/etc/reports-tls/tls.crt"
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].env
+          content:
+            name: OAUTH2_PROXY_TLS_KEY_FILE
+            value: "/etc/reports-tls/tls.key"
       - contains:
           path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts
           content:
             name: reports-tls
             mountPath: /etc/reports-tls
             readOnly: true
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].ports
+          content:
+            containerPort: 8443
+            name: https
+            protocol: TCP
 
   - it: should not configure reports TLS when cert-manager is disabled
     set:

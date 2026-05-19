@@ -45,6 +45,12 @@ tests:
     asserts:
       - contains:
           path: spec.dnsNames
+          content: my-release-cryostat-db
+      - contains:
+          path: spec.dnsNames
+          content: my-release-cryostat-db.my-namespace
+      - contains:
+          path: spec.dnsNames
           content: my-release-cryostat-db.my-namespace.svc
       - contains:
           path: spec.dnsNames

@@ -17,6 +17,8 @@ spec:
       - {{ $fullName }}
   commonName: {{ $fullName }}-db.{{ .Release.Namespace }}.svc
   dnsNames:
+    - {{ $fullName }}-db
+    - {{ $fullName }}-db.{{ .Release.Namespace }}
     - {{ $fullName }}-db.{{ .Release.Namespace }}.svc
     - {{ $fullName }}-db.{{ .Release.Namespace }}.svc.cluster.local
   usages:

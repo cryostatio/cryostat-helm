@@ -438,6 +438,14 @@ tests:
             name: db-tls
             secret:
               secretName: test-release-db-tls
+              defaultMode: 288
+              items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+              - key: ca.crt
+                path: ca.crt
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:
@@ -449,6 +457,15 @@ tests:
     set:
       tls.certManager.enabled: true
     asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "-c"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "ssl=on"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "ssl_ca_file=/var/lib/pgsql/tls/ca.crt"
       - contains:
           path: spec.template.spec.containers[0].env
           content:

@@ -41,6 +41,17 @@ spec:
             {{- toYaml (.Values.db).securityContext | nindent 12 }}
           image: "{{ (.Values.db).image.repository }}{{ include "cryostat.imageSeparator" (.Values.db).image.tag }}{{ (.Values.db).image.tag }}"
           imagePullPolicy: {{ (.Values.db).image.pullPolicy }}
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          args:
+          - -c
+          - ssl=on
+          - -c
+          - ssl_cert_file=/var/lib/pgsql/tls/tls.crt
+          - -c
+          - ssl_key_file=/var/lib/pgsql/tls/tls.key
+          - -c
+          - ssl_ca_file=/var/lib/pgsql/tls/ca.crt
+          {{- end }}
           env:
           {{- $hasSecret := (include "cryostat.databaseSecretHasUsernameKey" . ) }}
           {{- if ($hasSecret | eq "true") }}
@@ -131,5 +142,13 @@ spec:
       - name: db-tls
         secret:
           secretName: {{ include "cryostat.tls.db.secretName" . }}
+          defaultMode: 0440
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
       {{- end }}
 {{- end }}

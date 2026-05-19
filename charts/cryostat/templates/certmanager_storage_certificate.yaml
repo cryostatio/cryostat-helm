@@ -17,6 +17,8 @@ spec:
       - {{ $fullName }}
   commonName: {{ $fullName }}-storage.{{ .Release.Namespace }}.svc
   dnsNames:
+    - {{ $fullName }}-storage
+    - {{ $fullName }}-storage.{{ .Release.Namespace }}
     - {{ $fullName }}-storage.{{ .Release.Namespace }}.svc
     - {{ $fullName }}-storage.{{ .Release.Namespace }}.svc.cluster.local
   usages:

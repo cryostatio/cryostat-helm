@@ -66,7 +66,7 @@ Create the name of the service account to use.
 Cryostat service TLS enablement. Returns the string values "true" or "false".
 */}}
 {{- define "cryostat.core.service.tls" -}}
-{{ or .Values.authentication.openshift.enabled .Values.oauth2Proxy.tls.selfSigned.enabled }}
+{{ or .Values.authentication.openshift.enabled .Values.oauth2Proxy.tls.selfSigned.enabled ((include "cryostat.certManager.enabled" .) | eq "true") }}
 {{- end }}
 
 {{/*
@@ -289,9 +289,9 @@ Generate JDBC URL for database connection with optional TLS parameters.
 {{- $baseUrl := default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) .Values.db.provider.url -}}
 {{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
 {{- if not (contains "?" $baseUrl) -}}
-{{- printf "%s?ssl=true&sslmode=require" $baseUrl -}}
+{{- printf "%s?ssl=true&sslmode=verify-full&sslcert=&sslrootcert=/etc/database-tls/ca.crt" $baseUrl -}}
 {{- else -}}
-{{- printf "%s&ssl=true&sslmode=require" $baseUrl -}}
+{{- printf "%s&ssl=true&sslmode=verify-full&sslcert=&sslrootcert=/etc/database-tls/ca.crt" $baseUrl -}}
 {{- end -}}
 {{- else -}}
 {{- $baseUrl -}}
@@ -353,12 +353,8 @@ Get the secret name for storage TLS certificates.
 {{- end -}}
 
 {{/*
-Get the reports upstream URL based on cert-manager TLS configuration.
+Get the reports upstream URL. Always HTTP since TLS termination is on the auth proxy.
 */}}
 {{- define "cryostat.reports.upstreamUrl" -}}
-{{- if (include "cryostat.certManager.enabled" .) | eq "true" -}}
-https://localhost:10001/
-{{- else -}}
 http://localhost:10001/
-{{- end -}}
 {{- end -}}
