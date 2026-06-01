@@ -43,10 +43,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.2.0
+            helm.sh/chart: cryostat-2.2.1-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.2.0"
+            app.kubernetes.io/version: "4.2.1-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: cryostat
             app.kubernetes.io/part-of: cryostat
@@ -57,10 +57,10 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')]
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].image
-          value: "quay.io/cryostat/cryostat:4.2.0"
+          value: "quay.io/cryostat/cryostat:4.2.1-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          value: "quay.io/oauth2-proxy/oauth2-proxy:v7.15.2"
+          value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PORT')].value
           value: "8181"
@@ -509,10 +509,10 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].image
-          value: "quay.io/cryostat/cryostat-grafana-dashboard:4.2.0"
+          value: "quay.io/cryostat/cryostat-grafana-dashboard:4.2"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
-          value: "IfNotPresent"
+          value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_AUTH_ANONYMOUS_ENABLED')].value
           value: "true"
@@ -560,10 +560,10 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].image
-          value: "quay.io/cryostat/jfr-datasource:4.2.0"
+          value: "quay.io/cryostat/jfr-datasource:4.2.1-snapshot"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
-          value: "IfNotPresent"
+          value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].env[?(@.name=='LISTEN_HOST')].value
           value: "localhost"
@@ -630,7 +630,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-          value: "quay.io/openshift/origin-oauth-proxy:4.21"
+          value: "quay.io/openshift/origin-oauth-proxy:latest"
 
   - it: should configure the OAuth2 Proxy when OpenShift OAuth is disabled and OAuth2 is enabled
     set:
@@ -641,7 +641,7 @@ tests:
         path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')]
     - equal:
         path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].image
-        value: "quay.io/oauth2-proxy/oauth2-proxy:v7.15.2"
+        value: "quay.io/oauth2-proxy/oauth2-proxy:latest"
 
   - it: should apply Kubernetes specific settings when configured
     set:
@@ -791,20 +791,20 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].imagePullPolicy
-          value: IfNotPresent
+          value: Always
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].imagePullPolicy
-          value: IfNotPresent
+          value: Always
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
-          value: "IfNotPresent"
+          value: "Always"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].imagePullPolicy
-          value: "IfNotPresent"
+          value: "Always"
 
   - it: should verify image pull policies for release versions
     set:
-      core.image.tag: "4.2.0"
+      core.image.tag: "4.2.1-snapshot"
       core.image.pullPolicy: "IfNotPresent"
       oauth2Proxy.image.pullPolicy: "IfNotPresent"
       grafana.image.pullPolicy: "IfNotPresent"
