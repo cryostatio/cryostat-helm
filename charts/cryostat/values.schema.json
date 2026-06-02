@@ -526,7 +526,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "cryostat-4.2"
+                            "default": "cryostat-v4.2"
                         }
                     }
                 },
