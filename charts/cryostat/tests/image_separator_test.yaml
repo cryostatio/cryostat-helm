@@ -1,0 +1,96 @@
+suite: test image separator helper
+templates:
+  - cryostat_deployment.yaml
+  - db_deployment.yaml
+  - storage_deployment.yaml
+
+tests:
+  - it: should use colon separator for tag-based image references (default)
+    template: cryostat_deployment.yaml
+    set:
+      core.image.repository: quay.io/cryostat/cryostat
+      core.image.tag: "4.2.0-snapshot"
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat")].image
+          pattern: ^quay\.io/cryostat/cryostat:4\.2\.0-snapshot$
+
+  - it: should auto-detect sha256 hash
+    template: cryostat_deployment.yaml
+    set:
+      core.image.repository: quay.io/cryostat/cryostat
+      core.image.tag: sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat")].image
+          pattern: ^quay\.io/cryostat/cryostat@sha256:[a-f0-9]{64}$
+
+  - it: should auto-detect sha384 hash
+    template: cryostat_deployment.yaml
+    set:
+      core.image.repository: quay.io/cryostat/cryostat
+      core.image.tag: sha384:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat")].image
+          pattern: ^quay\.io/cryostat/cryostat@sha384:[a-f0-9]{96}$
+
+  - it: should auto-detect sha512 hash
+    template: cryostat_deployment.yaml
+    set:
+      core.image.repository: quay.io/cryostat/cryostat
+      core.image.tag: sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat")].image
+          pattern: ^quay\.io/cryostat/cryostat@sha512:[a-f0-9]{128}$
+
+  - it: should auto-detect hash for grafana container
+    template: cryostat_deployment.yaml
+    set:
+      grafana.image.repository: quay.io/cryostat/cryostat-grafana-dashboard
+      grafana.image.tag: sha256:fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat-grafana")].image
+          pattern: ^quay\.io/cryostat/cryostat-grafana-dashboard@sha256:[a-f0-9]{64}$
+
+  - it: should auto-detect hash for datasource container
+    template: cryostat_deployment.yaml
+    set:
+      datasource.image.repository: quay.io/cryostat/jfr-datasource
+      datasource.image.tag: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name=="cryostat-jfr-datasource")].image
+          pattern: ^quay\.io/cryostat/jfr-datasource@sha256:[a-f0-9]{64}$
+
+  - it: should auto-detect hash for database deployment
+    template: db_deployment.yaml
+    set:
+      db.image.repository: quay.io/cryostat/cryostat-db
+      db.image.tag: sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: ^quay\.io/cryostat/cryostat-db@sha256:[a-f0-9]{64}$
+
+  - it: should auto-detect hash for storage deployment
+    template: storage_deployment.yaml
+    set:
+      storage.image.repository: quay.io/cryostat/cryostat-storage
+      storage.image.tag: sha256:9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: ^quay\.io/cryostat/cryostat-storage@sha256:[a-f0-9]{64}$
+
+  - it: should use colon for regular tags
+    template: db_deployment.yaml
+    set:
+      db.image.repository: quay.io/cryostat/cryostat-db
+      db.image.tag: "cryostat-v4.2"
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: ^quay\.io/cryostat/cryostat-db:cryostat-v4\.2$

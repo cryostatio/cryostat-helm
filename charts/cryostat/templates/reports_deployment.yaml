@@ -40,7 +40,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "reports" }}
           securityContext:
             {{- toYaml (.Values.reports).securityContext | nindent 12 }}
-          image: "{{ (.Values.reports).image.repository }}:{{ (.Values.reports).image.tag }}"
+          image: "{{ (.Values.reports).image.repository }}{{ include "cryostat.imageSeparator" (.Values.reports).image.tag }}{{ (.Values.reports).image.tag }}"
           imagePullPolicy: {{ (.Values.reports).image.pullPolicy }}
           env:
           - name: QUARKUS_HTTP_PORT
