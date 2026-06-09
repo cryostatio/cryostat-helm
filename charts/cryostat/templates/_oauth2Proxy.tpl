@@ -5,7 +5,7 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml (.Values.oauth2Proxy).securityContext | nindent 4 }}
-  image: "{{ (.Values.oauth2Proxy).image.repository }}:{{ (.Values.oauth2Proxy).image.tag }}"
+  image: "{{ (.Values.oauth2Proxy).image.repository }}{{ include "cryostat.imageSeparator" (.Values.oauth2Proxy).image.tag }}{{ (.Values.oauth2Proxy).image.tag }}"
   args:
     - "--alpha-config=/etc/oauth2_proxy/alpha_config/alpha_config.yaml"
   imagePullPolicy: {{ (.Values.oauth2Proxy).image.pullPolicy }}
