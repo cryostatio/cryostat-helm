@@ -5,7 +5,7 @@ Create OpenShift OAuth Proxy container.
 - name: {{ printf "%s-%s" .Chart.Name "authproxy" }}
   securityContext:
     {{- toYaml .Values.openshiftOauthProxy.securityContext | nindent 4 }}
-  image: "{{ .Values.openshiftOauthProxy.image.repository }}:{{ .Values.openshiftOauthProxy.image.tag }}"
+  image: "{{ .Values.openshiftOauthProxy.image.repository }}{{ include "cryostat.imageSeparator" .Values.openshiftOauthProxy.image.tag }}{{ .Values.openshiftOauthProxy.image.tag }}"
   env:
   - name: COOKIE_SECRET
     valueFrom:

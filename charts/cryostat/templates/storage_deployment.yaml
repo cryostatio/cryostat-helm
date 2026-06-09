@@ -39,7 +39,7 @@ spec:
         - name: {{ printf "%s-%s" .Chart.Name "storage" }}
           securityContext:
             {{- toYaml (.Values.storage).securityContext | nindent 12 }}
-          image: "{{ (.Values.storage).image.repository }}:{{ (.Values.storage).image.tag }}"
+          image: "{{ (.Values.storage).image.repository }}{{ include "cryostat.imageSeparator" (.Values.storage).image.tag }}{{ (.Values.storage).image.tag }}"
           imagePullPolicy: {{ (.Values.storage).image.pullPolicy }}
           env:
           - name: CRYOSTAT_BUCKETS
