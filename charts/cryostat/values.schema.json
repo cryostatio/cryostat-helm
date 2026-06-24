@@ -1567,6 +1567,51 @@
             "description": "default Tolerations for the various Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)",
             "default": [],
             "items": {}
+        },
+        "tls": {
+            "type": "object",
+            "properties": {
+                "certManager": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable cert-manager integration for automatic TLS certificate management. When enabled, cert-manager will issue and manage certificates for all Cryostat components. Requires cert-manager to be installed in the cluster",
+                            "default": false
+                        },
+                        "issuerRef": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the cert-manager Issuer or ClusterIssuer to use for certificate issuance. If not specified and cert-manager integration is enabled, a self-signed Issuer will be created automatically",
+                                    "default": ""
+                                },
+                                "kind": {
+                                    "type": "string",
+                                    "description": "Kind of the cert-manager issuer. Either 'Issuer' or 'ClusterIssuer'",
+                                    "default": "Issuer"
+                                },
+                                "group": {
+                                    "type": "string",
+                                    "description": "API group of the cert-manager issuer",
+                                    "default": "cert-manager.io"
+                                }
+                            }
+                        },
+                        "duration": {
+                            "type": "string",
+                            "description": "Duration for issued certificates. Default is 90 days (2160h)",
+                            "default": "2160h"
+                        },
+                        "renewBefore": {
+                            "type": "string",
+                            "description": "Time before certificate expiry to trigger renewal. Default is 30 days (720h)",
+                            "default": "720h"
+                        }
+                    }
+                }
+            }
         }
     }
 }

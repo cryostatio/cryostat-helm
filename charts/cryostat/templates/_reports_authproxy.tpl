@@ -29,15 +29,20 @@
     - --pass-user-bearer-token=false
     - --pass-basic-auth=false
     - --htpasswd-file=/etc/oauth2_proxy/basicauth/htpasswd
-    - --upstream=http://localhost:10001/
+    - --upstream={{ include "cryostat.reports.upstreamUrl" . }}
     - --cookie-secret=$(COOKIE_SECRET)
     - --request-logging=true
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}
     - --proxy-websockets=true
     - --http-address=0.0.0.0:4180
     - --https-address=:8443
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - --tls-cert=/etc/reports-tls/tls.crt
+    - --tls-key=/etc/reports-tls/tls.key
+    {{- else }}
     - --tls-cert=/etc/tls/private/tls.crt
     - --tls-key=/etc/tls/private/tls.key
+    {{- end }}
     - --proxy-prefix=/oauth2
     - --bypass-auth-for=^/health$
   imagePullPolicy: {{ .Values.openshiftOauthProxy.image.pullPolicy }}
@@ -51,8 +56,14 @@
   resources:
     {{- toYaml .Values.openshiftOauthProxy.resources | nindent 4 }}
   volumeMounts:
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- else }}
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
+    {{- end }}
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
@@ -74,11 +85,19 @@
   - name: OAUTH2_PROXY_HTTPS_ADDRESS
     value: :8443
   - name: OAUTH2_PROXY_TLS_CERT_FILE
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    value: /etc/reports-tls/tls.crt
+    {{- else }}
     value: /etc/tls/private/cert
+    {{- end }}
   - name: OAUTH2_PROXY_TLS_KEY_FILE
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    value: /etc/reports-tls/tls.key
+    {{- else }}
     value: /etc/tls/private/key
+    {{- end }}
   - name: OAUTH2_PROXY_UPSTREAMS
-    value: http://localhost:10001/
+    value: {{ include "cryostat.reports.upstreamUrl" . }}
   - name: OAUTH2_PROXY_REDIRECT_URL
     value: "http://localhost:4180/oauth2/callback"
   - name: OAUTH2_PROXY_COOKIE_SECRET
@@ -93,6 +112,8 @@
     value: write
   - name: OAUTH2_PROXY_HTPASSWD_FILE
     value: /etc/oauth2_proxy/basicauth/htpasswd
+  - name: OAUTH2_PROXY_HTPASSWD_FILE_WATCH
+    value: "false"
   - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
     value: "^/health$"
   - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
@@ -123,7 +144,11 @@
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
-    {{- if .Values.oauth2Proxy.tls.selfSigned.enabled }}
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
     - name: {{ .Release.Name }}-oauth2proxy-reports-tls
       mountPath: /etc/tls/private
     {{- end }}
@@ -140,8 +165,16 @@
     value: none
   - name: OAUTH2_PROXY_HTTP_ADDRESS
     value: 0.0.0.0:4180
+  {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+  - name: OAUTH2_PROXY_HTTPS_ADDRESS
+    value: :8443
+  - name: OAUTH2_PROXY_TLS_CERT_FILE
+    value: /etc/reports-tls/tls.crt
+  - name: OAUTH2_PROXY_TLS_KEY_FILE
+    value: /etc/reports-tls/tls.key
+  {{- end }}
   - name: OAUTH2_PROXY_UPSTREAMS
-    value: http://localhost:10001/
+    value: {{ include "cryostat.reports.upstreamUrl" . }}
   - name: OAUTH2_PROXY_REDIRECT_URL
     value: "http://localhost:4180/oauth2/callback"
   - name: OAUTH2_PROXY_COOKIE_SECRET
@@ -156,6 +189,8 @@
     value: write
   - name: OAUTH2_PROXY_HTPASSWD_FILE
     value: /etc/oauth2_proxy/basicauth/htpasswd
+  - name: OAUTH2_PROXY_HTPASSWD_FILE_WATCH
+    value: "false"
   - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
     value: "^/health$"
   - name: OAUTH2_PROXY_PROXY_WEBSOCKETS
@@ -177,11 +212,21 @@
     - containerPort: 4180
       name: http
       protocol: TCP
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    {{- end }}
   resources:
     {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
   volumeMounts:
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: reports-tls
+      mountPath: /etc/reports-tls
+      readOnly: true
+    {{- end }}
 {{- end }}
 {{- end}}
