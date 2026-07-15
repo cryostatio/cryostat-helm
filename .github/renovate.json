@@ -21,5 +21,12 @@
   "major": {
     "dependencyDashboardApproval": true
   },
-  "stopUpdatingLabel": "blocked"
+  "stopUpdatingLabel": "blocked",
+  "packageRules": [
+    {
+      "description": "Disable digest pinning for all images in values.yaml, which use floating mutable development snapshot tags",
+      "matchFileNames": ["charts/cryostat/values.yaml"],
+      "pinDigests": false
+    }
+  ]
 }
