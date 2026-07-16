@@ -108,7 +108,7 @@ tests:
           value: "seaweed"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.path
-          value: "/status"
+          value: "/healthz"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].livenessProbe.httpGet.port
           value: 8333
@@ -120,7 +120,7 @@ tests:
           value: 2
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.path
-          value: "/status"
+          value: "/healthz"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.httpGet.port
           value: 8333
@@ -130,6 +130,18 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].startupProbe.failureThreshold
           value: 9
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].readinessProbe.httpGet.path
+          value: "/readyz"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].readinessProbe.httpGet.port
+          value: 8333
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].readinessProbe.periodSeconds
+          value: 10
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].readinessProbe.failureThreshold
+          value: 2
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-storage')].resources
           value:
