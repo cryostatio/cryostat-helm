@@ -41,6 +41,13 @@ spec:
             {{- toYaml (.Values.storage).securityContext | nindent 12 }}
           image: "{{ (.Values.storage).image.repository }}{{ include "cryostat.imageSeparator" (.Values.storage).image.tag }}{{ (.Values.storage).image.tag }}"
           imagePullPolicy: {{ (.Values.storage).image.pullPolicy }}
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          args:
+            - "-s3.port={{ .Values.storage.service.port }}"
+            - "-s3.port.https=0"
+            - "-s3.key.file=/etc/tls/s3/tls.key"
+            - "-s3.cert.file=/etc/tls/s3/tls.crt"
+          {{- end }}
           env:
           - name: CRYOSTAT_BUCKETS
             value: {{ join "," (.Values.storage.buckets.names | values | uniq | sortAlpha) }}
@@ -76,16 +83,27 @@ spec:
           - mountPath: /data
             name: {{ .Chart.Name }}-storage
             subPath: seaweed
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          - mountPath: /etc/tls/s3
+            name: storage-tls
+            readOnly: true
+          {{- end }}
           startupProbe:
             httpGet:
               path: "/status"
               port: 8333
+              {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+              scheme: HTTPS
+              {{- end }}
             periodSeconds: 10
             failureThreshold: 9
           livenessProbe:
             httpGet:
               path: "/status"
               port: 8333
+              {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+              scheme: HTTPS
+              {{- end }}
             periodSeconds: 10
             failureThreshold: 2
           readinessProbe:
@@ -121,5 +139,10 @@ spec:
       {{- if not ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
+      {{- end }}
+      {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: storage-tls
+        secret:
+          secretName: {{ include "cryostat.tls.storage.secretName" . }}
       {{- end }}
 {{- end }}

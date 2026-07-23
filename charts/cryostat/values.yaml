@@ -616,3 +616,21 @@ tolerations: []
 
 ## @param affinity [object] default Affinity for the various Pods. See: [Affinity](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
 affinity: {}
+
+## @section TLS Configuration
+
+tls:
+  certManager:
+    ## @param tls.certManager.enabled Enable cert-manager integration for automatic TLS certificate management. When enabled, cert-manager will issue and manage certificates for all Cryostat components. Requires cert-manager to be installed in the cluster
+    enabled: false
+    issuerRef:
+      ## @param tls.certManager.issuerRef.name Name of the cert-manager Issuer or ClusterIssuer to use for certificate issuance. If not specified and cert-manager integration is enabled, a self-signed Issuer will be created automatically
+      name: ""
+      ## @param tls.certManager.issuerRef.kind Kind of the cert-manager issuer. Either 'Issuer' or 'ClusterIssuer'
+      kind: "Issuer"
+      ## @param tls.certManager.issuerRef.group API group of the cert-manager issuer
+      group: "cert-manager.io"
+    ## @param tls.certManager.duration Duration for issued certificates. Default is 90 days (2160h)
+    duration: "2160h"
+    ## @param tls.certManager.renewBefore Time before certificate expiry to trigger renewal. Default is 30 days (720h)
+    renewBefore: "720h"
