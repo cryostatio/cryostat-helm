@@ -784,10 +784,10 @@
                                     "description": "the name of the storage bucket containing archived Heap Dumps",
                                     "default": "heapdumps"
                                 },
-                                "gcLogs": {
+                                "logs": {
                                     "type": "string",
-                                    "description": "the name of the storage bucket containing archived GC Logs",
-                                    "default": "gclogs"
+                                    "description": "the name of the storage bucket containing archived Unified Logs",
+                                    "default": "logs"
                                 },
                                 "metadata": {
                                     "type": "string",

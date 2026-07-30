@@ -317,8 +317,8 @@ storage:
       threadDumps: threaddumps
       ## @param storage.buckets.names.heapDumps the name of the storage bucket containing archived Heap Dumps
       heapDumps: heapdumps
-      ## @param storage.buckets.names.gcLogs the name of the storage bucket containing archived GC Logs
-      gcLogs: gclogs
+      ## @param storage.buckets.names.logs the name of the storage bucket containing archived Unified Logs
+      logs: logs
       ## @param storage.buckets.names.metadata the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.
       metadata: metadata
   encryption:
