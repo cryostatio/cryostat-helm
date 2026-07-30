@@ -784,6 +784,11 @@
                                     "description": "the name of the storage bucket containing archived Heap Dumps",
                                     "default": "heapdumps"
                                 },
+                                "logs": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Unified Logs",
+                                    "default": "logs"
+                                },
                                 "metadata": {
                                     "type": "string",
                                     "description": "the name of the storage bucket containing files' metadata. Only used if storage.provider.metadata.storageMode is set to 'bucket'.",
