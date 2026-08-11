@@ -186,6 +186,13 @@ spec:
           - name: CRYOSTAT_AUDIT_ENABLED
             value: {{ $auditEnabled | quote }}
           {{- end }}
+          {{- if and ((.Values.authentication.openshift).enabled) (not .Values.authentication.basicAuth.enabled) }}
+          - name: CRYOSTAT_SECURITY_RBAC_MODE
+            value: "OPENSHIFT"
+          {{- else if .Values.authentication.basicAuth.enabled }}
+          - name: CRYOSTAT_SECURITY_RBAC_MODE
+            value: "BASIC"
+          {{- end }}
           {{- with (.Values.core.config.extra).envSources }}
           envFrom:
             {{- toYaml . | nindent 10 }}

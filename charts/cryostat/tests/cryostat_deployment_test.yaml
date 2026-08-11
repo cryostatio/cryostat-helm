@@ -1494,3 +1494,54 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_DISCOVERY_KUBERNETES_PORT_NUMBERS')].value
           value: "9091"
+
+  - it: should inject CRYOSTAT_SECURITY_RBAC_MODE=OPENSHIFT when OpenShift auth is enabled without basicAuth
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_MODE')].value
+          value: "OPENSHIFT"
+
+  - it: should inject CRYOSTAT_SECURITY_RBAC_MODE=BASIC when basicAuth is enabled on non-OpenShift
+    set:
+      authentication.basicAuth.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_MODE')].value
+          value: "BASIC"
+
+  - it: should inject CRYOSTAT_SECURITY_RBAC_MODE=BASIC not OPENSHIFT when both OpenShift and basicAuth are enabled
+    set:
+      authentication.openshift.enabled: true
+      authentication.basicAuth.enabled: true
+      authentication.basicAuth.secretName: some-secret
+      authentication.basicAuth.filename: htpasswd
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_MODE')].value
+          value: "BASIC"
+
+  - it: should not inject CRYOSTAT_SECURITY_RBAC_MODE when neither auth mode is enabled
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_MODE')]
+
+  - it: should pass access token when OpenShift auth proxy is enabled without basicAuth
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].args
+          content: "--pass-access-token=true"
+
+  - it: should not pass access token when OpenShift auth proxy is enabled with basicAuth
+    set:
+      authentication.openshift.enabled: true
+      authentication.basicAuth.enabled: true
+      authentication.basicAuth.secretName: some-secret
+      authentication.basicAuth.filename: htpasswd
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].args
+          content: "--pass-access-token=false"
