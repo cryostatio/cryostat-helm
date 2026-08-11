@@ -536,14 +536,14 @@ openshiftOauthProxy:
     group: ""
     ## @param openshiftOauthProxy.accessReview.resource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for
     resource: "pods"
-    ## @param openshiftOauthProxy.accessReview.subresource The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for
-    subresource: "exec"
+    ## @param openshiftOauthProxy.accessReview.subresource The OpenShift subresource that the SubjectAccessReview/TokenAccessReview will be performed for. Empty string means no subresource is checked
+    subresource: ""
     ## @param openshiftOauthProxy.accessReview.name The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for
     name: ""
     ## @param openshiftOauthProxy.accessReview.namespace The OpenShift namespace that the SubjectAccessReview/TokenAccessReview will be performed for
     namespace: "{{ .Release.Namespace }}"
-    ## @param openshiftOauthProxy.accessReview.verb The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for
-    verb: "create"
+    ## @param openshiftOauthProxy.accessReview.verb The verb that the SubjectAccessReview/TokenAccessReview will be performed for
+    verb: "get"
     ## @param openshiftOauthProxy.accessReview.version The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for
     version: ""
   ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)

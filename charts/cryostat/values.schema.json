@@ -1403,8 +1403,8 @@
                         },
                         "subresource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for",
-                            "default": "exec"
+                            "description": "The OpenShift subresource that the SubjectAccessReview/TokenAccessReview will be performed for. Empty string means no subresource is checked",
+                            "default": ""
                         },
                         "name": {
                             "type": "string",
@@ -1418,8 +1418,8 @@
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for",
-                            "default": "create"
+                            "description": "The verb that the SubjectAccessReview/TokenAccessReview will be performed for",
+                            "default": "get"
                         },
                         "version": {
                             "type": "string",
