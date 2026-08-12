@@ -458,6 +458,9 @@ authentication:
     clusterRole:
       ## @param authentication.openshift.clusterRole.name The name of the ClusterRole to bind for the OpenShift OAuth Proxy
       name: system:auth-delegator
+    rbac:
+      ## @param authentication.openshift.rbac.namespaceScoped When true (default), Cryostat performs RBAC access reviews scoped to the installation namespace, so users only need a namespace-bound Role and RoleBinding. When false, access reviews are cluster-scoped and users must have a ClusterRole and ClusterRoleBinding.
+      namespaceScoped: true
   basicAuth:
     ## @param authentication.basicAuth.enabled Whether Cryostat should use basic authentication for users. When false, Cryostat will not perform any form of authentication
     enabled: false

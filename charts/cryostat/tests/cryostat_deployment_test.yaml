@@ -1527,6 +1527,36 @@ tests:
       - notExists:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_MODE')]
 
+  - it: should inject CRYOSTAT_SECURITY_RBAC_NAMESPACE from pod metadata when OpenShift auth is enabled and namespaceScoped is true (default)
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_NAMESPACE')].valueFrom.fieldRef.fieldPath
+          value: metadata.namespace
+
+  - it: should inject CRYOSTAT_SECURITY_RBAC_NAMESPACE from pod metadata when OpenShift auth is enabled and namespaceScoped is explicitly true
+    set:
+      authentication.openshift.enabled: true
+      authentication.openshift.rbac.namespaceScoped: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_NAMESPACE')].valueFrom.fieldRef.fieldPath
+          value: metadata.namespace
+
+  - it: should not inject CRYOSTAT_SECURITY_RBAC_NAMESPACE when OpenShift auth is enabled and namespaceScoped is false
+    set:
+      authentication.openshift.enabled: true
+      authentication.openshift.rbac.namespaceScoped: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_NAMESPACE')]
+
+  - it: should not inject CRYOSTAT_SECURITY_RBAC_NAMESPACE when OpenShift auth is not enabled
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_RBAC_NAMESPACE')]
+
   - it: should pass access token when OpenShift auth proxy is enabled without basicAuth
     set:
       authentication.openshift.enabled: true
