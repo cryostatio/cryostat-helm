@@ -50,6 +50,11 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     - containerPort: 4180
       name: http
       protocol: TCP
+    {{- if or .Values.oauth2Proxy.tls.selfSigned.enabled ((include "cryostat.certManager.enabled" .) | eq "true") }}
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    {{- end }}
   resources:
     {{- toYaml .Values.oauth2Proxy.resources | nindent 4 }}
   volumeMounts:
@@ -60,7 +65,11 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
     {{- end }}
-    {{- if .Values.oauth2Proxy.tls.selfSigned.enabled }}
+    {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+    - name: cryostat-tls
+      mountPath: /etc/cryostat-tls
+      readOnly: true
+    {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
     - name: {{ .Release.Name }}-oauth2proxy-tls
       mountPath: /etc/tls/private
     {{- end }}

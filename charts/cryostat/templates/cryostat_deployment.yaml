@@ -99,7 +99,7 @@ spec:
                 key: CONNECTION_KEY
                 optional: false
           - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: {{ default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) (.Values.db.provider).url }} 
+            value: {{ include "cryostat.db.jdbcUrl" . }}
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
             value: {{ .Values.storage.buckets.names.archivedRecordings }}
           - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME
@@ -116,12 +116,21 @@ spec:
             value: {{ .Values.storage.buckets.names.archivedReports }}
           - name: STORAGE_METADATA_STORAGE_MODE
             value: {{ .Values.storage.provider.metadata.storageMode }}
-          {{- if (.Values.storage.provider.tls).trustAll }}
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          {{- if (empty (.Values.storage.provider).url) }}
+          - name: CRYOSTAT_STORAGE_TLS_CA_PATH
+            value: /truststore/storage/ca.crt
+          - name: QUARKUS_S3_SYNC_CLIENT_TLS_KEY_MANAGERS_PROVIDER_TYPE
+            value: none
+          - name: QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE
+            value: system-property
+          {{- end }}
+          {{- else if (.Values.storage.provider.tls).trustAll }}
           - name: QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE
             value: trust-all
           {{- end }}
           - name: QUARKUS_S3_ENDPOINT_OVERRIDE
-            value: {{ default (printf "http://%s-storage:8333" $fullName) .Values.storage.provider.url }}
+            value: {{ include "cryostat.storage.endpointUrl" . }}
           - name: QUARKUS_S3_PATH_STYLE_ACCESS
             value: "{{ .Values.storage.provider.usePathStyleAccess }}"
           - name: STORAGE_PRESIGNED_TRANSFERS_ENABLED
@@ -209,6 +218,16 @@ spec:
           resources:
             {{- toYaml .Values.core.resources | nindent 12 }}
           volumeMounts:
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          - name: database-tls
+            mountPath: /etc/database-tls
+            readOnly: true
+          {{- if (empty (.Values.storage.provider).url) }}
+          - name: storage-tls
+            mountPath: /truststore/storage
+            readOnly: true
+          {{- end }}
+          {{- end }}
           {{- range .Values.core.config.eventTemplates.configMapNames }}
             - name: {{ . }}
               mountPath: /opt/cryostat.d/templates.d/{{ . }}
@@ -276,6 +295,14 @@ spec:
             value: localhost
           - name: QUARKUS_HTTP_PORT
             value: "8800"
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          {{- if (empty (.Values.storage.provider).url) }}
+          - name: CRYOSTAT_STORAGE_TLS_CA_PATH
+            value: /truststore/storage/ca.crt
+          - name: CRYOSTAT_STORAGE_TLS_CERT_PATH
+            value: /truststore/storage/tls.crt
+          {{- end }}
+          {{- end }}
           {{- with (.Values.datasource.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -294,6 +321,14 @@ spec:
               - http://localhost:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
+          {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+          {{- if (empty (.Values.storage.provider).url) }}
+          volumeMounts:
+          - name: storage-tls
+            mountPath: /truststore/storage
+            readOnly: true
+          {{- end }}
+          {{- end }}
       {{- with (default .Values.nodeSelector .Values.core.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -322,6 +357,10 @@ spec:
       - name: {{ .Release.Name }}-proxy-tls
         secret:
           secretName: {{ .Release.Name }}-proxy-tls
+      {{- else if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: cryostat-tls
+        secret:
+          secretName: {{ include "cryostat.tls.cryostat.secretName" . }}
       {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
       - name: {{ .Release.Name }}-oauth2proxy-tls
         secret:
@@ -364,4 +403,24 @@ spec:
                 name: {{ . }}
                 optional: false
             {{- end }}
+      {{- end }}
+      {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: database-tls
+        secret:
+          secretName: {{ include "cryostat.tls.db.secretName" . }}
+          defaultMode: 0440
+          items:
+          - key: ca.crt
+            path: ca.crt
+      {{- if (empty (.Values.storage.provider).url) }}
+      - name: storage-tls
+        secret:
+          secretName: {{ include "cryostat.tls.storage.secretName" . }}
+          defaultMode: 0440
+          items:
+          - key: ca.crt
+            path: ca.crt
+          - key: tls.crt
+            path: tls.crt
+      {{- end }}
       {{- end }}

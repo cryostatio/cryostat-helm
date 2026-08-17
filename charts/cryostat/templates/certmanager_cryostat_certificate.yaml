@@ -1,0 +1,28 @@
+{{- if (include "cryostat.certManager.enabled" . | eq "true") }}
+{{- $fullName := include "cryostat.fullname" . }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-cryostat-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cryostat
+spec:
+  secretName: {{ include "cryostat.tls.cryostat.secretName" . }}
+  duration: {{ .Values.tls.certManager.duration }}
+  renewBefore: {{ .Values.tls.certManager.renewBefore }}
+  subject:
+    organizations:
+      - {{ $fullName }}
+  commonName: {{ $fullName }}.{{ .Release.Namespace }}.svc
+  dnsNames:
+    - {{ $fullName }}.{{ .Release.Namespace }}.svc
+    - {{ $fullName }}.{{ .Release.Namespace }}.svc.cluster.local
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    {{- include "cryostat.certManager.issuerRef" . | nindent 4 }}
+{{- end }}

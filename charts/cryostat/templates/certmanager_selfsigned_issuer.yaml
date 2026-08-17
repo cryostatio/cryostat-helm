@@ -1,0 +1,10 @@
+{{- if and (include "cryostat.certManager.enabled" . | eq "true") (not .Values.tls.certManager.issuerRef.name) }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Release.Name }}-selfsigned-issuer
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
