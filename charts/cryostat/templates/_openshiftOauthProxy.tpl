@@ -28,7 +28,7 @@ Create OpenShift OAuth Proxy container.
   {{- end }}
   args:
     - --skip-provider-button={{ not .Values.authentication.basicAuth.enabled }}
-    - --pass-access-token=false
+    - --pass-access-token={{ not .Values.authentication.basicAuth.enabled }}
     - --pass-user-bearer-token=false
     - --pass-basic-auth=false
     - --upstream=http://localhost:8181/
