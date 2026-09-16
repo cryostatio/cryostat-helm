@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-auth-strip-proxy
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+data:
+  nginx.conf: |-
+    {{- include "cryostat.authStripProxy.config" . | nindent 4 }}

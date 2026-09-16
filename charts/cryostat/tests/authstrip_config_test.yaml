@@ -1,0 +1,95 @@
+suite: test authstrip_config.yaml
+templates:
+  - authstrip_config.yaml
+
+tests:
+  - it: should create the auth strip proxy configmap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: kind
+          value: ConfigMap
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-auth-strip-proxy
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: cryostat
+            app.kubernetes.io/part-of: cryostat
+            app.kubernetes.io/version: 4.3.0-dev
+            helm.sh/chart: cryostat-2.3.0-dev
+
+  - it: should listen on 8180 and forward to Cryostat on 8181
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'listen 8180;'
+      # The authenticating proxy dials http://localhost:8180, which may resolve to ::1 first.
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'listen \[::\]:8180;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_pass http://127\.0\.0\.1:8181\$request_uri;'
+
+  # The shared secret proves to Cryostat that a request came through the authenticating proxy
+  # rather than being sent straight to 8181 from elsewhere in the Pod.
+  - it: should include the shared secret directive from the mounted secret
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'include /var/run/secrets/cryostat\.io/user-proxy/user-auth\.conf;'
+
+  # This chart deploys no agent gateway, so no request arriving here is ever an agent request.
+  # A client that sent either header itself must not be able to claim otherwise.
+  - it: should clear the agent provenance headers
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Cryostat-Agent-Auth "";'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Cryostat-Agent-Proxy "";'
+
+  # proxy_set_header replaces rather than appends, so re-sourcing each header from this hop's
+  # own view of the request is what stops a client asserting its own identity.
+  - it: should re-source every forwarded identity header
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Forwarded-User \$http_x_forwarded_user;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Forwarded-Access-Token \$http_x_forwarded_access_token;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Forwarded-Email \$http_x_forwarded_email;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Forwarded-Preferred-Username \$http_x_forwarded_preferred_username;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_set_header X-Forwarded-Groups \$http_x_forwarded_groups;'
+
+  # Cryostat accepts recording uploads of arbitrary size; nginx's 1m default would reject them
+  # before Cryostat ever saw the request.
+  - it: should not impose a request body size limit
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'client_max_body_size 0;'
+
+  # Only the other containers in this Pod may reach the proxy. The kubelet probes /healthz from
+  # the node address, so that location has to sit outside the allow/deny block.
+  - it: should accept proxied traffic only from within the pod
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'allow 127\.0\.0\.1;\s*allow ::1;\s*deny all;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'location = /healthz \{\s*return 200;\s*\}'

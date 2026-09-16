@@ -1273,6 +1273,11 @@
                     "description": "Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
                     "default": ""
                 },
+                "userProxySecretName": {
+                    "type": "string",
+                    "description": "Name of the secret containing the shared secret that the auth strip proxy stamps onto every request it forwards to Cryostat, proving that the request passed through the authenticating proxy rather than being sent directly to Cryostat's HTTP port from elsewhere in the Pod. This secret must contain a USER_PROXY_SECRET key holding the shared secret, and a `user-auth.conf` key holding exactly the line `proxy_set_header X-Cryostat-User-Proxy-Auth \"<shared secret>\";`. Supplying this is recommended when the chart is rendered by a GitOps tool that cannot read existing cluster state, since the chart otherwise generates a new value on every render. More details: [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable)",
+                    "default": ""
+                },
                 "openshift": {
                     "type": "object",
                     "properties": {
@@ -1494,6 +1499,76 @@
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "authStripProxy": {
+            "type": "object",
+            "properties": {
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "capabilities": {
+                            "type": "object",
+                            "properties": {
+                                "drop": {
+                                    "type": "array",
+                                    "description": "",
+                                    "default": [
+                                        "ALL"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "allowPrivilegeEscalation": {
+                            "type": "boolean",
+                            "description": "",
+                            "default": false
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "repository": {
+                            "type": "string",
+                            "description": "Repository for the auth strip proxy container image",
+                            "default": "registry.access.redhat.com/ubi9/nginx-124"
+                        },
+                        "pullPolicy": {
+                            "type": "string",
+                            "description": "Image pull policy for the auth strip proxy container image",
+                            "default": "Always"
+                        },
+                        "tag": {
+                            "type": "string",
+                            "description": "Tag for the auth strip proxy container image",
+                            "default": "latest"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string",
+                                    "description": "CPU resource request for the auth strip proxy container",
+                                    "default": "50m"
+                                },
+                                "memory": {
+                                    "type": "string",
+                                    "description": "Memory resource request for the auth strip proxy container",
+                                    "default": "64Mi"
                                 }
                             }
                         }

@@ -452,6 +452,8 @@ datasource:
 authentication:
   ## @param authentication.cookieSecretName Name of the secret containing the authenticating proxy cookie encryption key. This secret must contain a COOKIE_SECRET secret which is the cookie encryption key. It must not be updated across chart upgrades, or else existing user login sessions will be invalidated. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
   cookieSecretName: ""
+  ## @param authentication.userProxySecretName Name of the secret containing the shared secret that the auth strip proxy stamps onto every request it forwards to Cryostat, proving that the request passed through the authenticating proxy rather than being sent directly to Cryostat's HTTP port from elsewhere in the Pod. This secret must contain a USER_PROXY_SECRET key holding the shared secret, and a `user-auth.conf` key holding exactly the line `proxy_set_header X-Cryostat-User-Proxy-Auth "<shared secret>";`. Supplying this is recommended when the chart is rendered by a GitOps tool that cannot read existing cluster state, since the chart otherwise generates a new value on every render. More details: [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable)
+  userProxySecretName: ""
   openshift:
     ## @param authentication.openshift.enabled Whether the OAuth Proxy deployed for securing Cryostat's Pods should be one that integrates with OpenShift-specific features, or a generic one
     enabled: false
@@ -575,6 +577,32 @@ openshiftOauthProxy:
           envVars: []
           ## @param openshiftOauthProxy.config.extra.inPod.reports.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy **only in the report generator pods**
           envSources: []
+
+## @section Auth Strip Proxy
+## @extra authStripProxy Configuration for the nginx proxy that sits between the authenticating proxy and Cryostat. It re-sources the `X-Forwarded-*` headers from the request it receives, so that a client cannot assert its own identity, and stamps a shared secret header proving to Cryostat that the request arrived through the authenticating proxy
+
+authStripProxy:
+  image:
+    ## @param authStripProxy.image.repository Repository for the auth strip proxy container image
+    repository: "registry.access.redhat.com/ubi9/nginx-124"
+    ## @param authStripProxy.image.pullPolicy Image pull policy for the auth strip proxy container image
+    pullPolicy: Always
+    ## @param authStripProxy.image.tag Tag for the auth strip proxy container image
+    tag: "latest"
+  resources:
+    requests:
+      ## @param authStripProxy.resources.requests.cpu CPU resource request for the auth strip proxy container
+      cpu: 50m
+      ## @param authStripProxy.resources.requests.memory Memory resource request for the auth strip proxy container
+      memory: 64Mi
+  ## @param authStripProxy.securityContext [object] Security Context for the auth strip proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  securityContext:
+    ## @skip authStripProxy.securityContext.allowPrivilegeEscalation
+    allowPrivilegeEscalation: false
+    ## @skip authStripProxy.securityContext.capabilities
+    capabilities:
+      drop:
+        - ALL
 
 ## @section Other Parameters
 
