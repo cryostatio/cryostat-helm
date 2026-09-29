@@ -1290,6 +1290,16 @@
                                     "default": "system:auth-delegator"
                                 }
                             }
+                        },
+                        "rbac": {
+                            "type": "object",
+                            "properties": {
+                                "namespaceScoped": {
+                                    "type": "boolean",
+                                    "description": "When true (default), Cryostat performs RBAC access reviews scoped to the installation namespace, so users only need a namespace-bound Role and RoleBinding. When false, access reviews are cluster-scoped and users must have a ClusterRole and ClusterRoleBinding.",
+                                    "default": true
+                                }
+                            }
                         }
                     }
                 },
@@ -1403,8 +1413,8 @@
                         },
                         "subresource": {
                             "type": "string",
-                            "description": "The OpenShift resource that the SubjectAccessReview/TokenAccessReview will be performed for",
-                            "default": "exec"
+                            "description": "The OpenShift subresource that the SubjectAccessReview/TokenAccessReview will be performed for. Empty string means no subresource is checked",
+                            "default": ""
                         },
                         "name": {
                             "type": "string",
@@ -1418,8 +1428,8 @@
                         },
                         "verb": {
                             "type": "string",
-                            "description": "The OpenShift resource name that the SubjectAccessReview/TokenAccessReview will be performed for",
-                            "default": "create"
+                            "description": "The verb that the SubjectAccessReview/TokenAccessReview will be performed for",
+                            "default": "get"
                         },
                         "version": {
                             "type": "string",
