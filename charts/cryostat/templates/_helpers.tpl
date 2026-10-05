@@ -232,6 +232,39 @@ Get or generate a default secret key for auth proxy cookies.
 {{- end -}}
 
 {{/*
+Get or generate the shared secret that the auth strip proxy stamps onto every request it
+forwards to Cryostat. Returns the plaintext value, not a base64 encoding of it, because it is
+rendered both as a Secret value and into an nginx directive.
+
+The alphabet matters here for correctness and not only for entropy: nginx interpolates "$"
+inside a double-quoted directive value, and "\" and '"' would end or escape it. randAlphaNum
+emits only [a-zA-Z0-9], so the rendering in userproxy_secret.yaml is safe. Anything that widens
+this alphabet must escape for nginx there.
+*/}}
+{{- define "cryostat.userProxySecret" -}}
+{{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-user-proxy" .Release.Name)) -}}
+{{- $existing := ((($secret).data).USER_PROXY_SECRET | default "" | b64dec) -}}
+{{- if $existing -}}
+{{/*
+   Use current secret. Do not regenerate.
+*/}}
+{{- $existing -}}
+{{- else -}}
+{{/*
+    Generate new secret
+*/}}
+{{- (randAlphaNum 32) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of the Secret holding the auth strip proxy's shared secret.
+*/}}
+{{- define "cryostat.userProxySecretName" -}}
+{{- default (printf "%s-user-proxy" .Release.Name) .Values.authentication.userProxySecretName -}}
+{{- end -}}
+
+{{/*
     Get sanitized list or defaults (if not disabled) as comma-separated list.
 */}}
 {{- define "cryostat.commaSepList" -}}

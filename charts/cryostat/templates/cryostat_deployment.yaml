@@ -18,6 +18,17 @@ spec:
   template:
     metadata:
       annotations:
+        # The auth strip proxy reads its shared secret and its configuration once, at nginx
+        # startup, while Cryostat reads the same secret from its environment once, at process
+        # startup. Neither picks up a change in place, so a change to either must roll the
+        # whole Pod: if only one end were restarted the two would disagree about the stamp and
+        # Cryostat would reject every request it forwarded.
+        {{- if empty .Values.authentication.userProxySecretName }}
+        # Salted with the release name so that this annotation is a change detector only, and
+        # not a digest of the shared secret itself that anyone able to read Pods could lift.
+        checksum/user-proxy-secret: {{ printf "%s/%s" .Release.Name (include "cryostat.userProxySecret" .) | sha256sum }}
+        {{- end }}
+        checksum/auth-strip-proxy-config: {{ include "cryostat.authStripProxy.config" . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -41,6 +52,7 @@ spec:
         {{- else }}
         {{- include "cryostat.oauth2Proxy" . | nindent 8 }}
         {{- end }}
+        {{- include "cryostat.authStripProxy" . | nindent 8 }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.core.securityContext | nindent 12 }}
@@ -186,6 +198,17 @@ spec:
           - name: CRYOSTAT_AUDIT_ENABLED
             value: {{ $auditEnabled | quote }}
           {{- end }}
+          # The shared secret stamped by the auth strip proxy. Cryostat rejects a request
+          # carrying neither this stamp nor an agent gateway's, rather than assuming that
+          # anything unstamped arrived through the authenticating proxy. This matters only in
+          # BASIC and OPENSHIFT modes; PERMISSIVE grants every request an unrestricted
+          # identity whatever its provenance.
+          - name: CRYOSTAT_SECURITY_USER_PROXY_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "cryostat.userProxySecretName" . }}
+                key: USER_PROXY_SECRET
+                optional: false
           {{- if and ((.Values.authentication.openshift).enabled) (not .Values.authentication.basicAuth.enabled) }}
           - name: CRYOSTAT_SECURITY_RBAC_MODE
             value: "OPENSHIFT"
@@ -320,6 +343,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      - name: auth-strip-proxy-config
+        configMap:
+          name: {{ .Release.Name }}-auth-strip-proxy
+      - name: user-proxy-secret
+        secret:
+          defaultMode: 0440
+          secretName: {{ include "cryostat.userProxySecretName" . }}
       {{- if not (.Values.authentication.openshift).enabled }}
       - name: alpha-config
         configMap:

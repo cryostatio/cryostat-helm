@@ -31,7 +31,9 @@ Create OpenShift OAuth Proxy container.
     - --pass-access-token={{ not .Values.authentication.basicAuth.enabled }}
     - --pass-user-bearer-token=false
     - --pass-basic-auth=false
-    - --upstream=http://localhost:8181/
+    # Routed through the auth strip proxy rather than straight to Cryostat on 8181, so that
+    # the X-Forwarded-* headers this proxy sets cannot be confused with client-supplied ones.
+    - --upstream=http://localhost:8180/
     - --upstream=http://localhost:3000/grafana/
     - --cookie-secret=$(COOKIE_SECRET)
     - --openshift-service-account={{ include "cryostat.serviceAccountName" . }}

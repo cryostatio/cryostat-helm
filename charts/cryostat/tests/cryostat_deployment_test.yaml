@@ -589,22 +589,61 @@ tests:
               cpu: 200m
               memory: 200Mi
 
+  # Every request reaching Cryostat has to pass through this hop, whichever authenticating
+  # proxy is in front of it, so that the X-Forwarded-* headers Cryostat trusts are always ones
+  # this hop set rather than ones a client sent.
+  - it: should run the auth strip proxy alongside oauth2-proxy
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].image
+          value: registry.access.redhat.com/ubi9/nginx-124:latest
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].ports[0].containerPort
+          value: 8180
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].livenessProbe.httpGet.port
+          value: 8180
+
+  - it: should run the auth strip proxy alongside the OpenShift OAuth proxy
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')]
+      # Routed through 8180 rather than straight to Cryostat on 8181.
+      - contains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].args
+          content: --upstream=http://localhost:8180/
+      - notContains:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].args
+          content: --upstream=http://localhost:8181/
+
   - it: should validate volumes and volume mounts
     asserts:
       - lengthEqual:
-          count: 1
+          count: 3
           path: spec.template.spec.volumes
       - exists:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
       - exists:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/etc/oauth2_proxy/alpha_config')]
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='auth-strip-proxy-config')]
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='user-proxy-secret')]
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].volumeMounts[?(@.mountPath=='/etc/nginx-auth-strip')]
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].volumeMounts[?(@.mountPath=='/var/run/secrets/cryostat.io/user-proxy')]
 
   - it: should validate volumes and volume mounts with oauth2-proxy self-signed TLS enabled
     set:
       oauth2Proxy.tls.selfSigned.enabled: true
     asserts:
       - lengthEqual:
-          count: 2
+          count: 4
           path: spec.template.spec.volumes
       - exists:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
@@ -830,9 +869,8 @@ tests:
         foo: bar
     asserts:
       - equal:
-          path: spec.template.metadata.annotations
-          value:
-            foo: bar
+          path: spec.template.metadata.annotations.foo
+          value: bar
 
   - it: should set pod-specific podAnnotations
     set:
@@ -840,9 +878,8 @@ tests:
         foo: bar
     asserts:
       - equal:
-          path: spec.template.metadata.annotations
-          value:
-            foo: bar
+          path: spec.template.metadata.annotations.foo
+          value: bar
 
   - it: should set merge pod-specific and default podAnnotations
     set:
@@ -852,10 +889,39 @@ tests:
         alice: bob
     asserts:
       - equal:
-          path: spec.template.metadata.annotations
+          path: spec.template.metadata.annotations.foo
+          value: bar
+      - equal:
+          path: spec.template.metadata.annotations.alice
+          value: bob
+
+  # Both ends of the shared secret, and the nginx config that carries it, are read once at
+  # container startup, so a change to either has to roll the Pod rather than being picked up
+  # in place.
+  - it: should roll the pod when the user proxy secret or the auth strip proxy config changes
+    asserts:
+      - exists:
+          path: spec.template.metadata.annotations['checksum/user-proxy-secret']
+      - exists:
+          path: spec.template.metadata.annotations['checksum/auth-strip-proxy-config']
+
+  # Nothing in the chart generates the secret when the user supplies their own, so there is no
+  # value for the chart to checksum and no reason for the chart to roll the Pod on their behalf.
+  - it: should not checksum a user-supplied user proxy secret
+    set:
+      authentication.userProxySecretName: my-secret
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations['checksum/user-proxy-secret']
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SECURITY_USER_PROXY_SECRET')].valueFrom.secretKeyRef
           value:
-            alice: bob
-            foo: bar
+            name: my-secret
+            key: USER_PROXY_SECRET
+            optional: false
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='user-proxy-secret')].secret.secretName
+          value: my-secret
 
 
   - it: should add volume mounts for declarative TLS truststore
@@ -874,6 +940,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -901,6 +974,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -927,6 +1007,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -958,6 +1045,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -988,6 +1082,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -1019,6 +1120,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
@@ -1050,6 +1158,13 @@ tests:
       - equal:
           path: spec.template.spec.volumes
           value:
+            - name: auth-strip-proxy-config
+              configMap:
+                name: RELEASE-NAME-auth-strip-proxy
+            - name: user-proxy-secret
+              secret:
+                defaultMode: 0440
+                secretName: RELEASE-NAME-user-proxy
             - name: alpha-config
               configMap:
                 name: RELEASE-NAME-alpha-config
