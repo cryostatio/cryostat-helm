@@ -15,7 +15,8 @@ spec:
   type: {{ .Values.reports.service.type }}
   ports:
     - port: {{ .Values.reports.service.httpPort }}
-      targetPort: {{ include "cryostat.core.service.scheme" . }}
+      targetPort: {{ if (include "cryostat.certManager.enabled" .) | eq "true" }}https{{- else }}{{ include "cryostat.core.service.scheme" . }}{{- end }}
+      protocol: TCP
   selector:
     {{- include "cryostat.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: reports

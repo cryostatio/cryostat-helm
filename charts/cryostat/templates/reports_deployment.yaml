@@ -43,10 +43,20 @@ spec:
           image: "{{ (.Values.reports).image.repository }}{{ include "cryostat.imageSeparator" (.Values.reports).image.tag }}{{ (.Values.reports).image.tag }}"
           imagePullPolicy: {{ (.Values.reports).image.pullPolicy }}
           env:
-          - name: QUARKUS_HTTP_PORT
-            value: "{{ .Values.reports.service.httpPort }}"
+          - name: QUARKUS_HTTP_HOST
+            value: localhost
           - name: QUARKUS_LOG_LEVEL
             value: {{ .Values.reports.debug.log.level }}
+          - name: QUARKUS_HTTP_PORT
+            value: "{{ .Values.reports.service.httpPort }}"
+          {{- if and ((include "cryostat.certManager.enabled" .) | eq "true") (empty (.Values.storage.provider).url) }}
+          - name: QUARKUS_S3_AWS_CREDENTIALS_TYPE
+            value: "anonymous"
+          - name: CRYOSTAT_STORAGE_TLS_CA_PATH
+            value: "/etc/storage-tls/ca.crt"
+          - name: CRYOSTAT_STORAGE_TLS_CERT_PATH
+            value: "/etc/storage-tls/tls.crt"
+          {{- end }}
           {{- with (.Values.reports.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -57,16 +67,24 @@ spec:
           ports:
           - containerPort: {{ .Values.reports.service.httpPort }}
             protocol: TCP
+          {{- if and ((include "cryostat.certManager.enabled" .) | eq "true") (empty (.Values.storage.provider).url) }}
+          volumeMounts:
+          - name: storage-tls
+            mountPath: /etc/storage-tls
+            readOnly: true
+          {{- end }}
           startupProbe:
             httpGet:
               path: "/health"
               port: {{ .Values.reports.service.httpPort }}
+              scheme: HTTP
             periodSeconds: 10
             failureThreshold: 9
           livenessProbe:
             httpGet:
               path: "/health"
               port: {{ .Values.reports.service.httpPort }}
+              scheme: HTTP
             periodSeconds: 10
             failureThreshold: 2
           resources:
@@ -86,7 +104,7 @@ spec:
       volumes:
       - name: {{ .Release.Name }}-reports-secret
         secret:
-          defaultMode: 0440
+          defaultMode: 0444
           secretName: {{ .Release.Name }}-reports-secret
       {{- if (.Values.authentication.openshift).enabled }}
       - name: {{ .Release.Name }}-proxy-tls
@@ -96,5 +114,21 @@ spec:
       - name: {{ .Release.Name }}-oauth2proxy-reports-tls
         secret:
           secretName: {{ .Release.Name }}-oauth2proxy-reports-tls
+      {{- end }}
+      {{- if (include "cryostat.certManager.enabled" .) | eq "true" }}
+      - name: reports-tls
+        secret:
+          secretName: {{ include "cryostat.tls.reports.secretName" . }}
+      {{- if (empty (.Values.storage.provider).url) }}
+      - name: storage-tls
+        secret:
+          secretName: {{ include "cryostat.tls.storage.secretName" . }}
+          defaultMode: 0440
+          items:
+          - key: ca.crt
+            path: ca.crt
+          - key: tls.crt
+            path: tls.crt
+      {{- end }}
       {{- end }}
 {{- end -}}

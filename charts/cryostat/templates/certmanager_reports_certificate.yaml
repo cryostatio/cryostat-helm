@@ -1,0 +1,28 @@
+{{- if and (include "cryostat.certManager.enabled" . | eq "true") (gt (int .Values.reports.replicas) 0) }}
+{{- $fullName := include "cryostat.fullname" . }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-reports-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cryostat.labels" . | nindent 4 }}
+    app.kubernetes.io/component: reports
+spec:
+  secretName: {{ include "cryostat.tls.reports.secretName" . }}
+  duration: {{ .Values.tls.certManager.duration }}
+  renewBefore: {{ .Values.tls.certManager.renewBefore }}
+  subject:
+    organizations:
+      - {{ $fullName }}
+  commonName: {{ $fullName }}-reports.{{ .Release.Namespace }}.svc
+  dnsNames:
+    - {{ $fullName }}-reports.{{ .Release.Namespace }}.svc
+    - {{ $fullName }}-reports.{{ .Release.Namespace }}.svc.cluster.local
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    {{- include "cryostat.certManager.issuerRef" . | nindent 4 }}
+{{- end }}

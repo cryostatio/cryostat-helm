@@ -1,0 +1,108 @@
+suite: Test cert-manager Cryostat server certificate
+templates:
+  - certmanager_cryostat_certificate.yaml
+tests:
+  - it: should not create certificate when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create certificate when cert-manager is enabled
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: test-release
+      namespace: test-namespace
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Certificate
+      - equal:
+          path: metadata.name
+          value: test-release-cryostat-tls
+      - equal:
+          path: metadata.namespace
+          value: test-namespace
+
+  - it: should use custom issuer when specified
+    set:
+      tls.certManager.enabled: true
+      tls.certManager.issuerRef.name: "my-issuer"
+      tls.certManager.issuerRef.kind: "ClusterIssuer"
+    release:
+      name: test-release
+    asserts:
+      - equal:
+          path: spec.issuerRef.name
+          value: my-issuer
+      - equal:
+          path: spec.issuerRef.kind
+          value: ClusterIssuer
+
+  - it: should use self-signed issuer when no custom issuer specified
+    set:
+      tls.certManager.enabled: true
+      tls.certManager.issuerRef.name: ""
+    release:
+      name: test-release
+    asserts:
+      - equal:
+          path: spec.issuerRef.name
+          value: test-release-selfsigned-issuer
+      - equal:
+          path: spec.issuerRef.kind
+          value: Issuer
+
+  - it: should use configured duration and renewBefore
+    set:
+      tls.certManager.enabled: true
+      tls.certManager.duration: "8760h"
+      tls.certManager.renewBefore: "2160h"
+    asserts:
+      - equal:
+          path: spec.duration
+          value: "8760h"
+      - equal:
+          path: spec.renewBefore
+          value: "2160h"
+
+  - it: should include correct DNS names
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: my-release
+      namespace: my-namespace
+    asserts:
+      - contains:
+          path: spec.dnsNames
+          content: my-release-cryostat.my-namespace.svc
+      - contains:
+          path: spec.dnsNames
+          content: my-release-cryostat.my-namespace.svc.cluster.local
+
+  - it: should store certificate in correct secret
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: test-release
+    asserts:
+      - equal:
+          path: spec.secretName
+          value: test-release-cryostat-tls
+
+  - it: should have correct usages
+    set:
+      tls.certManager.enabled: true
+    asserts:
+      - contains:
+          path: spec.usages
+          content: digital signature
+      - contains:
+          path: spec.usages
+          content: key encipherment
+      - contains:
+          path: spec.usages
+          content: server auth

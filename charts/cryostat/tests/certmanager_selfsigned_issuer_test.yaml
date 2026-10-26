@@ -1,0 +1,52 @@
+suite: Test cert-manager self-signed issuer
+templates:
+  - certmanager_selfsigned_issuer.yaml
+tests:
+  - it: should not create issuer when cert-manager is disabled
+    set:
+      tls.certManager.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create issuer when custom issuer is specified
+    set:
+      tls.certManager.enabled: true
+      tls.certManager.issuerRef.name: "my-custom-issuer"
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create self-signed issuer when cert-manager enabled and no custom issuer
+    set:
+      tls.certManager.enabled: true
+      tls.certManager.issuerRef.name: ""
+    release:
+      name: test-release
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Issuer
+      - equal:
+          path: metadata.name
+          value: test-release-selfsigned-issuer
+      - equal:
+          path: spec.selfSigned
+          value: {}
+      - matchRegex:
+          path: metadata.labels["app.kubernetes.io/name"]
+          pattern: cryostat
+
+  - it: should include proper labels
+    set:
+      tls.certManager.enabled: true
+    release:
+      name: my-release
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: my-release
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
