@@ -61,6 +61,8 @@ spec:
           env:
           - name: QUARKUS_HTTP_HOST
             value: localhost
+          - name: QUARKUS_HTTP_HOST_VALIDATION_REQUIRE_LOCALHOST
+            value: "false"
           - name: QUARKUS_LOG_LEVEL
             value: {{ .Values.core.debug.log.level }}
           - name: QUARKUS_HTTP_PORT

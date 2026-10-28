@@ -71,6 +71,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_HOST')].value
           value: "localhost"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_HOST_VALIDATION_REQUIRE_LOCALHOST')].value
+          value: "false"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING')].value
           value: "true"
       - equal:
