@@ -20,8 +20,8 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/part-of: cryostat
-            app.kubernetes.io/version: 4.3.0-dev
-            helm.sh/chart: cryostat-2.3.0-dev
+            app.kubernetes.io/version: "5.0.0-dev"
+            helm.sh/chart: cryostat-5.0.0-dev
 
   - it: should listen on 8180 and forward to Cryostat on 8181
     asserts:

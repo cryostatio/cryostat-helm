@@ -10,7 +10,7 @@ tests:
           value: Deployment
       - equal:
           path: metadata.name
-          value: RELEASE-NAME-cryostat-v4-storage
+          value: RELEASE-NAME-cryostat-v5-storage
       - equal:
           path: spec.replicas
           value: 1
@@ -42,10 +42,10 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            helm.sh/chart: cryostat-2.3.0-dev
+            helm.sh/chart: cryostat-5.0.0-dev
             app.kubernetes.io/name: cryostat
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/version: "4.3.0-dev"
+            app.kubernetes.io/version: "5.0.0-dev"
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/component: storage
             app.kubernetes.io/part-of: cryostat
