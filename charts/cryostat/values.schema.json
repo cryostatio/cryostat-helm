@@ -526,7 +526,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the database container image",
-                            "default": "latest"
+                            "default": "4.3"
                         }
                     }
                 },
@@ -674,7 +674,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the storage container image",
-                            "default": "latest"
+                            "default": "4.3"
                         }
                     }
                 },
@@ -967,7 +967,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the Grafana container image",
-                            "default": "latest"
+                            "default": "4.3"
                         }
                     }
                 },
@@ -1065,7 +1065,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the JFR Data Source container image",
-                            "default": "latest"
+                            "default": "4.3.0-snapshot"
                         }
                     }
                 },
@@ -1163,7 +1163,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OAuth2 Proxy container image",
-                            "default": "latest"
+                            "default": "v7.15.6"
                         }
                     }
                 },
@@ -1374,7 +1374,7 @@
                         "tag": {
                             "type": "string",
                             "description": "Tag for the OpenShift OAuth Proxy container image",
-                            "default": "latest"
+                            "default": "4.22"
                         }
                     }
                 },
