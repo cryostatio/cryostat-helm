@@ -512,7 +512,7 @@ tests:
             - ALL
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].image
-          value: "quay.io/cryostat/cryostat-grafana-dashboard:4.3"
+          value: "quay.io/cryostat/cryostat-grafana-dashboard:4.3-dev"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].imagePullPolicy
           value: "Always"
