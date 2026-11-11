@@ -59,6 +59,7 @@ jobs:
         uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376 # v1.15.2
         with:
           cluster_name: ci-${{ github.run_id }}
+          node_image: mirror.gcr.io/kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
       - name: Install and test chart
         run: |
           # FIXME: Remove when chart-testing fixes the issue https://github.com/helm/chart-testing/issues/525
