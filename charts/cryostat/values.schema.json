@@ -786,7 +786,7 @@
                                 },
                                 "heapDumpReports": {
                                     "type": "string",
-                                    "description": "the name of the storage bucket containing archived Heap Dump Reports",
+                                    "description": "the name of the storage bucket containing archived Heap Dump Automated Analysis Reports",
                                     "default": "heapdumpreports"
                                 },
                                 "logs": {
