@@ -784,6 +784,11 @@
                                     "description": "the name of the storage bucket containing archived Heap Dumps",
                                     "default": "heapdumps"
                                 },
+                                "heapDumpReports": {
+                                    "type": "string",
+                                    "description": "the name of the storage bucket containing archived Heap Dump Reports",
+                                    "default": "heapdumpreports"
+                                },
                                 "logs": {
                                     "type": "string",
                                     "description": "the name of the storage bucket containing archived Unified Logs",

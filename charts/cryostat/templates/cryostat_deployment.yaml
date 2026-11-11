@@ -124,10 +124,14 @@ spec:
             value: {{ .Values.storage.buckets.names.threadDumps }}
           - name: STORAGE_BUCKETS_HEAP_DUMPS_NAME
             value: {{ .Values.storage.buckets.names.heapDumps }}
+          - name: STORAGE_BUCKETS_UNIFIED_LOGS_NAME
+            value: {{ .Values.storage.buckets.names.logs }}
           - name: STORAGE_BUCKETS_METADATA_NAME
             value: {{ .Values.storage.buckets.names.metadata }}
           - name: CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME
             value: {{ .Values.storage.buckets.names.archivedReports }}
+          - name: CRYOSTAT_SERVICES_HEAP_DUMP_REPORTS_STORAGE_CACHE_NAME
+            value: {{ .Values.storage.buckets.names.heapDumpReports }}
           - name: STORAGE_METADATA_STORAGE_MODE
             value: {{ .Values.storage.provider.metadata.storageMode }}
           {{- if (.Values.storage.provider.tls).trustAll }}
