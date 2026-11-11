@@ -122,6 +122,9 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_HEAP_DUMPS_NAME')].value
           value: "heapdumps"
       - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_UNIFIED_LOGS_NAME')].value
+          value: "logs"
+      - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_METADATA_NAME')].value
           value: "metadata"
       - equal:
@@ -130,6 +133,9 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME')].value
           value: "archivedreports"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_HEAP_DUMP_REPORTS_STORAGE_CACHE_NAME')].value
+          value: "heapdumpreports"
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='QUARKUS_S3_ENDPOINT_OVERRIDE')].value
           value: "http://RELEASE-NAME-cryostat-storage:8333"
@@ -289,6 +295,8 @@ tests:
             metadata: e
             threadDumps: f
             heapDumps: g
+            logs: h
+            heapDumpReports: i
     asserts:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_METADATA_STORAGE_MODE')].value
@@ -314,7 +322,12 @@ tests:
       - equal:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_HEAP_DUMPS_NAME')].value
           value: "g"
-
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='STORAGE_BUCKETS_UNIFIED_LOGS_NAME')].value
+          value: "h"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_SERVICES_HEAP_DUMP_REPORTS_STORAGE_CACHE_NAME')].value
+          value: "i"
   - it: should allow disabling S3 TLS validation
     set:
       storage:
