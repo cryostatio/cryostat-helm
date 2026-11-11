@@ -115,21 +115,25 @@ spec:
           - name: QUARKUS_DATASOURCE_JDBC_URL
             value: {{ default (printf "jdbc:postgresql://%s-db:5432/cryostat" $fullName) (.Values.db.provider).url }} 
           - name: STORAGE_BUCKETS_ARCHIVES_NAME
-            value: {{ .Values.storage.buckets.names.archivedRecordings }}
+            value: {{ .Values.storage.buckets.names.archivedRecordings | quote }}
           - name: STORAGE_BUCKETS_EVENT_TEMPLATES_NAME
-            value: {{ .Values.storage.buckets.names.eventTemplates }}
+            value: {{ .Values.storage.buckets.names.eventTemplates | quote }}
           - name: STORAGE_BUCKETS_PROBE_TEMPLATES_NAME
-            value: {{ .Values.storage.buckets.names.jmcAgentProbeTemplates }}
+            value: {{ .Values.storage.buckets.names.jmcAgentProbeTemplates | quote }}
           - name: STORAGE_BUCKETS_THREAD_DUMPS_NAME
-            value: {{ .Values.storage.buckets.names.threadDumps }}
+            value: {{ .Values.storage.buckets.names.threadDumps | quote }}
           - name: STORAGE_BUCKETS_HEAP_DUMPS_NAME
-            value: {{ .Values.storage.buckets.names.heapDumps }}
+            value: {{ .Values.storage.buckets.names.heapDumps | quote }}
+          - name: STORAGE_BUCKETS_UNIFIED_LOGS_NAME
+            value: {{ .Values.storage.buckets.names.logs | quote }}
           - name: STORAGE_BUCKETS_METADATA_NAME
-            value: {{ .Values.storage.buckets.names.metadata }}
+            value: {{ .Values.storage.buckets.names.metadata | quote }}
           - name: CRYOSTAT_SERVICES_REPORTS_STORAGE_CACHE_NAME
-            value: {{ .Values.storage.buckets.names.archivedReports }}
+            value: {{ .Values.storage.buckets.names.archivedReports | quote }}
+          - name: CRYOSTAT_SERVICES_HEAP_DUMP_REPORTS_STORAGE_CACHE_NAME
+            value: {{ .Values.storage.buckets.names.heapDumpReports | quote }}
           - name: STORAGE_METADATA_STORAGE_MODE
-            value: {{ .Values.storage.provider.metadata.storageMode }}
+            value: {{ .Values.storage.provider.metadata.storageMode | quote }}
           {{- if (.Values.storage.provider.tls).trustAll }}
           - name: QUARKUS_S3_SYNC_CLIENT_TLS_TRUST_MANAGERS_PROVIDER_TYPE
             value: trust-all
