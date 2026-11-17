@@ -232,6 +232,34 @@ Get or generate a default secret key for auth proxy cookies.
 {{- end -}}
 
 {{/*
+Get or generate a self-signed TLS certificate and private key, reusing the existing Secret's
+data if present rather than regenerating a fresh pair on every render. The Secret this backs is
+marked immutable, so a render after the first one has to reproduce the same cert and key
+exactly, or the Kubernetes API rejects the update outright. Returns a complete "data:" block,
+rather than a single value like the chart's other generated secrets, because a certificate and
+its key must be looked up and (re)generated together as one pair, not as two independent values
+that could otherwise end up mismatched.
+Usage: include "cryostat.selfSignedCertData" (dict "namespace" .Release.Namespace "secretName" (printf "%s-oauth2proxy-tls" .Release.Name) "commonName" $fullName)
+*/}}
+{{- define "cryostat.selfSignedCertData" -}}
+{{- $secret := (lookup "v1" "Secret" .namespace .secretName) -}}
+{{- if $secret -}}
+{{/*
+   Use the current cert and key. Do not regenerate.
+*/}}
+cert: {{ $secret.data.cert }}
+key: {{ $secret.data.key }}
+{{- else -}}
+{{/*
+    Generate a new cert and key.
+*/}}
+{{- $cert := genSelfSignedCert .commonName nil nil 365 -}}
+cert: {{ $cert.Cert | b64enc }}
+key: {{ $cert.Key | b64enc }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get or generate the shared secret that the auth strip proxy stamps onto every request it
 forwards to Cryostat. Returns the plaintext value, not a base64 encoding of it, because it is
 rendered both as a Secret value and into an nginx directive.
