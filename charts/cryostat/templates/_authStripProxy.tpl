@@ -13,6 +13,14 @@ shared secret that proves to Cryostat which path a request arrived by.
     - nginx
     - -c
     - /etc/nginx-auth-strip/nginx.conf
+    {{- if .Values.authStripProxy.securityContext.readOnlyRootFilesystem }}
+    # Before nginx parses that config's own "error_log stderr notice;" directive, it first
+    # tries to open its compiled-in default error log at /var/log/nginx/error.log, which a
+    # read-only root filesystem makes unwritable. This redirects that pre-configuration
+    # fallback to the same destination the config uses once loaded.
+    - -e
+    - /dev/stderr
+    {{- end }}
     - -g
     - daemon off;
   ports:
@@ -32,6 +40,12 @@ shared secret that proves to Cryostat which path a request arrived by.
     - name: user-proxy-secret
       mountPath: /var/run/secrets/cryostat.io/user-proxy
       readOnly: true
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-auth-strip-proxy-scratch" .Chart.Name) "scratch" .Values.authStripProxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.authStripProxy.config).extra).volumeMounts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end }}
 
 {{/*
@@ -42,7 +56,11 @@ reloads it, so a change to it has to roll the Pod to take effect.
 {{- define "cryostat.authStripProxy.config" -}}
 worker_processes auto;
 error_log stderr notice;
-pid /run/nginx.pid;
+# Every path nginx writes to is kept on the container's scratch mount, so that the root
+# filesystem can be made read-only. The image's defaults put the pid file under /run and the
+# temporary files under /var/lib/nginx, both on the root filesystem. nginx creates these
+# directories itself at startup.
+pid /tmp/nginx.pid;
 
 include /usr/share/nginx/modules/*.conf;
 
@@ -52,6 +70,12 @@ events {
 
 http {
     access_log /dev/stdout;
+
+    client_body_temp_path /tmp/nginx-client-body;
+    proxy_temp_path /tmp/nginx-proxy;
+    fastcgi_temp_path /tmp/nginx-fastcgi;
+    uwsgi_temp_path /tmp/nginx-uwsgi;
+    scgi_temp_path /tmp/nginx-scgi;
 
     # Cryostat accepts recording uploads of arbitrary size on this path. nginx would
     # otherwise reject anything over its 1m default before Cryostat ever saw it.

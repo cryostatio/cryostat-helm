@@ -76,6 +76,12 @@ spec:
           - mountPath: /data
             name: {{ .Chart.Name }}-storage
             subPath: seaweed
+          {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-storage-scratch" .Chart.Name) "scratch" .Values.storage.scratch "mountPath" "/tmp")) }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with ((.Values.storage.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           startupProbe:
             httpGet:
               path: "/healthz"
@@ -117,5 +123,11 @@ spec:
       {{- if not ((.Values.storage.pvc).enabled) }}
       - name: {{ .Chart.Name }}-storage
         emptyDir: {}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-storage-scratch" .Chart.Name) "scratch" .Values.storage.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.storage.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
 {{- end }}

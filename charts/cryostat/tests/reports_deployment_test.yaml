@@ -529,3 +529,142 @@ tests:
           - secretRef:
               name: sercret-special-config-for-reports
               optional: false
+
+  - it: should mount a default scratch emptyDir on the Report Generator container
+    set:
+      reports.replicas: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-reports-scratch')]
+          value:
+            name: cryostat-reports-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts[?(@.name=='cryostat-reports-scratch')]
+          value:
+            name: cryostat-reports-scratch
+            mountPath: /tmp
+
+  - it: should omit the Report Generator scratch volume when it is disabled
+    set:
+      reports.replicas: 1
+      reports.scratch.emptyDir.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-reports-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts[?(@.name=='cryostat-reports-scratch')]
+
+  - it: should back the Report Generator scratch volume with a generic ephemeral volume
+    set:
+      reports.replicas: 1
+      reports.scratch.volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-reports-scratch')]
+          value:
+            name: cryostat-reports-scratch
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+  - it: should not mount a scratch volume on the reports OAuth2 Proxy by default
+    set:
+      reports.replicas: 1
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-reports-authproxy-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts[?(@.name=='cryostat-reports-authproxy-scratch')]
+
+  - it: should mount a default scratch volume on the reports OpenShift OAuth Proxy
+    set:
+      reports.replicas: 1
+      authentication.openshift.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-reports-authproxy-scratch')]
+          value:
+            name: cryostat-reports-authproxy-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts[?(@.name=='cryostat-reports-authproxy-scratch')]
+          value:
+            name: cryostat-reports-authproxy-scratch
+            mountPath: /tmp
+
+  - it: should mount a scratch volume on the reports OAuth2 Proxy when enabled
+    set:
+      reports.replicas: 1
+      oauth2Proxy.scratch.emptyDir.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts[?(@.name=='cryostat-reports-authproxy-scratch')]
+          value:
+            name: cryostat-reports-authproxy-scratch
+            mountPath: /tmp
+
+  - it: should add extra volumes and volume mounts for the Report Generator container
+    set:
+      reports.replicas: 1
+      reports.config.extra.volumes:
+        - name: reports-extra
+          emptyDir: {}
+      reports.config.extra.volumeMounts:
+        - name: reports-extra
+          mountPath: /var/cache/cryostat-reports
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='reports-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts[?(@.name=='reports-extra')]
+          value:
+            name: reports-extra
+            mountPath: /var/cache/cryostat-reports
+
+  - it: should add extra volumes and volume mounts for the reports auth proxy container
+    set:
+      reports.replicas: 1
+      oauth2Proxy.config.extra.volumes:
+        - name: reports-authproxy-extra
+          emptyDir: {}
+      oauth2Proxy.config.extra.volumeMounts:
+        - name: reports-authproxy-extra
+          mountPath: /var/cache/oauth2-proxy
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='reports-authproxy-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts[?(@.name=='reports-authproxy-extra')]
+          value:
+            name: reports-authproxy-extra
+            mountPath: /var/cache/oauth2-proxy
+
+  - it: should start every container in the Report Generator Pod with a read-only root filesystem
+    set:
+      reports.replicas: 1
+      reports.securityContext.readOnlyRootFilesystem: true
+      oauth2Proxy.securityContext.readOnlyRootFilesystem: true
+      oauth2Proxy.scratch.emptyDir.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports')].volumeMounts[?(@.mountPath=='/tmp')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-reports-authproxy')].volumeMounts[?(@.mountPath=='/tmp')]

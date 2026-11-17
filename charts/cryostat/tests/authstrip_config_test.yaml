@@ -93,3 +93,30 @@ tests:
       - matchRegex:
           path: data['nginx.conf']
           pattern: 'location = /healthz \{\s*return 200;\s*\}'
+
+  # nginx must have somewhere writable for its pid file and for the temporary files it spools
+  # request and response bodies into. The image's defaults sit on the root filesystem, which a
+  # cluster policy may make read-only, so they are relocated onto the container's scratch mount.
+  - it: should keep every nginx write path on the scratch mount
+    asserts:
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'pid /tmp/nginx\.pid;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'client_body_temp_path /tmp/nginx-client-body;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'proxy_temp_path /tmp/nginx-proxy;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'fastcgi_temp_path /tmp/nginx-fastcgi;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'uwsgi_temp_path /tmp/nginx-uwsgi;'
+      - matchRegex:
+          path: data['nginx.conf']
+          pattern: 'scgi_temp_path /tmp/nginx-scgi;'
+      - notMatchRegex:
+          path: data['nginx.conf']
+          pattern: 'pid /run/nginx\.pid;'
