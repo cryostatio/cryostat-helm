@@ -368,9 +368,8 @@ Usage: include "cryostat.scratch.mount" (dict "name" "cryostat-scratch" "scratch
 
 {{/*
 Convert a Kubernetes resource quantity to a whole number of bytes. Understands the binary
-(Ki, Mi, Gi, Ti, Pi, Ei) and decimal (k, M, G, T, P, E) suffixes, and a bare integer. Returns 0
-for anything else, including the fractional suffixes, which are never meaningful as a volume
-size.
+(Ki, Mi, Gi, Ti, Pi, Ei) and decimal (k, M, G, T, P, E) suffixes, a fractional amount of either
+(ex. 0.5Gi), and a bare integer. Returns 0 for anything else.
 */}}
 {{- define "cryostat.quantityToBytes" -}}
 {{- $quantity := . | toString | trim -}}
@@ -395,35 +394,62 @@ size.
 {{- if and (not $matched) (hasSuffix $symbol $quantity) -}}
 {{- $digits := trimSuffix $symbol $quantity -}}
 {{- if regexMatch "^[0-9]+$" $digits -}}
+{{/*
+   Whole amount of the suffix: exact integer arithmetic.
+*/}}
 {{- $matched = true -}}
 {{- $bytes = mul (int64 $digits) (int64 $factor) -}}
+{{- else if regexMatch "^[0-9]+\\.[0-9]+$" $digits -}}
+{{/*
+   Fractional amount of the suffix (ex. 0.5Gi): floating-point arithmetic, since the amount
+   itself is not a whole number.
+*/}}
+{{- $matched = true -}}
+{{- $bytes = mulf (float64 $digits) (float64 $factor) | int64 -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
-{{- if and (not $matched) (regexMatch "^[0-9]+$" $quantity) -}}
+{{- if not $matched -}}
+{{- if regexMatch "^[0-9]+$" $quantity -}}
 {{- $bytes = int64 $quantity -}}
+{{- else if regexMatch "^[0-9]+\\.[0-9]+$" $quantity -}}
+{{- $bytes = float64 $quantity | int64 -}}
+{{- end -}}
 {{- end -}}
 {{- $bytes -}}
 {{- end -}}
 
 {{/*
 The size the Cryostat container's scratch space is bounded to, as a resource quantity, or the
-empty string if it is unbounded. A claim template's storage request is preferred, then the
-scratch emptyDir's size limit, then any ephemeral-storage limit on the container: writes that
-reach no scratch volume land on the container runtime's overlay layer, which that limit bounds.
+empty string if it is unbounded. A claim template's storage request is preferred and is never
+further bounded, since it provisions a separate PersistentVolume rather than counting against the
+Pod's ephemeral-storage. Otherwise, the scratch emptyDir's size limit is used; if its medium is
+not Memory (so it is backed by local disk, which does count against ephemeral-storage) and the
+container also has a smaller ephemeral-storage limit, that smaller limit is used instead, since
+the kubelet enforces whichever bound is reached first. With no sized scratch volume at all, any
+ephemeral-storage limit on the container is used as-is, since every scratch write then lands on
+the container runtime's overlay layer, which that limit bounds directly.
 */}}
 {{- define "cryostat.core.scratchSize" -}}
 {{- $scratch := .Values.core.scratch | default dict -}}
 {{- $claimTemplate := $scratch.volumeClaimTemplate | default dict -}}
+{{- $ephemeralLimit := index ((.Values.core.resources).limits | default dict) "ephemeral-storage" | default "" -}}
 {{- $size := "" -}}
 {{- if not (empty $claimTemplate) -}}
 {{- $size = ((($claimTemplate.spec).resources).requests).storage | default "" -}}
-{{- end -}}
-{{- if and (not $size) ($scratch.emptyDir).enabled -}}
+{{- else if ($scratch.emptyDir).enabled -}}
 {{- $size = ($scratch.emptyDir).sizeLimit | default "" -}}
+{{- $medium := ($scratch.emptyDir).medium | default "" -}}
+{{- if and $size $ephemeralLimit (ne $medium "Memory") -}}
+{{- $sizeBytes := include "cryostat.quantityToBytes" $size | int64 -}}
+{{- $limitBytes := include "cryostat.quantityToBytes" $ephemeralLimit | int64 -}}
+{{- if lt $limitBytes $sizeBytes -}}
+{{- $size = $ephemeralLimit -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- if not $size -}}
-{{- $size = index ((.Values.core.resources).limits | default dict) "ephemeral-storage" | default "" -}}
+{{- $size = $ephemeralLimit -}}
 {{- end -}}
 {{- $size -}}
 {{- end -}}
