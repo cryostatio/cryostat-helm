@@ -64,4 +64,10 @@ Create OAuth2 Proxy container. Configurations defined in alpha_config.yaml
     - name: {{ .Release.Name }}-oauth2proxy-tls
       mountPath: /etc/tls/private
     {{- end }}
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-authproxy-scratch" .Chart.Name) "scratch" .Values.oauth2Proxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.oauth2Proxy.config.extra).volumeMounts) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end}}

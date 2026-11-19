@@ -56,6 +56,12 @@
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-reports-authproxy-scratch" .Chart.Name) "scratch" .Values.openshiftOauthProxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.openshiftOauthProxy.config.extra).volumeMounts) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- else if .Values.oauth2Proxy.tls.selfSigned.enabled }}
@@ -127,6 +133,12 @@
     - name: {{ .Release.Name }}-oauth2proxy-reports-tls
       mountPath: /etc/tls/private
     {{- end }}
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-reports-authproxy-scratch" .Chart.Name) "scratch" .Values.oauth2Proxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.oauth2Proxy.config.extra).volumeMounts) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- else }}
 - name: {{ printf "%s-reports-%s" .Chart.Name "authproxy" }}
   securityContext:
@@ -183,5 +195,11 @@
     - name: {{ .Release.Name }}-reports-secret
       mountPath: /etc/oauth2_proxy/basicauth
       readOnly: true
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-reports-authproxy-scratch" .Chart.Name) "scratch" .Values.oauth2Proxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.oauth2Proxy.config.extra).volumeMounts) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end }}
 {{- end}}

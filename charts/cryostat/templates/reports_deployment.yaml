@@ -71,6 +71,16 @@ spec:
             failureThreshold: 2
           resources:
             {{- toYaml (.Values.reports).resources | nindent 12 }}
+          {{- $reportsScratchMount := include "cryostat.scratch.mount" (dict "name" (printf "%s-reports-scratch" .Chart.Name) "scratch" .Values.reports.scratch "mountPath" "/tmp") }}
+          {{- if or $reportsScratchMount ((.Values.reports.config.extra).volumeMounts) }}
+          volumeMounts:
+          {{- with $reportsScratchMount }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with ((.Values.reports.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- end }}
       {{- with (default .Values.nodeSelector .Values.reports.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -96,5 +106,19 @@ spec:
       - name: {{ .Release.Name }}-oauth2proxy-reports-tls
         secret:
           secretName: {{ .Release.Name }}-oauth2proxy-reports-tls
+      {{- end }}
+      {{- $authProxyScratch := ternary .Values.openshiftOauthProxy.scratch .Values.oauth2Proxy.scratch ((.Values.authentication.openshift).enabled | default false) }}
+      {{- $authProxyExtra := ternary ((.Values.openshiftOauthProxy.config.extra).volumes) ((.Values.oauth2Proxy.config.extra).volumes) ((.Values.authentication.openshift).enabled | default false) }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-reports-scratch" .Chart.Name) "scratch" .Values.reports.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-reports-authproxy-scratch" .Chart.Name) "scratch" $authProxyScratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.reports.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with $authProxyExtra }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
 {{- end -}}

@@ -69,6 +69,12 @@ Create OpenShift OAuth Proxy container.
     {{- end }}
     - name: {{ .Release.Name }}-proxy-tls
       mountPath: /etc/tls/private
+    {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-authproxy-scratch" .Chart.Name) "scratch" .Values.openshiftOauthProxy.scratch "mountPath" "/tmp")) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with ((.Values.openshiftOauthProxy.config.extra).volumeMounts) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
 {{- end}}

@@ -417,3 +417,98 @@ tests:
           - configMapRef:
               name: cm-special-config
               optional: false
+
+  # The postgres image writes its nss_wrapper passwd file and generated configuration into
+  # $HOME, its socket and lock files into /var/run/postgresql, and temporary files into /tmp.
+  # The data volume stays mounted at /var/lib/pgsql/data, nested inside the scratch mount.
+  - it: should mount a default scratch emptyDir on the database container
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db-scratch')]
+          value:
+            name: cryostat-db-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/lib/pgsql')]
+          value:
+            name: cryostat-db-scratch
+            mountPath: /var/lib/pgsql
+            subPath: home
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/run/postgresql')]
+          value:
+            name: cryostat-db-scratch
+            mountPath: /var/run/postgresql
+            subPath: run
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/tmp')]
+          value:
+            name: cryostat-db-scratch
+            mountPath: /tmp
+            subPath: tmp
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[0].mountPath
+          value: "/var/lib/pgsql/data"
+
+  - it: should omit the database scratch volume when it is disabled
+    set:
+      db.scratch.emptyDir.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/lib/pgsql')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/run/postgresql')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/tmp')]
+
+  - it: should back the database scratch volume with a generic ephemeral volume
+    set:
+      db.scratch.volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-db-scratch')]
+          value:
+            name: cryostat-db-scratch
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+  - it: should add extra volumes and volume mounts for the database container
+    set:
+      db.config.extra.volumes:
+        - name: db-extra
+          emptyDir: {}
+      db.config.extra.volumeMounts:
+        - name: db-extra
+          mountPath: /var/cache/cryostat-db
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='db-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.name=='db-extra')]
+          value:
+            name: db-extra
+            mountPath: /var/cache/cryostat-db
+
+  - it: should start the database container with a read-only root filesystem
+    set:
+      db.securityContext.readOnlyRootFilesystem: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-db')].volumeMounts[?(@.mountPath=='/var/lib/pgsql')]
