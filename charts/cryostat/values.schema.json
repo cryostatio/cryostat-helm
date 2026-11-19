@@ -216,6 +216,36 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the Cryostat container. Ignored when `core.scratch.volumeClaimTemplate` is set, which takes precedence. When neither is configured, `/tmp` falls back to the container runtime's writable layer, which a cluster policy enforcing `readOnlyRootFilesystem: true` makes unwritable",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `4Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod, whereas a volume provisioned from a StorageClass fails only the offending write",
+                                    "default": ""
+                                }
+                            }
+                        },
+                        "cachePercentage": {
+                            "type": "number",
+                            "description": "Percentage of the scratch volume dedicated to the JFR file-backed analysis on-disk cache, leaving the remainder for merging, splitting and upload staging. The chart sets `CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT` to `floor(sizeMiB * cachePercentage / 100)`, sizing against `core.scratch.volumeClaimTemplate`'s storage request, else `core.scratch.emptyDir.sizeLimit`, else `core.resources.limits.ephemeral-storage`. If the scratch `emptyDir`'s medium is not `Memory` and `core.resources.limits.ephemeral-storage` is also set and smaller, that smaller limit is used instead, since a disk-backed `emptyDir`'s usage counts against the Pod's ephemeral-storage and the kubelet enforces whichever bound is reached first. When none of those give a size, Cryostat's own default cache size stands. The largest single recording the JFR file-backed analysis features can process is `(cachePercentage / 100) * volumeSize`",
+                            "default": 50
+                        }
+                    }
+                },
                 "databaseSecretName": {
                     "type": "string",
                     "description": "Name of the secret containing database keys. This secret must contain a USERNAME secret which is the database connection username, a CONNECTION_KEY secret which is the database connection password, and an ENCRYPTION_KEY secret which is the key used to encrypt sensitive data stored within the database, such as the target credentials keyring. It must not be updated across chart upgrades. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable",
@@ -356,6 +386,18 @@
                                     "description": "Sources for extra variables for main Cryostat container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
                                     "default": [],
                                     "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Cryostat Pod for the main Cryostat container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the main Cryostat container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
+                                    "default": [],
+                                    "items": {}
                                 }
                             }
                         }
@@ -477,6 +519,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the Report Generator container. Ignored when `reports.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -492,6 +559,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the Report Generator container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Report Generator Pods for the Report Generator container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the Report Generator container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 }
@@ -530,16 +609,6 @@
                         }
                     }
                 },
-                "provider": {
-                    "type": "object",
-                    "properties": {
-                        "url": {
-                            "type": "string",
-                            "description": "URL to the database instance. This can be an in-cluster self-hosted instance with a hostname like db.myapp.local, or it can be an external commercial service. This should be a complete JDBC URL with scheme, host, and port. User authentication information should be provided using a *Secret* and *core.databaseSecretName*. If this URL is not specified then a managed [cryostat-db](https://github.com/cryostatio/cryostat-db) instance will be automatically deployed and configured. If an unmanaged database instance is specified here then other database configuration settings (Pod annotations, Service configurations) do not apply. The database must be a Postgres instance with the pgcrypto extension enabled.",
-                            "default": ""
-                        }
-                    }
-                },
                 "securityContext": {
                     "type": "object",
                     "properties": {
@@ -562,6 +631,16 @@
                             "type": "boolean",
                             "description": "",
                             "default": false
+                        }
+                    }
+                },
+                "provider": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "URL to the database instance. This can be an in-cluster self-hosted instance with a hostname like db.myapp.local, or it can be an external commercial service. This should be a complete JDBC URL with scheme, host, and port. User authentication information should be provided using a *Secret* and *core.databaseSecretName*. If this URL is not specified then a managed [cryostat-db](https://github.com/cryostatio/cryostat-db) instance will be automatically deployed and configured. If an unmanaged database instance is specified here then other database configuration settings (Pod annotations, Service configurations) do not apply. The database must be a Postgres instance with the pgcrypto extension enabled.",
+                            "default": ""
                         }
                     }
                 },
@@ -625,6 +704,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at the database container's writable paths. Ignored when `db.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -640,6 +744,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Database Pod for the database container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the database container. Mount paths must not collide with those the chart already mounts, including the data volume and the scratch volume. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 }
@@ -898,6 +1014,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the object storage container. Ignored when `storage.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -913,6 +1054,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Storage Pod for the object storage container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the object storage container. Mount paths must not collide with those the chart already mounts, including the data volume at `/data` and the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 }
@@ -996,6 +1149,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/var/lib/grafana/data` in the Grafana container. Ignored when `grafana.scratch.volumeClaimTemplate` is set, which takes precedence. When neither is configured, `GF_PATHS_DATA` is left at the image's default of `/var/lib/grafana`",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -1011,6 +1189,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Cryostat Pod for the Grafana container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the Grafana container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/var/lib/grafana/data`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 }
@@ -1094,6 +1284,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the JFR Data Source container. Ignored when `datasource.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -1109,6 +1324,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the JFR Data Source container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Cryostat Pod for the JFR Data Source container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the JFR Data Source container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 }
@@ -1207,6 +1434,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the OAuth2 Proxy container. Ignored when `oauth2Proxy.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": false
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -1222,6 +1474,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add, for the OAuth2 Proxy container, to every Pod the OAuth2 Proxy runs in. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the OAuth2 Proxy container. Mount paths must not collide with those the chart already mounts. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 },
@@ -1448,6 +1712,31 @@
                         }
                     }
                 },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the OpenShift OAuth Proxy container. Ignored when `openshiftOauthProxy.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -1463,6 +1752,18 @@
                                 "envSources": {
                                     "type": "array",
                                     "description": "Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add, for the OpenShift OAuth Proxy container, to every Pod the OpenShift OAuth Proxy runs in. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the OpenShift OAuth Proxy container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
                                     "default": [],
                                     "items": {}
                                 },
@@ -1574,6 +1875,53 @@
                                     "type": "string",
                                     "description": "Memory resource request for the auth strip proxy container",
                                     "default": "64Mi"
+                                }
+                            }
+                        }
+                    }
+                },
+                "scratch": {
+                    "type": "object",
+                    "properties": {
+                        "emptyDir": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether an `emptyDir` is mounted at `/tmp` in the auth strip proxy container. Ignored when `authStripProxy.scratch.volumeClaimTemplate` is set, which takes precedence",
+                                    "default": true
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "description": "Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+                                    "default": ""
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "description": "Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "extra": {
+                            "type": "object",
+                            "properties": {
+                                "volumes": {
+                                    "type": "array",
+                                    "description": "Extra volumes to add to the Cryostat Pod for the auth strip proxy container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)",
+                                    "default": [],
+                                    "items": {}
+                                },
+                                "volumeMounts": {
+                                    "type": "array",
+                                    "description": "Extra volume mounts for the auth strip proxy container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)",
+                                    "default": [],
+                                    "items": {}
                                 }
                             }
                         }

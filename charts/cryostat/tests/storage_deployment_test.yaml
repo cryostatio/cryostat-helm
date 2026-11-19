@@ -477,3 +477,80 @@ tests:
           - configMapRef:
               name: cm-special-config
               optional: false
+
+  # SeaweedFS writes its log files and unix sockets into /tmp, and the entrypoint renders its
+  # configuration there with mktemp.
+  - it: should mount a default scratch emptyDir on the storage container
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage-scratch')]
+          value:
+            name: cryostat-storage-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[?(@.name=='cryostat-storage-scratch')]
+          value:
+            name: cryostat-storage-scratch
+            mountPath: /tmp
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[0].mountPath
+          value: "/data"
+
+  - it: should omit the storage scratch volume when it is disabled
+    set:
+      storage.scratch.emptyDir.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[?(@.name=='cryostat-storage-scratch')]
+
+  - it: should back the storage scratch volume with a generic ephemeral volume
+    set:
+      storage.scratch.volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-storage-scratch')]
+          value:
+            name: cryostat-storage-scratch
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+  - it: should add extra volumes and volume mounts for the storage container
+    set:
+      storage.config.extra.volumes:
+        - name: storage-extra
+          emptyDir: {}
+      storage.config.extra.volumeMounts:
+        - name: storage-extra
+          mountPath: /var/cache/cryostat-storage
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='storage-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[?(@.name=='storage-extra')]
+          value:
+            name: storage-extra
+            mountPath: /var/cache/cryostat-storage
+
+  - it: should start the storage container with a read-only root filesystem
+    set:
+      storage.securityContext.readOnlyRootFilesystem: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-storage')].volumeMounts[?(@.mountPath=='/tmp')]

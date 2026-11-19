@@ -189,6 +189,13 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
+          {{- with (include "cryostat.core.jfrAnalysisCacheMaxWeight" .) }}
+          # Keep Cryostat's own eviction bound for the on-disk JFR analysis cache consistent
+          # with the scratch space the Pod is actually given, rather than letting the cache
+          # grow until the scratch volume fills or the kubelet evicts the Pod.
+          - name: CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT
+            value: {{ . | quote }}
+          {{- end }}
           {{- $auditMode := .Values.core.audit.mode | toString -}}
           {{- $auditEnabled := include "cryostat.core.audit.enabled" . | trim -}}
           {{- $extraAuditEnvExists := false -}}
@@ -276,6 +283,12 @@ spec:
               mountPath: /opt/cryostat.d/credentials.d/{{ . }}
               readOnly: true
           {{- end}}
+          {{- with (include "cryostat.scratch.mount" (dict "name" (printf "%s-scratch" .Chart.Name) "scratch" .Values.core.scratch "mountPath" "/tmp")) }}
+          {{- . | nindent 12 }}
+          {{- end }}
+          {{- with ((.Values.core.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "grafana" }}
           securityContext:
             {{- toYaml .Values.grafana.securityContext | nindent 12 }}
@@ -292,6 +305,18 @@ spec:
             value: "true"
           - name: JFR_DATASOURCE_URL
             value: http://localhost:8800
+          {{- if eq (include "cryostat.scratch.enabled" .Values.grafana.scratch) "true" }}
+          # Grafana's data directory has to move onto the scratch volume rather than the volume
+          # covering it where it is: its default location, /var/lib/grafana, also holds the
+          # plugins shipped in the image, which an emptyDir over that path would hide.
+          - name: GF_PATHS_DATA
+            value: {{ include "cryostat.grafana.scratchPath" . }}
+          # The Infinity datasource plugin is a separate Go binary (hashicorp/go-plugin) that
+          # writes its own temp files straight to os.TempDir(), independent of GF_PATHS_DATA.
+          # Without this, that lands on the read-only root filesystem at the default /tmp.
+          - name: TMPDIR
+            value: {{ include "cryostat.grafana.scratchPath" . }}
+          {{- end }}
           {{- with (.Values.grafana.config).extra.envVars }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -308,6 +333,16 @@ spec:
               port: 3000
           resources:
             {{- toYaml .Values.grafana.resources | nindent 12 }}
+          {{- $grafanaScratchMount := include "cryostat.scratch.mount" (dict "name" (printf "%s-grafana-scratch" .Chart.Name) "scratch" .Values.grafana.scratch "mountPath" (include "cryostat.grafana.scratchPath" .)) }}
+          {{- if or $grafanaScratchMount ((.Values.grafana.config.extra).volumeMounts) }}
+          volumeMounts:
+          {{- with $grafanaScratchMount }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with ((.Values.grafana.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- end }}
         - name: {{ printf "%s-%s" .Chart.Name "jfr-datasource" }}
           securityContext:
             {{- toYaml .Values.datasource.securityContext | nindent 12 }}
@@ -336,6 +371,16 @@ spec:
               - http://localhost:8800
           resources:
             {{- toYaml .Values.datasource.resources | nindent 12 }}
+          {{- $datasourceScratchMount := include "cryostat.scratch.mount" (dict "name" (printf "%s-jfr-datasource-scratch" .Chart.Name) "scratch" .Values.datasource.scratch "mountPath" "/tmp") }}
+          {{- if or $datasourceScratchMount ((.Values.datasource.config.extra).volumeMounts) }}
+          volumeMounts:
+          {{- with $datasourceScratchMount }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with ((.Values.datasource.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- end }}
       {{- with (default .Values.nodeSelector .Values.core.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -413,4 +458,36 @@ spec:
                 name: {{ . }}
                 optional: false
             {{- end }}
+      {{- end }}
+      {{- $authProxyScratch := ternary .Values.openshiftOauthProxy.scratch .Values.oauth2Proxy.scratch ((.Values.authentication.openshift).enabled | default false) }}
+      {{- $authProxyExtra := ternary ((.Values.openshiftOauthProxy.config.extra).volumes) ((.Values.oauth2Proxy.config.extra).volumes) ((.Values.authentication.openshift).enabled | default false) }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-scratch" .Chart.Name) "scratch" .Values.core.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-grafana-scratch" .Chart.Name) "scratch" .Values.grafana.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-jfr-datasource-scratch" .Chart.Name) "scratch" .Values.datasource.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-auth-strip-proxy-scratch" .Chart.Name) "scratch" .Values.authStripProxy.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-authproxy-scratch" .Chart.Name) "scratch" $authProxyScratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.core.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.grafana.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.datasource.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.authStripProxy.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with $authProxyExtra }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}

@@ -82,6 +82,19 @@ spec:
           - mountPath: /var/lib/pgsql/data
             name: {{ .Chart.Name }}-db
             subPath: postgres
+          {{- $dbScratch := dict "name" (printf "%s-db-scratch" .Chart.Name) "scratch" .Values.db.scratch }}
+          {{- with (include "cryostat.scratch.mount" (merge (dict "mountPath" "/var/lib/pgsql" "subPath" "home") $dbScratch)) }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with (include "cryostat.scratch.mount" (merge (dict "mountPath" "/var/run/postgresql" "subPath" "run") $dbScratch)) }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with (include "cryostat.scratch.mount" (merge (dict "mountPath" "/tmp" "subPath" "tmp") $dbScratch)) }}
+          {{- . | nindent 10 }}
+          {{- end }}
+          {{- with ((.Values.db.config.extra).volumeMounts) }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           readinessProbe:
             exec:
               command:
@@ -113,5 +126,11 @@ spec:
       {{- if not ((.Values.db.pvc).enabled) }}
       - name: {{ .Chart.Name }}-db
         emptyDir: {}
+      {{- end }}
+      {{- with (include "cryostat.scratch.volume" (dict "name" (printf "%s-db-scratch" .Chart.Name) "scratch" .Values.db.scratch)) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      {{- with ((.Values.db.config.extra).volumes) }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
 {{- end }}

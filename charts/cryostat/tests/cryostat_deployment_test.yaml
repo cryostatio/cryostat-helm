@@ -622,6 +622,31 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].livenessProbe.httpGet.port
           value: 8180
 
+  # Before nginx parses its own config's "error_log stderr notice;" directive, it first tries
+  # to open its compiled-in default error log at /var/log/nginx/error.log, which is unwritable
+  # on a read-only root filesystem. The -e flag redirects that pre-configuration fallback.
+  - it: should leave nginx's pre-configuration error log at its default by default
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].command
+          value:
+            - nginx
+            - -c
+            - /etc/nginx-auth-strip/nginx.conf
+            - -g
+            - daemon off;
+
+  - it: should redirect nginx's pre-configuration error log off the root filesystem when read-only
+    set:
+      authStripProxy.securityContext.readOnlyRootFilesystem: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].command[3]
+          value: "-e"
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].command[4]
+          value: "/dev/stderr"
+
   - it: should run the auth strip proxy alongside the OpenShift OAuth proxy
     set:
       authentication.openshift.enabled: true
@@ -639,7 +664,7 @@ tests:
   - it: should validate volumes and volume mounts
     asserts:
       - lengthEqual:
-          count: 3
+          count: 7
           path: spec.template.spec.volumes
       - exists:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
@@ -659,7 +684,7 @@ tests:
       oauth2Proxy.tls.selfSigned.enabled: true
     asserts:
       - lengthEqual:
-          count: 4
+          count: 8
           path: spec.template.spec.volumes
       - exists:
           path: spec.template.spec.volumes[?(@.name=='alpha-config')]
@@ -953,6 +978,8 @@ tests:
             - name: b
               mountPath: /truststore/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -972,6 +999,14 @@ tests:
             - name: b
               secret:
                 secretName: b
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
 
   - it: should add volume mounts for declarative event templates
@@ -987,6 +1022,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/templates.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1006,6 +1043,14 @@ tests:
             - name: b
               configMap:
                 name: b
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should add volume mounts for declarative automated rules
     set:
@@ -1020,6 +1065,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/rules.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1043,6 +1090,14 @@ tests:
                   - configMap:
                       name: b
                       optional: false
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should add volume mounts for declarative rules with a specific default fs mode
     set:
@@ -1058,6 +1113,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/rules.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1081,6 +1138,14 @@ tests:
                   - configMap:
                       name: b
                       optional: false  
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should add volume mounts for declarative probe templates
     set:
@@ -1095,6 +1160,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/probes.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1118,6 +1185,14 @@ tests:
                   - configMap:
                       name: b
                       optional: false
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should add volume mounts for declarative probe templates with a specific default fs mode
     set: 
@@ -1133,6 +1208,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/probes.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1156,6 +1233,14 @@ tests:
                   - configMap:
                       name: b
                       optional: false
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should add volume mounts for declarative credentials with a specific default fs mode
     set:
@@ -1171,6 +1256,8 @@ tests:
             - name: b
               mountPath: /opt/cryostat.d/credentials.d/b
               readOnly: true
+            - name: cryostat-scratch
+              mountPath: /tmp
       - equal:
           path: spec.template.spec.volumes
           value:
@@ -1192,6 +1279,14 @@ tests:
               secret:
                 secretName: b
                 optional: false  
+            - name: cryostat-scratch
+              emptyDir: {}
+            - name: cryostat-grafana-scratch
+              emptyDir: {}
+            - name: cryostat-jfr-datasource-scratch
+              emptyDir: {}
+            - name: cryostat-auth-strip-proxy-scratch
+              emptyDir: {}
 
   - it: should set extra env vars and env sources for main container
     set:
@@ -1706,3 +1801,400 @@ tests:
       - contains:
           path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].args
           content: "--pass-access-token=false"
+
+  - it: should mount a default scratch emptyDir on each container of the Cryostat Pod
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-scratch')]
+          value:
+            name: cryostat-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts[?(@.name=='cryostat-scratch')]
+          value:
+            name: cryostat-scratch
+            mountPath: /tmp
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-jfr-datasource-scratch')]
+          value:
+            name: cryostat-jfr-datasource-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].volumeMounts[?(@.name=='cryostat-jfr-datasource-scratch')]
+          value:
+            name: cryostat-jfr-datasource-scratch
+            mountPath: /tmp
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-auth-strip-proxy-scratch')]
+          value:
+            name: cryostat-auth-strip-proxy-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].volumeMounts[?(@.name=='cryostat-auth-strip-proxy-scratch')]
+          value:
+            name: cryostat-auth-strip-proxy-scratch
+            mountPath: /tmp
+
+  # Grafana cannot take an emptyDir over /var/lib/grafana, because that directory also holds the
+  # plugins shipped in the image. Its data directory is relocated to a subdirectory instead.
+  - it: should relocate the Grafana data directory onto a scratch volume
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-grafana-scratch')]
+          value:
+            name: cryostat-grafana-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].volumeMounts[?(@.name=='cryostat-grafana-scratch')]
+          value:
+            name: cryostat-grafana-scratch
+            mountPath: /var/lib/grafana/data
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_PATHS_DATA')].value
+          value: /var/lib/grafana/data
+      # The Infinity datasource plugin is a separate process that writes its own temp files
+      # straight to os.TempDir(), independent of GF_PATHS_DATA, so TMPDIR has to be redirected
+      # too.
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='TMPDIR')].value
+          value: /var/lib/grafana/data
+
+  - it: should not relocate the Grafana data directory when its scratch volume is disabled
+    set:
+      grafana.scratch.emptyDir.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-grafana-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].volumeMounts[?(@.name=='cryostat-grafana-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='GF_PATHS_DATA')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].env[?(@.name=='TMPDIR')]
+
+  # oauth2-proxy already runs with a read-only root filesystem, so it gets no scratch volume
+  # unless one is asked for.
+  - it: should not mount a scratch volume on the OAuth2 Proxy by default
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-authproxy-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.name=='cryostat-authproxy-scratch')]
+
+  - it: should mount a scratch volume on the OAuth2 Proxy when enabled
+    set:
+      oauth2Proxy.scratch.emptyDir.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-authproxy-scratch')]
+          value:
+            name: cryostat-authproxy-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.name=='cryostat-authproxy-scratch')]
+          value:
+            name: cryostat-authproxy-scratch
+            mountPath: /tmp
+
+  - it: should mount a default scratch volume on the OpenShift OAuth Proxy
+    set:
+      authentication.openshift.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-authproxy-scratch')]
+          value:
+            name: cryostat-authproxy-scratch
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.name=='cryostat-authproxy-scratch')]
+          value:
+            name: cryostat-authproxy-scratch
+            mountPath: /tmp
+
+  - it: should apply the scratch emptyDir medium and size limit
+    set:
+      core.scratch.emptyDir.medium: Memory
+      core.scratch.emptyDir.sizeLimit: 512Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-scratch')]
+          value:
+            name: cryostat-scratch
+            emptyDir:
+              medium: Memory
+              sizeLimit: 512Mi
+
+  - it: should back the scratch volume with a generic ephemeral volume when a claim template is given
+    set:
+      core.scratch.volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: fast
+          resources:
+            requests:
+              storage: 4Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-scratch')]
+          value:
+            name: cryostat-scratch
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  storageClassName: fast
+                  resources:
+                    requests:
+                      storage: 4Gi
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts[?(@.name=='cryostat-scratch')]
+          value:
+            name: cryostat-scratch
+            mountPath: /tmp
+
+  - it: should omit the scratch volume entirely when it is disabled
+    set:
+      core.scratch.emptyDir.enabled: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.volumes[?(@.name=='cryostat-scratch')]
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts[?(@.name=='cryostat-scratch')]
+
+  # The on-disk JFR analysis cache evicts against a weight in MiB. Sizing it from the scratch
+  # volume keeps Cryostat's own bound consistent with the space actually provisioned. With no
+  # sized volume there is nothing to size it against, so Cryostat's built-in default stands.
+  - it: should not set the JFR analysis cache weight when the scratch volume is unsized
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')]
+
+  - it: should derive the JFR analysis cache weight from the scratch emptyDir size limit
+    set:
+      core.scratch.emptyDir.sizeLimit: 4Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "2048"
+
+  - it: should apply a custom cache percentage to the JFR analysis cache weight
+    set:
+      core.scratch.emptyDir.sizeLimit: 4Gi
+      core.scratch.cachePercentage: 25
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "1024"
+
+  - it: should derive the JFR analysis cache weight from the scratch claim template size
+    set:
+      core.scratch.volumeClaimTemplate:
+        spec:
+          resources:
+            requests:
+              storage: 2Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "1024"
+
+  # Without a sized scratch volume, writes still land on the container runtime's overlay layer,
+  # so an ephemeral-storage limit is the next best bound to size the cache against.
+  - it: should fall back to the ephemeral storage limit for the JFR analysis cache weight
+    set:
+      core.resources.limits.ephemeral-storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "512"
+
+  # A disk-backed emptyDir's usage counts against the Pod's ephemeral-storage accounting, so the
+  # smaller of the two bounds is the one the kubelet actually enforces. Sizing the cache against
+  # the larger, unenforced emptyDir sizeLimit would let it grow past the space actually available.
+  - it: should bound a disk-backed emptyDir's size by a smaller ephemeral storage limit
+    set:
+      core.scratch.emptyDir.sizeLimit: 8Gi
+      core.resources.limits.ephemeral-storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "512"
+
+  # A Memory-medium emptyDir is backed by tmpfs, which is accounted against the Pod's memory
+  # rather than its ephemeral-storage, so an ephemeral-storage limit does not bound it.
+  - it: should not bound a Memory-medium emptyDir's size by the ephemeral storage limit
+    set:
+      core.scratch.emptyDir.medium: Memory
+      core.scratch.emptyDir.sizeLimit: 8Gi
+      core.resources.limits.ephemeral-storage: 1Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "4096"
+
+  - it: should accept decimal SI quantities for the scratch size
+    set:
+      core.scratch.emptyDir.sizeLimit: 2G
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "953"
+
+  - it: should accept fractional binary quantities for the scratch size
+    set:
+      core.scratch.emptyDir.sizeLimit: 0.5Gi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "256"
+
+  - it: should accept decimal exponent quantities for the scratch size
+    set:
+      core.scratch.emptyDir.sizeLimit: "1e9"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "476"
+
+  - it: should add extra volumes and volume mounts for the Cryostat container
+    set:
+      core.config.extra.volumes:
+        - name: core-extra
+          emptyDir: {}
+      core.config.extra.volumeMounts:
+        - name: core-extra
+          mountPath: /var/cache/cryostat
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name=='core-extra')]
+          value:
+            name: core-extra
+            emptyDir: {}
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts[?(@.name=='core-extra')]
+          value:
+            name: core-extra
+            mountPath: /var/cache/cryostat
+
+  - it: should add extra volumes and volume mounts for the Grafana container
+    set:
+      grafana.config.extra.volumes:
+        - name: grafana-extra
+          emptyDir: {}
+      grafana.config.extra.volumeMounts:
+        - name: grafana-extra
+          mountPath: /var/lib/grafana/extra
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='grafana-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].volumeMounts[?(@.name=='grafana-extra')]
+          value:
+            name: grafana-extra
+            mountPath: /var/lib/grafana/extra
+
+  - it: should add extra volumes and volume mounts for the JFR Data Source container
+    set:
+      datasource.config.extra.volumes:
+        - name: datasource-extra
+          emptyDir: {}
+      datasource.config.extra.volumeMounts:
+        - name: datasource-extra
+          mountPath: /var/cache/jfr-datasource
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='datasource-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].volumeMounts[?(@.name=='datasource-extra')]
+          value:
+            name: datasource-extra
+            mountPath: /var/cache/jfr-datasource
+
+  - it: should add extra volumes and volume mounts for the auth strip proxy container
+    set:
+      authStripProxy.config.extra.volumes:
+        - name: authstrip-extra
+          emptyDir: {}
+      authStripProxy.config.extra.volumeMounts:
+        - name: authstrip-extra
+          mountPath: /var/cache/nginx-extra
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='authstrip-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].volumeMounts[?(@.name=='authstrip-extra')]
+          value:
+            name: authstrip-extra
+            mountPath: /var/cache/nginx-extra
+
+  - it: should add extra volumes and volume mounts for the OAuth2 Proxy container
+    set:
+      oauth2Proxy.config.extra.volumes:
+        - name: authproxy-extra
+          emptyDir: {}
+      oauth2Proxy.config.extra.volumeMounts:
+        - name: authproxy-extra
+          mountPath: /var/cache/oauth2-proxy
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='authproxy-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.name=='authproxy-extra')]
+          value:
+            name: authproxy-extra
+            mountPath: /var/cache/oauth2-proxy
+
+  - it: should add extra volumes and volume mounts for the OpenShift OAuth Proxy container
+    set:
+      authentication.openshift.enabled: true
+      openshiftOauthProxy.config.extra.volumes:
+        - name: authproxy-extra
+          emptyDir: {}
+      openshiftOauthProxy.config.extra.volumeMounts:
+        - name: authproxy-extra
+          mountPath: /var/cache/oauth-proxy
+    asserts:
+      - exists:
+          path: spec.template.spec.volumes[?(@.name=='authproxy-extra')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.name=='authproxy-extra')]
+          value:
+            name: authproxy-extra
+            mountPath: /var/cache/oauth-proxy
+
+  - it: should start every container in the Cryostat Pod with a read-only root filesystem
+    set:
+      core.securityContext.readOnlyRootFilesystem: true
+      grafana.securityContext.readOnlyRootFilesystem: true
+      datasource.securityContext.readOnlyRootFilesystem: true
+      authStripProxy.securityContext.readOnlyRootFilesystem: true
+      oauth2Proxy.securityContext.readOnlyRootFilesystem: true
+      oauth2Proxy.scratch.emptyDir.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].volumeMounts[?(@.mountPath=='/tmp')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-grafana')].volumeMounts[?(@.mountPath=='/var/lib/grafana/data')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-jfr-datasource')].volumeMounts[?(@.mountPath=='/tmp')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-auth-strip-proxy')].volumeMounts[?(@.mountPath=='/tmp')]
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].securityContext.readOnlyRootFilesystem
+          value: true
+      - exists:
+          path: spec.template.spec.containers[?(@.name=='cryostat-authproxy')].volumeMounts[?(@.mountPath=='/tmp')]
