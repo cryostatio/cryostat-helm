@@ -22,6 +22,19 @@
     "dependencyDashboardApproval": true
   },
   "stopUpdatingLabel": "blocked",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track the pinned kindest/node image passed to helm/kind-action's node_image input, independently of the action's own pinned digest",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "node_image:\\s+mirror\\.gcr\\.io/kindest/node:(?<currentValue>v[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ],
+      "depNameTemplate": "kindest/node",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver-coerced"
+    }
+  ],
   "packageRules": [
     {
       "description": "Disable digest pinning for all images in values.yaml, which use floating mutable development snapshot tags",
