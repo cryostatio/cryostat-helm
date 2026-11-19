@@ -2050,6 +2050,14 @@ tests:
           path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
           value: "256"
 
+  - it: should accept decimal exponent quantities for the scratch size
+    set:
+      core.scratch.emptyDir.sizeLimit: "1e9"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='cryostat')].env[?(@.name=='CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT')].value
+          value: "476"
+
   - it: should add extra volumes and volume mounts for the Cryostat container
     set:
       core.config.extra.volumes:

@@ -369,7 +369,8 @@ Usage: include "cryostat.scratch.mount" (dict "name" "cryostat-scratch" "scratch
 {{/*
 Convert a Kubernetes resource quantity to a whole number of bytes. Understands the binary
 (Ki, Mi, Gi, Ti, Pi, Ei) and decimal (k, M, G, T, P, E) suffixes, a fractional amount of either
-(ex. 0.5Gi), and a bare integer. Returns 0 for anything else.
+(ex. 0.5Gi), a bare integer or decimal, and decimal exponent notation. Fails chart
+rendering if the quantity does not match any of these forms.
 */}}
 {{- define "cryostat.quantityToBytes" -}}
 {{- $quantity := . | toString | trim -}}
@@ -411,10 +412,36 @@ Convert a Kubernetes resource quantity to a whole number of bytes. Understands t
 {{- end -}}
 {{- if not $matched -}}
 {{- if regexMatch "^[0-9]+$" $quantity -}}
+{{- $matched = true -}}
 {{- $bytes = int64 $quantity -}}
 {{- else if regexMatch "^[0-9]+\\.[0-9]+$" $quantity -}}
+{{- $matched = true -}}
 {{- $bytes = float64 $quantity | int64 -}}
+{{- else if regexMatch "^[0-9]+(\\.[0-9]+)?[eE][+-]?[0-9]+$" $quantity -}}
+{{/*
+   Decimal exponent form (ex. 1e9): repeated multiplication/division by 10, since sprig has
+   no "pow" function to compute the multiplier directly.
+*/}}
+{{- $matched = true -}}
+{{- $parts := splitList "e" (lower $quantity) -}}
+{{- $value := float64 (index $parts 0) -}}
+{{- $exponent := int (index $parts 1) -}}
+{{- $steps := $exponent -}}
+{{- if lt $exponent 0 -}}
+{{- $steps = int (mul $exponent -1) -}}
 {{- end -}}
+{{- range until $steps -}}
+{{- if lt $exponent 0 -}}
+{{- $value = divf $value 10.0 -}}
+{{- else -}}
+{{- $value = mulf $value 10.0 -}}
+{{- end -}}
+{{- end -}}
+{{- $bytes = int64 $value -}}
+{{- end -}}
+{{- end -}}
+{{- if not $matched -}}
+{{- fail (printf "cryostat.quantityToBytes: unrecognized resource quantity %q" $quantity) -}}
 {{- end -}}
 {{- $bytes -}}
 {{- end -}}
