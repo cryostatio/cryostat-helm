@@ -435,11 +435,13 @@ the container runtime's overlay layer, which that limit bounds directly.
 {{- $claimTemplate := $scratch.volumeClaimTemplate | default dict -}}
 {{- $ephemeralLimit := index ((.Values.core.resources).limits | default dict) "ephemeral-storage" | default "" -}}
 {{- $size := "" -}}
+{{- $memoryBacked := false -}}
 {{- if not (empty $claimTemplate) -}}
 {{- $size = ((($claimTemplate.spec).resources).requests).storage | default "" -}}
 {{- else if ($scratch.emptyDir).enabled -}}
 {{- $size = ($scratch.emptyDir).sizeLimit | default "" -}}
 {{- $medium := ($scratch.emptyDir).medium | default "" -}}
+{{- $memoryBacked := eq $medium "Memory" -}}
 {{- if and $size $ephemeralLimit (ne $medium "Memory") -}}
 {{- $sizeBytes := include "cryostat.quantityToBytes" $size | int64 -}}
 {{- $limitBytes := include "cryostat.quantityToBytes" $ephemeralLimit | int64 -}}
@@ -448,7 +450,7 @@ the container runtime's overlay layer, which that limit bounds directly.
 {{- end -}}
 {{- end -}}
 {{- end -}}
-{{- if not $size -}}
+{{- if and (not $size) (not $memoryBacked) -}}
 {{- $size = $ephemeralLimit -}}
 {{- end -}}
 {{- $size -}}
