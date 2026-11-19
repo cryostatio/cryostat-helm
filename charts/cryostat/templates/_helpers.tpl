@@ -468,7 +468,7 @@ the container runtime's overlay layer, which that limit bounds directly.
 {{- else if ($scratch.emptyDir).enabled -}}
 {{- $size = ($scratch.emptyDir).sizeLimit | default "" -}}
 {{- $medium := ($scratch.emptyDir).medium | default "" -}}
-{{- $memoryBacked := eq $medium "Memory" -}}
+{{- $memoryBacked = eq $medium "Memory" -}}
 {{- if and $size $ephemeralLimit (ne $medium "Memory") -}}
 {{- $sizeBytes := include "cryostat.quantityToBytes" $size | int64 -}}
 {{- $limitBytes := include "cryostat.quantityToBytes" $ephemeralLimit | int64 -}}
