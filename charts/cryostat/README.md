@@ -96,6 +96,9 @@ db:
 storage:
   securityContext:
     readOnlyRootFilesystem: true
+openshiftOauthProxy
+  securityContext:
+    readOnlyRootFilesystem: true
 ```
 
 Each container is given a writable scratch volume, mounted at the paths that container writes to.
