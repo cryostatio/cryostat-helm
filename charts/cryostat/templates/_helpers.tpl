@@ -306,6 +306,200 @@ Name of the Secret holding the auth strip proxy's shared secret.
 {{- end -}}
 
 {{/*
+Where Grafana's data directory lives when it is on a scratch volume. A subdirectory of
+/var/lib/grafana rather than that path itself, which also holds the plugins shipped in the
+image and so cannot be covered by a volume.
+*/}}
+{{- define "cryostat.grafana.scratchPath" -}}
+/var/lib/grafana/data
+{{- end -}}
+
+{{/*
+Whether a component has a scratch volume to mount. Returns the string "true", or the empty
+string. A claim template takes precedence over an emptyDir, so that a user who asks for one does
+not also have to disable the emptyDir that is enabled by default.
+Usage: include "cryostat.scratch.enabled" .Values.core.scratch
+*/}}
+{{- define "cryostat.scratch.enabled" -}}
+{{- $scratch := . | default dict -}}
+{{- if not (empty ($scratch.volumeClaimTemplate | default dict)) -}}
+true
+{{- else if ($scratch.emptyDir).enabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Render a component's scratch volume, or nothing if it has none. A claim template becomes a
+generic ephemeral volume: capacity comes from a StorageClass rather than the node's overlay
+partition, and the volume is created and deleted along with the Pod.
+Usage: include "cryostat.scratch.volume" (dict "name" "cryostat-scratch" "scratch" .Values.core.scratch)
+*/}}
+{{- define "cryostat.scratch.volume" -}}
+{{- $scratch := .scratch | default dict -}}
+{{- $claimTemplate := $scratch.volumeClaimTemplate | default dict -}}
+{{- if not (empty $claimTemplate) -}}
+- name: {{ .name }}
+  ephemeral:
+    volumeClaimTemplate:
+      {{- toYaml $claimTemplate | nindent 6 }}
+{{- else if ($scratch.emptyDir).enabled -}}
+{{- $emptyDir := dict -}}
+{{- with ($scratch.emptyDir).medium }}{{- $_ := set $emptyDir "medium" . -}}{{- end -}}
+{{- with ($scratch.emptyDir).sizeLimit }}{{- $_ := set $emptyDir "sizeLimit" . -}}{{- end -}}
+- name: {{ .name }}
+  emptyDir:{{ if $emptyDir }}{{ toYaml $emptyDir | nindent 4 }}{{ else }} {}{{ end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Render a mount of a component's scratch volume, or nothing if it has none.
+Usage: include "cryostat.scratch.mount" (dict "name" "cryostat-scratch" "scratch" .Values.core.scratch "mountPath" "/tmp" "subPath" "")
+*/}}
+{{- define "cryostat.scratch.mount" -}}
+{{- if eq (include "cryostat.scratch.enabled" .scratch) "true" -}}
+- name: {{ .name }}
+  mountPath: {{ .mountPath }}
+  {{- with .subPath }}
+  subPath: {{ . }}
+  {{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Convert a Kubernetes resource quantity to a whole number of bytes. Understands the binary
+(Ki, Mi, Gi, Ti, Pi, Ei) and decimal (k, M, G, T, P, E) suffixes, a fractional amount of either
+(ex. 0.5Gi), a bare integer or decimal, and decimal exponent notation. Fails chart
+rendering if the quantity does not match any of these forms.
+*/}}
+{{- define "cryostat.quantityToBytes" -}}
+{{- $quantity := . | toString | trim -}}
+{{- $suffixes := list
+  (list "Ki" 1024)
+  (list "Mi" 1048576)
+  (list "Gi" 1073741824)
+  (list "Ti" 1099511627776)
+  (list "Pi" 1125899906842624)
+  (list "Ei" 1152921504606846976)
+  (list "k" 1000)
+  (list "M" 1000000)
+  (list "G" 1000000000)
+  (list "T" 1000000000000)
+  (list "P" 1000000000000000)
+  (list "E" 1000000000000000000) -}}
+{{- $bytes := int64 0 -}}
+{{- $matched := false -}}
+{{- range $suffix := $suffixes -}}
+{{- $symbol := index $suffix 0 -}}
+{{- $factor := index $suffix 1 -}}
+{{- if and (not $matched) (hasSuffix $symbol $quantity) -}}
+{{- $digits := trimSuffix $symbol $quantity -}}
+{{- if regexMatch "^[0-9]+$" $digits -}}
+{{/*
+   Whole amount of the suffix: exact integer arithmetic.
+*/}}
+{{- $matched = true -}}
+{{- $bytes = mul (int64 $digits) (int64 $factor) -}}
+{{- else if regexMatch "^[0-9]+\\.[0-9]+$" $digits -}}
+{{/*
+   Fractional amount of the suffix (ex. 0.5Gi): floating-point arithmetic, since the amount
+   itself is not a whole number.
+*/}}
+{{- $matched = true -}}
+{{- $bytes = mulf (float64 $digits) (float64 $factor) | int64 -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if not $matched -}}
+{{- if regexMatch "^[0-9]+$" $quantity -}}
+{{- $matched = true -}}
+{{- $bytes = int64 $quantity -}}
+{{- else if regexMatch "^[0-9]+\\.[0-9]+$" $quantity -}}
+{{- $matched = true -}}
+{{- $bytes = float64 $quantity | int64 -}}
+{{- else if regexMatch "^[0-9]+(\\.[0-9]+)?[eE][+-]?[0-9]+$" $quantity -}}
+{{/*
+   Decimal exponent form (ex. 1e9): repeated multiplication/division by 10, since sprig has
+   no "pow" function to compute the multiplier directly.
+*/}}
+{{- $matched = true -}}
+{{- $parts := splitList "e" (lower $quantity) -}}
+{{- $value := float64 (index $parts 0) -}}
+{{- $exponent := int (index $parts 1) -}}
+{{- $steps := $exponent -}}
+{{- if lt $exponent 0 -}}
+{{- $steps = int (mul $exponent -1) -}}
+{{- end -}}
+{{- range until $steps -}}
+{{- if lt $exponent 0 -}}
+{{- $value = divf $value 10.0 -}}
+{{- else -}}
+{{- $value = mulf $value 10.0 -}}
+{{- end -}}
+{{- end -}}
+{{- $bytes = int64 $value -}}
+{{- end -}}
+{{- end -}}
+{{- if not $matched -}}
+{{- fail (printf "cryostat.quantityToBytes: unrecognized resource quantity %q" $quantity) -}}
+{{- end -}}
+{{- $bytes -}}
+{{- end -}}
+
+{{/*
+The size the Cryostat container's scratch space is bounded to, as a resource quantity, or the
+empty string if it is unbounded. A claim template's storage request is preferred and is never
+further bounded, since it provisions a separate PersistentVolume rather than counting against the
+Pod's ephemeral-storage. Otherwise, the scratch emptyDir's size limit is used; if its medium is
+not Memory (so it is backed by local disk, which does count against ephemeral-storage) and the
+container also has a smaller ephemeral-storage limit, that smaller limit is used instead, since
+the kubelet enforces whichever bound is reached first. With no sized scratch volume at all, any
+ephemeral-storage limit on the container is used as-is, since every scratch write then lands on
+the container runtime's overlay layer, which that limit bounds directly.
+*/}}
+{{- define "cryostat.core.scratchSize" -}}
+{{- $scratch := .Values.core.scratch | default dict -}}
+{{- $claimTemplate := $scratch.volumeClaimTemplate | default dict -}}
+{{- $ephemeralLimit := index ((.Values.core.resources).limits | default dict) "ephemeral-storage" | default "" -}}
+{{- $size := "" -}}
+{{- $memoryBacked := false -}}
+{{- if not (empty $claimTemplate) -}}
+{{- $size = ((($claimTemplate.spec).resources).requests).storage | default "" -}}
+{{- else if ($scratch.emptyDir).enabled -}}
+{{- $size = ($scratch.emptyDir).sizeLimit | default "" -}}
+{{- $medium := ($scratch.emptyDir).medium | default "" -}}
+{{- $memoryBacked = eq $medium "Memory" -}}
+{{- if and $size $ephemeralLimit (ne $medium "Memory") -}}
+{{- $sizeBytes := include "cryostat.quantityToBytes" $size | int64 -}}
+{{- $limitBytes := include "cryostat.quantityToBytes" $ephemeralLimit | int64 -}}
+{{- if lt $limitBytes $sizeBytes -}}
+{{- $size = $ephemeralLimit -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if and (not $size) (not $memoryBacked) -}}
+{{- $size = $ephemeralLimit -}}
+{{- end -}}
+{{- $size -}}
+{{- end -}}
+
+{{/*
+The weight, in MiB, to cap Cryostat's on-disk JFR analysis cache at, so that its own eviction
+bound matches the scratch space actually provisioned. Empty when no bound on that space is
+known, in which case Cryostat's built-in default stands.
+*/}}
+{{- define "cryostat.core.jfrAnalysisCacheMaxWeight" -}}
+{{- $size := include "cryostat.core.scratchSize" . -}}
+{{- if $size -}}
+{{- $bytes := include "cryostat.quantityToBytes" $size | int64 -}}
+{{- if gt $bytes (int64 0) -}}
+{{- $percentage := (.Values.core.scratch).cachePercentage | default 50 | int64 -}}
+{{- div (mul (div $bytes 1048576) $percentage) 100 -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get the name for managed deployments.
 */}}
 {{- define "cryostat.deploymentName" -}}

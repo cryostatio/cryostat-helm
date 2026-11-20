@@ -66,7 +66,7 @@ core:
       cpu: 500m
       ## @param core.resources.requests.memory Memory resource request for the Cryostat container
       memory: 384Mi
-  ## @param core.securityContext [object] Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param core.securityContext [object] Security Context for the Cryostat container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip core.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -74,6 +74,19 @@ core:
     capabilities:
       drop:
         - ALL
+  ## @extra core.scratch Configuration for the writable scratch volume mounted at `/tmp` in the Cryostat container. The Cryostat container materializes whole recording files under `/tmp` on a seekable filesystem for JFR file-backed analysis of archived recordings, local JFR file merging and splitting, and REST upload staging, so this is where that space is sized
+  scratch:
+    emptyDir:
+      ## @param core.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the Cryostat container. Ignored when `core.scratch.volumeClaimTemplate` is set, which takes precedence. When neither is configured, `/tmp` falls back to the container runtime's writable layer, which a cluster policy enforcing `readOnlyRootFilesystem: true` makes unwritable
+      enabled: true
+      ## @param core.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param core.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `4Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod, whereas a volume provisioned from a StorageClass fails only the offending write
+      sizeLimit: ""
+    ## @param core.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the Cryostat container, provisioned from a StorageClass and created and deleted along with the Pod. This is preferred over an `emptyDir` and takes precedence over it. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
+    ## @param core.scratch.cachePercentage Percentage of the scratch volume dedicated to the JFR file-backed analysis on-disk cache, leaving the remainder for merging, splitting and upload staging. The chart sets `CRYOSTAT_JFR_ANALYSIS_CACHE_MAX_WEIGHT` to `floor(sizeMiB * cachePercentage / 100)`, sizing against `core.scratch.volumeClaimTemplate`'s storage request, else `core.scratch.emptyDir.sizeLimit`, else `core.resources.limits.ephemeral-storage`. If the scratch `emptyDir`'s medium is not `Memory` and `core.resources.limits.ephemeral-storage` is also set and smaller, that smaller limit is used instead, since a disk-backed `emptyDir`'s usage counts against the Pod's ephemeral-storage and the kubelet enforces whichever bound is reached first. When none of those give a size, Cryostat's own default cache size stands. The largest single recording the JFR file-backed analysis features can process is `(cachePercentage / 100) * volumeSize`
+    cachePercentage: 50
   ## @param core.databaseSecretName Name of the secret containing database keys. This secret must contain a USERNAME secret which is the database connection username, a CONNECTION_KEY secret which is the database connection password, and an ENCRYPTION_KEY secret which is the key used to encrypt sensitive data stored within the database, such as the target credentials keyring. It must not be updated across chart upgrades. It is recommended that the secret should be marked as immutable to avoid accidental changes to secret's data. More details: https://kubernetes.io/docs/concepts/configuration/secret/#secret-immutable
   databaseSecretName: ""
   ## @extra core.discovery Configuration options to the Cryostat application's target discovery mechanisms
@@ -143,6 +156,10 @@ core:
       #      name: special-config
       #      optional: false
       envSources: []
+      ## @param core.config.extra.volumes [array] Extra volumes to add to the Cryostat Pod for the main Cryostat container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param core.config.extra.volumeMounts [array] Extra volume mounts for the main Cryostat container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param core.nodeSelector [object] Node Selector for the Cryostat Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param core.tolerations [array] Tolerations for the Cryostat Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -183,7 +200,7 @@ reports:
       cpu: 500m
       ## @param reports.resources.requests.memory Memory resource request for each Pod in the Report Generator Deployment
       memory: 512Mi
-  ## @param reports.securityContext [object] Security Context for the Report Generator containers. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param reports.securityContext [object] Security Context for the Report Generator containers. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip reports.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -191,6 +208,17 @@ reports:
     capabilities:
       drop:
         - ALL
+  ## @extra reports.scratch Configuration for the writable scratch volume mounted at `/tmp` in the Report Generator container, where it keeps its Vert.x cache
+  scratch:
+    emptyDir:
+      ## @param reports.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the Report Generator container. Ignored when `reports.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param reports.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param reports.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param reports.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the Report Generator container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `reports.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra reports.config.extra Extra configurations for the Report Generator container
     extra:
@@ -198,6 +226,10 @@ reports:
       envVars: []
       ## @param reports.config.extra.envSources [array] Sources for extra variables for the Report Generator container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param reports.config.extra.volumes [array] Extra volumes to add to the Report Generator Pods for the Report Generator container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param reports.config.extra.volumeMounts [array] Extra volume mounts for the Report Generator container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param reports.nodeSelector [object] Node Selector for the Report Generator Pods. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param reports.tolerations [array] Tolerations for the Report Generator Pods. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -247,7 +279,7 @@ db:
     selector: {}
     ## @param db.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
     # storageClassName: ""
-  ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param db.securityContext [object] Security Context for the database container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip db.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -255,6 +287,17 @@ db:
     capabilities:
       drop:
         - ALL
+  ## @extra db.scratch Configuration for the writable scratch volume mounted in the database container. One volume is mounted at `/var/lib/pgsql` (the Postgres user's home directory, where it writes its `nss_wrapper` passwd file and generated configuration), at `/var/run/postgresql` (socket and lock files) and at `/tmp`, each under its own subpath. The database's own data volume stays mounted at `/var/lib/pgsql/data`
+  scratch:
+    emptyDir:
+      ## @param db.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at the database container's writable paths. Ignored when `db.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param db.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param db.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param db.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at the database container's writable paths, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `db.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra db.config.extra Extra configurations for the database container
     extra:
@@ -262,6 +305,10 @@ db:
       envVars: []
       ## @param db.config.extra.envSources [array] Sources for extra variables for the database container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param db.config.extra.volumes [array] Extra volumes to add to the Database Pod for the database container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param db.config.extra.volumeMounts [array] Extra volume mounts for the database container. Mount paths must not collide with those the chart already mounts, including the data volume and the scratch volume. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param db.nodeSelector [object] Node Selector for the Database Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param db.tolerations [array] Tolerations for the Database Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -355,7 +402,7 @@ storage:
     selector: {}
     ## @param storage.pvc.storageClassName [string, nullable] The name of the StorageClass for the persistentVolumeClaim. See: [Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)
     # storageClassName: ""
-  ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param storage.securityContext [object] Security Context for the storage container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip storage.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -363,6 +410,17 @@ storage:
     capabilities:
       drop:
         - ALL
+  ## @extra storage.scratch Configuration for the writable scratch volume mounted at `/tmp` in the object storage container, where it writes its log files, unix sockets and rendered configuration. This is separate from the object storage data volume, which is mounted at `/data`
+  scratch:
+    emptyDir:
+      ## @param storage.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the object storage container. Ignored when `storage.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param storage.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param storage.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param storage.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the object storage container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `storage.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra storage.config.extra Extra configurations for the object storage container
     extra:
@@ -370,6 +428,10 @@ storage:
       envVars: []
       ## @param storage.config.extra.envSources [array] Sources for extra variables for the object storage container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param storage.config.extra.volumes [array] Extra volumes to add to the Storage Pod for the object storage container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param storage.config.extra.volumeMounts [array] Extra volume mounts for the object storage container. Mount paths must not collide with those the chart already mounts, including the data volume at `/data` and the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param storage.nodeSelector [object] Node Selector for the Storage Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param storage.tolerations [array] Tolerations for the Storage Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -393,7 +455,7 @@ grafana:
       cpu: 25m
       ## @param grafana.resources.requests.memory Memory resource request for the Grafana container
       memory: 80Mi
-  ## @param grafana.securityContext [object] Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param grafana.securityContext [object] Security Context for the Grafana container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip grafana.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -401,6 +463,17 @@ grafana:
     capabilities:
       drop:
         - ALL
+  ## @extra grafana.scratch Configuration for the writable scratch volume mounted at `/var/lib/grafana/data` in the Grafana container, where Grafana writes `grafana.db` and its alerting, PNG and CSV working directories. When this volume is mounted the chart points `GF_PATHS_DATA` at it. The volume cannot simply cover `/var/lib/grafana`, because that directory also holds the plugins shipped in the image
+  scratch:
+    emptyDir:
+      ## @param grafana.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/var/lib/grafana/data` in the Grafana container. Ignored when `grafana.scratch.volumeClaimTemplate` is set, which takes precedence. When neither is configured, `GF_PATHS_DATA` is left at the image's default of `/var/lib/grafana`
+      enabled: true
+      ## @param grafana.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param grafana.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param grafana.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/var/lib/grafana/data` in the Grafana container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `grafana.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra grafana.config.extra Extra configurations for the Grafana container
     extra:
@@ -408,6 +481,10 @@ grafana:
       envVars: []
       ## @param grafana.config.extra.envSources [array] Sources for extra variables for the Grafana container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param grafana.config.extra.volumes [array] Extra volumes to add to the Cryostat Pod for the Grafana container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param grafana.config.extra.volumeMounts [array] Extra volume mounts for the Grafana container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/var/lib/grafana/data`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param grafana.nodeSelector [object] Node Selector for the Grafana Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param grafana.tolerations [array] Tolerations for the Grafana Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -429,7 +506,7 @@ datasource:
       cpu: 200m
       ## @param datasource.resources.requests.memory Memory resource request for the JFR Data Source container
       memory: 200Mi
-  ## @param datasource.securityContext [object] Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param datasource.securityContext [object] Security Context for the JFR Data Source container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip datasource.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -437,6 +514,17 @@ datasource:
     capabilities:
       drop:
         - ALL
+  ## @extra datasource.scratch Configuration for the writable scratch volume mounted at `/tmp` in the JFR Data Source container, where it keeps its Vert.x cache and stages uploaded JFR files
+  scratch:
+    emptyDir:
+      ## @param datasource.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the JFR Data Source container. Ignored when `datasource.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param datasource.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param datasource.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param datasource.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the JFR Data Source container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `datasource.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra datasource.config.extra Extra configurations for the JFR Data Source container
     extra:
@@ -444,6 +532,10 @@ datasource:
       envVars: []
       ## @param datasource.config.extra.envSources [array] Sources for extra variables for the JFR Data Source container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param datasource.config.extra.volumes [array] Extra volumes to add to the Cryostat Pod for the JFR Data Source container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param datasource.config.extra.volumeMounts [array] Extra volume mounts for the JFR Data Source container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
   ## @param datasource.nodeSelector [object] Node Selector for the JFR Datasource Pod. See: [NodeSelector](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
   nodeSelector: {}
   ## @param datasource.tolerations [array] Tolerations for the JFR Datasource Pod. See: [Tolerations](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#scheduling)
@@ -493,7 +585,7 @@ oauth2Proxy:
       cpu: 25m
       ## @param oauth2Proxy.resources.requests.memory Memory resource request for the OAuth2 Proxy container
       memory: 64Mi
-  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param oauth2Proxy.securityContext [object] Security Context for the OAuth2 Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). This container writes nothing to its root filesystem, so `readOnlyRootFilesystem: true` may be set here without a scratch volume. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip oauth2Proxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -501,6 +593,17 @@ oauth2Proxy:
     capabilities:
       drop:
         - ALL
+  ## @extra oauth2Proxy.scratch Configuration for a writable scratch volume mounted at `/tmp` in the OAuth2 Proxy container. Unlike the chart's other containers this one is disabled by default, because the OAuth2 Proxy already runs with a read-only root filesystem
+  scratch:
+    emptyDir:
+      ## @param oauth2Proxy.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the OAuth2 Proxy container. Ignored when `oauth2Proxy.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: false
+      ## @param oauth2Proxy.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param oauth2Proxy.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param oauth2Proxy.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the OAuth2 Proxy container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `oauth2Proxy.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra oauth2Proxy.config.extra Extra configurations for the OAuth2 Proxy container
     extra:
@@ -508,6 +611,10 @@ oauth2Proxy:
       envVars: []
       ## @param oauth2Proxy.config.extra.envSources [array] Sources for extra variables for the OAuth2 Proxy container. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param oauth2Proxy.config.extra.volumes [array] Extra volumes to add, for the OAuth2 Proxy container, to every Pod the OAuth2 Proxy runs in. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param oauth2Proxy.config.extra.volumeMounts [array] Extra volume mounts for the OAuth2 Proxy container. Mount paths must not collide with those the chart already mounts. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
       inPod:
         main:
           ## @param oauth2Proxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OAuth2 Proxy container **only in the Cryostat main pod**
@@ -553,7 +660,7 @@ openshiftOauthProxy:
     verb: "get"
     ## @param openshiftOauthProxy.accessReview.version The OpenShift resource version that the SubjectAccessReview/TokenAccessReview will be performed for
     version: ""
-  ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param openshiftOauthProxy.securityContext [object] Security Context for the OpenShift OAuth Proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip openshiftOauthProxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -561,6 +668,17 @@ openshiftOauthProxy:
     capabilities:
       drop:
         - ALL
+  ## @extra openshiftOauthProxy.scratch Configuration for the writable scratch volume mounted at `/tmp` in the OpenShift OAuth Proxy container
+  scratch:
+    emptyDir:
+      ## @param openshiftOauthProxy.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the OpenShift OAuth Proxy container. Ignored when `openshiftOauthProxy.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param openshiftOauthProxy.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param openshiftOauthProxy.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param openshiftOauthProxy.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the OpenShift OAuth Proxy container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `openshiftOauthProxy.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
   config:
     ## @extra openshiftOauthProxy.config.extra Extra configurations for the OpenShift OAuth Proxy
     extra:
@@ -568,6 +686,10 @@ openshiftOauthProxy:
       envVars: []
       ## @param openshiftOauthProxy.config.extra.envSources [array] Sources for extra variables for the OpenShift OAuth Proxy. See: [Define Environment Variables From ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables)
       envSources: []
+      ## @param openshiftOauthProxy.config.extra.volumes [array] Extra volumes to add, for the OpenShift OAuth Proxy container, to every Pod the OpenShift OAuth Proxy runs in. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param openshiftOauthProxy.config.extra.volumeMounts [array] Extra volume mounts for the OpenShift OAuth Proxy container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
       inPod:
         main:
           ## @param openshiftOauthProxy.config.extra.inPod.main.envVars [array] Extra environment variables for the OpenShift OAuth Proxy **only in the Cryostat main pod**
@@ -597,7 +719,7 @@ authStripProxy:
       cpu: 50m
       ## @param authStripProxy.resources.requests.memory Memory resource request for the auth strip proxy container
       memory: 64Mi
-  ## @param authStripProxy.securityContext [object] Security Context for the auth strip proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+  ## @param authStripProxy.securityContext [object] Security Context for the auth strip proxy container. Defaults to meet "restricted" [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted). The chart mounts a writable scratch volume at every path this container needs to write to, so `readOnlyRootFilesystem: true` may be set here. See: [SecurityContext](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
   securityContext:
     ## @skip authStripProxy.securityContext.allowPrivilegeEscalation
     allowPrivilegeEscalation: false
@@ -605,6 +727,24 @@ authStripProxy:
     capabilities:
       drop:
         - ALL
+  ## @extra authStripProxy.scratch Configuration for the writable scratch volume mounted at `/tmp` in the auth strip proxy container. nginx writes its pid file there, and spools request and response bodies there. Because the chart accepts recording uploads of arbitrary size through this hop, sizing this volume bounds the largest upload that can pass through it
+  scratch:
+    emptyDir:
+      ## @param authStripProxy.scratch.emptyDir.enabled Whether an `emptyDir` is mounted at `/tmp` in the auth strip proxy container. Ignored when `authStripProxy.scratch.volumeClaimTemplate` is set, which takes precedence
+      enabled: true
+      ## @param authStripProxy.scratch.emptyDir.medium Storage medium for the scratch `emptyDir`. Leave empty for the node's default storage, or set to `Memory` for a tmpfs. See: [emptyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+      medium: ""
+      ## @param authStripProxy.scratch.emptyDir.sizeLimit Size limit for the scratch `emptyDir`, for example `1Gi`. Leave empty for no limit. Note that exceeding an `emptyDir` size limit causes the kubelet to evict the whole Pod
+      sizeLimit: ""
+    ## @param authStripProxy.scratch.volumeClaimTemplate [object] Claim template for a generic ephemeral volume mounted at `/tmp` in the auth strip proxy container, provisioned from a StorageClass and created and deleted along with the Pod. Takes precedence over `authStripProxy.scratch.emptyDir`. See: [PersistentVolumeClaimTemplate](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PersistentVolumeClaimTemplate)
+    volumeClaimTemplate: {}
+  config:
+    ## @extra authStripProxy.config.extra Extra configurations for the auth strip proxy container
+    extra:
+      ## @param authStripProxy.config.extra.volumes [array] Extra volumes to add to the Cryostat Pod for the auth strip proxy container. See: [Volumes](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes)
+      volumes: []
+      ## @param authStripProxy.config.extra.volumeMounts [array] Extra volume mounts for the auth strip proxy container. Mount paths must not collide with those the chart already mounts, including the scratch volume at `/tmp`. See: [VolumeMount](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+      volumeMounts: []
 
 ## @section Other Parameters
 
